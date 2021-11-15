@@ -22,6 +22,7 @@ tags:
     url: https://puppet.com/
 - name: nodes
   description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
+
 paths:
   /users:
     get:
@@ -46,15 +47,7 @@ paths:
       description: This can only be done by the logged in user.
       operationId: createUser
       requestBody:
-        description: Created user object
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              properties:
-                email:
-                  type: string
-                  description: User work email
-        required: true
+        $ref: '#/components/requestBodies/NewUser'
       responses:
         201:
           description: Created
@@ -63,6 +56,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
       x-codegen-request-body-name: body
+
   /users/{id}:
     get:
       tags:
@@ -89,6 +83,7 @@ paths:
         404:
           description: User not found
           content: {}
+
   /nodes:
     get:
       tags:
@@ -105,6 +100,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Node'
+
   /nodes/{id}:
     get:
       tags:
@@ -131,6 +127,7 @@ paths:
         404:
           description: User not found
           content: {}
+
   /nodes/{id}/nodedata:
     get:
       tags:
@@ -157,6 +154,7 @@ paths:
         404:
           description: Node not found
           content: {}
+
   /nodes/{id}/hieradata:
     get:
       tags:
@@ -183,14 +181,12 @@ paths:
         404:
           description: Node not found
           content: {}
+
 components:
   schemas:
-    User:
+    NewUser:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         email:
           type: string
         role:
@@ -216,6 +212,14 @@ components:
         updated_at:
           type: string
           format: date-time
+    User:
+      allOf:
+        - $ref: '#/components/schemas/NewUser'
+        - properties:
+            id:
+              type: string
+              format: uuid
+      
     Node:
       type: object
       properties:
@@ -233,6 +237,7 @@ components:
         updated_at:
           type: string
           format: date-time
+
     Nodedata:
       type: object
       properties:
@@ -254,6 +259,7 @@ components:
         updated_at:
           type: string
           format: date-time
+
     Hieradata:
       type: object
       properties:
@@ -269,6 +275,7 @@ components:
         updated_at:
           type: string
           format: date-time
+
     ApiResponse:
       type: object
       properties:
@@ -279,6 +286,17 @@ components:
           type: string
         message:
           type: string
+
+  requestBodies:
+    NewUser:
+      description: Created user object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/NewUser'
+              - required: ['email']
+
   securitySchemes:
     pds_auth:
       type: oauth2
