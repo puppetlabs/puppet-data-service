@@ -101,16 +101,16 @@ paths:
                 items:
                   $ref: '#/components/schemas/Node'
 
-  /nodes/{id}:
+  /nodes/{name}:
     get:
       tags:
       - nodes
-      summary: Get node by node id
-      operationId: getNodeById
+      summary: Get node by node name
+      operationId: getNodeByName
       parameters:
-      - name: id
+      - name: name
         in: path
-        description: 'The node ID that needs to be fetched. Use node1 for testing. '
+        description: 'The node name that needs to be fetched. Use node1 for testing. '
         required: true
         schema:
           type: string
@@ -122,22 +122,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Node'
         400:
-          description: Invalid user-id supplied
+          description: Invalid node-name supplied
           content: {}
         404:
           description: User not found
           content: {}
 
-  /nodes/{id}/nodedata:
+  /nodes/{name}/nodedata:
     get:
       tags:
       - nodes
-      summary: Get nodedata by node id
-      operationId: getNodeDataByNodeId
+      summary: Get nodedata by node name
+      operationId: getNodeDataByNodeName
       parameters:
-      - name: id
+      - name: name
         in: path
-        description: 'The nodedata that needs to be fetched. Use node1 as the node ID for testing. '
+        description: 'The nodedata that needs to be fetched. Use node1 as the node name for testing. '
         required: true
         schema:
           type: string
@@ -149,22 +149,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Nodedata'
         400:
-          description: Invalid node-id supplied
+          description: Invalid node-name supplied
           content: {}
         404:
           description: Node not found
           content: {}
 
-  /nodes/{id}/hieradata:
+  /nodes/{name}/hieradata:
     get:
       tags:
       - nodes
-      summary: Get hieradata by node id
-      operationId: getHieraDataByNodeId
+      summary: Get hieradata by node name
+      operationId: getHieraDataByNodeName
       parameters:
-      - name: id
+      - name: name
         in: path
-        description: 'The hieradata that needs to be fetched. Use node1 as the node ID for testing. '
+        description: 'The hieradata that needs to be fetched. Use node1 as the node name for testing. '
         required: true
         schema:
           type: string
@@ -176,7 +176,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Hieradata'
         400:
-          description: Invalid node-id supplied
+          description: Invalid node-name supplied
           content: {}
         404:
           description: Node not found
