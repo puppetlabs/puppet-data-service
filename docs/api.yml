@@ -196,8 +196,6 @@ components:
           enum:
           - operator
           - superadmin
-        temp_token:
-          type: string
         status:
           type: string
           description: User status
@@ -206,20 +204,22 @@ components:
           - active
           - inactive
           - deleted
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     User:
       allOf:
-        - $ref: '#/components/schemas/NewUser'
-        - properties:
-            id:
-              type: string
-              format: uuid
-      
+      - $ref: '#/components/schemas/NewUser'
+      - properties:
+          id:
+            type: string
+            format: uuid
+          temp_token:
+            type: string
+          created_at:
+            type: string
+            format: date-time
+          updated_at:
+            type: string
+            format: date-time
+
     Node:
       type: object
       properties:
