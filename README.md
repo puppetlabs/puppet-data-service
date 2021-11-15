@@ -1,2 +1,3 @@
-# puppet-data-service
+# Puppet Data Service (PDS)
+
 Puppet Data Service API
