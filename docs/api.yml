@@ -208,7 +208,42 @@ paths:
       parameters:
       - name: name
         in: path
-        description: 'The hieradata that needs to be fetched. Use node1 as the node name for testing. '
+        description: 'The hieradata level that needs to be fetched. Use node1 as the node name for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hieradata'
+        400:
+          description: Invalid node-name supplied
+          content: {}
+        404:
+          description: Node not found
+          content: {}
+
+  /nodes/{name}/hieradata/{key}:
+    get:
+      tags:
+      - nodes
+      summary: Get hieradata by node name
+      operationId: getHieraDataByNodeNameAndKey
+      parameters:
+      - name: name
+        in: path
+        description: 'The hieradata level that needs to be fetched. Use node1 as the node name for testing. '
+        required: true
+        schema:
+          type: string
+      - name: key
+        in: path
+        description: 'The hieradata key that needs to be fetched. Use node1 as the node name & certname as the key for testing. '
         required: true
         schema:
           type: string
