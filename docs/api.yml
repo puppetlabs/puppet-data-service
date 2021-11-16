@@ -154,6 +154,22 @@ paths:
         404:
           description: Node not found
           content: {}
+    post:
+      tags:
+      - nodes
+      summary: Create Nodedata
+      description: This can only be done by the logged in user.
+      operationId: createNodeData
+      requestBody:
+        $ref: '#/components/requestBodies/NewNodedata'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nodedata'
+      x-codegen-request-body-name: body
 
   /nodes/{name}/hieradata:
     get:
@@ -204,6 +220,7 @@ components:
           - active
           - inactive
           - deleted
+
     User:
       allOf:
       - $ref: '#/components/schemas/NewUser'
@@ -220,17 +237,39 @@ components:
             type: string
             format: date-time
 
-    Node:
+    NewNodedata:
       type: object
       properties:
         name:
           type: string
-        nodedata_count:
-          type: integer
-          format: int32
-        hieradata_count:
-          type: integer
-          format: int32
+        code_environment:
+          type: string
+          description: Code environment
+          enum:
+          - staging
+          - production
+          - compliance
+        classes:
+          type: object
+          additionalProperties:
+            type: string
+        trusted_data:
+          type: object
+          additionalProperties:
+            type: string
+
+    Node:
+      properties:
+        name:
+          type: string
+        code_environments:
+          type: array
+          items:
+            type: string
+            enum:
+            - staging
+            - production
+            - qa
         created_at:
           type: string
           format: date-time
@@ -289,13 +328,21 @@ components:
 
   requestBodies:
     NewUser:
-      description: Created user object
+      description: Create user object
       content:
         application/json:
           schema:
             allOf:
               - $ref: '#/components/schemas/NewUser'
               - required: ['email']
+    NewNodedata:
+      description: Create nodedata object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/NewNodedata'
+              - required: ['name']
 
   securitySchemes:
     pds_auth:
