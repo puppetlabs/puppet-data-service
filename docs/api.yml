@@ -176,7 +176,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Nodedata'
-      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - nodes
+      summary: Deletes a nodedata
+      operationId: deleteNodedata
+      parameters:
+      - name: name
+        in: path
+        description: 'The nodedata that needs to be deleted. Use node1 as the node name for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Ok
+          content: {}
+        400:
+          description: Invalid Node name supplied
+          content: {}
+        404:
+          description: Nodedata not found
+          content: {}
 
   /nodes/{name}/hieradata:
     get:
