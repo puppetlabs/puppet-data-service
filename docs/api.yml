@@ -227,6 +227,28 @@ paths:
         404:
           description: Node not found
           content: {}
+    post:
+      tags:
+      - nodes
+      summary: Create Hieradata
+      description: This can only be done by the logged in user.
+      operationId: createHieraData
+      parameters:
+      - name: name
+        in: path
+        description: 'The hieradata level that needs to be used. Use node1 as the nodename for testing. '
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: '#/components/requestBodies/NewHieradata'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hieradata'
 
   /nodes/{name}/hieradata/{key}:
     get:
@@ -362,14 +384,19 @@ components:
           type: string
           format: date-time
 
-    Hieradata:
+    NewHieradata:
       type: object
       properties:
-        level:
-          type: string
         key:
           type: string
         value:
+          type: string
+
+    Hieradata:
+      allOf:
+      - $ref: '#/components/schemas/NewHieradata'
+      properties:
+        level:
           type: string
         created_at:
           type: string
@@ -406,6 +433,14 @@ components:
             allOf:
               - $ref: '#/components/schemas/NewNodedata'
               - required: ['name']
+    NewHieradata:
+      description: Create hieradata object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/NewHieradata'
+              - required: ['key']
 
   securitySchemes:
     pds_auth:
