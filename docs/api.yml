@@ -78,11 +78,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         400:
-          description: Invalid user-id supplied
-          content: {}
+          description: 'Invalid user supplied'
         404:
-          description: User not found
-          content: {}
+          description: 'User not found'
 
   /nodes:
     get:
@@ -108,12 +106,7 @@ paths:
       summary: Get node by node name
       operationId: getNodeByName
       parameters:
-      - name: name
-        in: path
-        description: 'The node name that needs to be fetched. Use node1 for testing. '
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/NodeName'
       responses:
         200:
           description: Ok
@@ -123,183 +116,66 @@ paths:
                 $ref: '#/components/schemas/Node'
         400:
           description: Invalid node-name supplied
-          content: {}
         404:
-          description: User not found
-          content: {}
+          description: Node not found
 
-  /nodes/{name}/nodedata:
-    get:
+    put:
       tags:
       - nodes
-      summary: Get nodedata by node name
-      operationId: getNodeDataByNodeName
+      summary: Create a new node or replace an existing node
+      description: This can only be done by the logged in user.
+      operationId: putNodeByName
       parameters:
-      - name: name
-        in: path
-        description: 'The nodedata that needs to be fetched. Use node1 as the node name for testing. '
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/NodeName'
+      requestBody:
+        $ref: '#/components/requestBodies/NewNode'
       responses:
         200:
-          description: Ok
+          description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Nodedata'
-        400:
-          description: Invalid node-name supplied
-          content: {}
-        404:
-          description: Node not found
-          content: {}
-    post:
-      tags:
-      - nodes
-      summary: Create Nodedata
-      description: This can only be done by the logged in user.
-      operationId: createNodeData
-      parameters:
-      - name: name
-        in: path
-        description: 'The nodedata that needs to be fetched. Use node1 as the node name for testing. '
-        required: true
-        schema:
-          type: string
-      requestBody:
-        $ref: '#/components/requestBodies/NewNodedata'
-      responses:
+                $ref: '#/components/schemas/Node'
         201:
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Nodedata'
-    delete:
-      tags:
-      - nodes
-      summary: Deletes a nodedata
-      operationId: deleteNodedata
-      parameters:
-      - name: name
-        in: path
-        description: 'The nodedata that needs to be deleted. Use node1 as the node name for testing. '
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: Ok
-          content: {}
-        400:
-          description: Invalid Node name supplied
-          content: {}
-        404:
-          description: Nodedata not found
-          content: {}
-
-  /nodes/{name}/hieradata:
-    get:
-      tags:
-      - nodes
-      summary: Get hieradata by node name
-      operationId: getHieraDataByNodeName
-      parameters:
-      - name: name
-        in: path
-        description: 'The hieradata level that needs to be fetched. Use node1 as the node name for testing. '
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Hieradata'
+                $ref: '#/components/schemas/Node'
         400:
           description: Invalid node-name supplied
-          content: {}
         404:
           description: Node not found
-          content: {}
-    post:
+
+    patch:
       tags:
       - nodes
-      summary: Create Hieradata
+      summary: Edit properties of an existing node
       description: This can only be done by the logged in user.
-      operationId: createHieraData
+      operationId: editNode
       parameters:
-      - name: name
-        in: path
-        description: 'The hieradata level that needs to be used. Use node1 as the nodename for testing. '
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/NodeName'
       requestBody:
-        $ref: '#/components/requestBodies/NewHieradata'
-      responses:
-        201:
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Hieradata'
-
-  /nodes/{name}/hieradata/{key}:
-    get:
-      tags:
-      - nodes
-      summary: Get hieradata by node name
-      operationId: getHieraDataByNodeNameAndKey
-      parameters:
-      - name: name
-        in: path
-        description: 'The hieradata level that needs to be fetched. Use node1 as the nodename for testing. '
-        required: true
-        schema:
-          type: string
-      - name: key
-        in: path
-        description: 'The hieradata key that needs to be fetched. Use node1 as the nodename & certname as the key for testing. '
-        required: true
-        schema:
-          type: string
+        $ref: '#/components/requestBodies/EditNode'
       responses:
         200:
-          description: Ok
+          description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Hieradata'
+                $ref: '#/components/schemas/Node'
         400:
           description: Invalid node-name supplied
-          content: {}
         404:
           description: Node not found
-          content: {}
+
     delete:
       tags:
       - nodes
-      summary: Deletes a hieradata
-      operationId: deleteHieradata
+      summary: Deletes a node
+      operationId: deleteNode
       parameters:
-      - name: name
-        in: path
-        description: 'The hieradata that needs to be deleted. Use node1 as the nodename for testing. '
-        required: true
-        schema:
-          type: string
-      - name: key
-        in: path
-        description: 'The hieradata key that needs to be deleted. Use node1 as the nodename & certname as the key for testing. '
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/NodeName'
       responses:
         200:
           description: Ok
@@ -313,7 +189,26 @@ paths:
 
 components:
   schemas:
-    NewUser:
+    TimestampProperties:
+      type: object
+      properties:
+        created-at:
+          type: string
+          format: date-time
+        updated-at:
+          type: string
+          format: date-time
+
+    ImmutableUserProperties:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        temp_token:
+          type: string
+
+    EditableUserProperties:
       type: object
       properties:
         email:
@@ -336,25 +231,19 @@ components:
 
     User:
       allOf:
-      - $ref: '#/components/schemas/NewUser'
-      - properties:
-          id:
-            type: string
-            format: uuid
-          temp_token:
-            type: string
-          created_at:
-            type: string
-            format: date-time
-          updated_at:
-            type: string
-            format: date-time
+      - $ref: '#/components/schemas/ImmutableUserProperties'
+      - $ref: '#/components/schemas/EditableUserProperties'
+      - $ref: '#/components/schemas/TimestampProperties'
 
-    NewNodedata:
+    ImmutableNodeProperties:
       type: object
       properties:
         name:
           type: string
+
+    EditableNodeProperties:
+      type: object
+      properties:
         code_environment:
           type: string
           description: Code environment
@@ -368,70 +257,29 @@ components:
             type: string
         trusted_data:
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: true
 
     Node:
-      properties:
-        name:
-          type: string
-        code_environments:
-          type: array
-          items:
-            type: string
-            enum:
-            - staging
-            - production
-            - qa
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+      allOf:
+      - $ref: '#/components/schemas/ImmutableNodeProperties'
+      - $ref: '#/components/schemas/EditableNodeProperties'
+      - $ref: '#/components/schemas/TimestampProperties'
 
-    Nodedata:
+    EditableHieradataProperties:
       type: object
       properties:
-        name:
+        level:
           type: string
-        code_environment:
-          type: string
-        classes:
-          type: object
-          additionalProperties:
-            type: string
-        trusted_data:
-          type: object
-          additionalProperties:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-
-    NewHieradata:
-      type: object
-      properties:
         key:
           type: string
         value:
           type: string
+          description: JSON-encoded value
 
     Hieradata:
       allOf:
-      - $ref: '#/components/schemas/NewHieradata'
-      properties:
-        level:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+      - $ref: '#/components/schemas/EditableHieradataProperties'
+      - $ref: '#/components/schemas/TimestampProperties'
 
     ApiResponse:
       type: object
@@ -444,6 +292,15 @@ components:
         message:
           type: string
 
+  parameters:
+    NodeName:
+      name: name
+      in: path
+      description: 'The node name to be fetched or modified. Use node1 for testing.'
+      required: true
+      schema:
+        type: string
+
   requestBodies:
     NewUser:
       description: Create user object
@@ -451,24 +308,46 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/NewUser'
+              - $ref: '#/components/schemas/EditableUserProperties'
               - required: ['email']
-    NewNodedata:
-      description: Create nodedata object
+
+    NewNode:
+      description: Create node object
       content:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/NewNodedata'
+              - $ref: '#/components/schemas/ImmutableNodeProperties'
+              - $ref: '#/components/schemas/EditableNodeProperties'
               - required: ['name']
+
+    EditNode:
+      description: Edit existing node object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/EditableNodeProperties'
+
     NewHieradata:
       description: Create hieradata object
       content:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/NewHieradata'
-              - required: ['key']
+              - $ref: '#/components/schemas/EditableHieradataProperties'
+              - required: ['level', 'key', 'value']
+
+  responses:
+    204NoContent:
+      description: No content.
+      content: {}
+    400BadRequest:
+      description: Bad request.
+      content: {}
+    404NotFound:
+      description: The specified resource was not found.
+      content: {}
 
   securitySchemes:
     pds_auth:
