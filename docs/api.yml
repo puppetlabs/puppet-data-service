@@ -59,19 +59,14 @@ paths:
                 $ref: '#/components/schemas/User'
       x-codegen-request-body-name: body
 
-  /users/{id}:
+  /users/{username}:
     get:
       tags:
       - users
-      summary: Get user by user id
-      operationId: getUserById
+      summary: Get user by username
+      operationId: getUserByUsername
       parameters:
-      - name: id
-        in: path
-        description: 'The user ID that needs to be fetched. Use user1 for testing. '
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/Username'
       responses:
         200:
           description: Ok
@@ -79,6 +74,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        400:
+          description: 'Invalid user supplied'
+        404:
+          description: 'User not found'
+
+  /users/{username}/token:
+    get:
+      tags:
+      - users
+      summary: Get API token by username
+      operationId: getTokenByUsername
+      parameters:
+      - $ref: '#/components/parameters/Username'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
         400:
           description: 'Invalid user supplied'
         404:
@@ -258,6 +273,10 @@ paths:
 
 components:
   schemas:
+    Username:
+      type: string
+      pattern: '^([-\d\w.]+){2}$'
+
     TimestampProperties:
       type: object
       properties:
@@ -271,11 +290,8 @@ components:
     ImmutableUserProperties:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        temp_token:
-          type: string
+        username:
+          $ref: '#/components/schemas/Username'
 
     EditableUserProperties:
       type: object
@@ -303,6 +319,13 @@ components:
       - $ref: '#/components/schemas/ImmutableUserProperties'
       - $ref: '#/components/schemas/EditableUserProperties'
       - $ref: '#/components/schemas/TimestampProperties'
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          description: API token
 
     ImmutableNodeProperties:
       type: object
@@ -380,6 +403,14 @@ components:
           type: string
 
   parameters:
+    Username:
+      name: username
+      in: path
+      description: 'The username'
+      required: true
+      schema:
+        $ref: '#/components/schemas/Username'
+
     NodeName:
       name: name
       in: path
@@ -411,8 +442,9 @@ components:
         application/json:
           schema:
             allOf:
+              - $ref: '#/components/schemas/ImmutableUserProperties'
               - $ref: '#/components/schemas/EditableUserProperties'
-              - required: ['email']
+              - required: ['username']
 
     NewNode:
       description: Create node object
@@ -442,7 +474,6 @@ components:
               value:
                 nullable: true
                 description: The value of the key at the level
-
 
   responses:
     HieraValue:
