@@ -1,6 +1,0 @@
-output:
-  api.gen.go
-package: pds
-generate:
-  - types
-  - client
