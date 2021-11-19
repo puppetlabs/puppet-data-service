@@ -15,8 +15,10 @@ externalDocs:
 servers:
   - url: localhost:3000/v1
 tags:
-  - name: hiera-data
-    description: Hiera data levels and key/value pairs
+  - name: hiera-levels
+    description: Whole Hiera levels
+  - name: hiera-values
+    description: Hiera data key/value pairs
   - name: nodes
     description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
   - name: users
