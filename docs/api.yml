@@ -23,7 +23,7 @@ tags:
 - name: nodes
   description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
 - name: hiera-data
-  description: Hiera data levels and key/value pairs
+  description: Hiera data key/value pairs
 
 paths:
   /users:
@@ -204,16 +204,16 @@ paths:
           description: Nodedata not found
           content: {}
 
-  /hiera/value:
+  /hiera/values:
     get:
       tags:
       - hiera-data
-      summary: Get a specific Hiera value
-      description: Get a specific Hiera data value, from a particular level and key
-      operationId: getHieraData
+      summary: Get all hiera data values matching a filter
+      description: Get all Hiera data values by level
+      operationId: getHieraValues
       parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+      - $ref: '#/components/parameters/OptionalHieraLevel'
+      - $ref: '#/components/parameters/OptionalHieraKey'
       responses:
         200:
           description: successful operation
@@ -223,43 +223,56 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/HieraValue'
-    put:
+
+  /hiera/values/upsert:
+    post:
       tags:
       - hiera-data
-      summary: Set a specific Hiera value
-      description: Set a specific Hiera value, at a particular level and key
-      operationId: putHieraData
-      parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+      summary: Set one or more Hiera values
+      description: Set one or more Hiera values, using level, key, and value for each.
+      operationId: upsertHieraValues
       requestBody:
-        $ref: '#/components/requestBodies/EditHieraValue'
+        $ref: '#/components/requestBodies/EditHieraValues'
       responses:
-        200:
-          $ref: '#/components/responses/HieraValue'
-        201:
-          $ref: '#/components/responses/HieraValue'
-    delete:
+        204:
+          $ref: '#/components/responses/204NoContent'
+
+  /hiera/values/delete:
+    post:
       tags:
       - hiera-data
-      summary: Delete a specific Hiera value
-      description: Delete a specific Hiera value, at a particular level and key
-      operationId: deleteHieraData
-      parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+      summary: Delete one or more Hiera values
+      description: Delete one or more Hiera values, using level and key for each.
+      operationId: deleteHieraValues
+      requestBody:
+        $ref: '#/components/requestBodies/ListHieraValues'
+      responses:
+        204:
+          $ref: '#/components/responses/204NoContent'
+
+  /hiera/levels:
+    get:
+      tags:
+      - hiera-data
+      summary: List all Hiera data levels
+      description: List all levels for which Hiera data is defined
+      operationId: getHieraLevels
       responses:
         200:
-          $ref: '#/components/responses/HieraValue'
-        201:
-          $ref: '#/components/responses/HieraValue'
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 
   /hiera/level:
     get:
       tags:
       - hiera-data
-      summary: Get all hiera data at a level
-      description: Get all Hiera data by level, or specific key by level
+      summary: Get all hiera data values from a particular level
+      description: Get all Hiera data values by level
       operationId: getHieraLevel
       parameters:
       - $ref: '#/components/parameters/HieraLevel'
@@ -270,6 +283,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HieraLevel'
+
+    delete:
+      tags:
+      - hiera-data
+      summary: Delete all hiera data values from a particular level
+      description: Get all Hiera data values by level
+      operationId: deleteHieraLevel
+      parameters:
+      - $ref: '#/components/parameters/HieraLevel'
+      responses:
+        204:
+          $ref: '#/components/responses/204NoContent'
 
 components:
   schemas:
@@ -369,8 +394,8 @@ components:
       type: object
       properties:
         value:
-          type: string
-          description: JSON-encoded value
+          nullable: true
+          description: The value to set the Hiera key to
 
     HieraValue:
       allOf:
@@ -427,11 +452,19 @@ components:
       schema:
         type: string
 
-    HieraKey:
+    OptionalHieraLevel:
       name: key
       in: query
       description: 'The Hiera key'
-      required: true
+      required: false
+      schema:
+        type: string
+
+    OptionalHieraKey:
+      name: key
+      in: query
+      description: 'The Hiera key'
+      required: false
       schema:
         type: string
 
@@ -465,17 +498,49 @@ components:
               - $ref: '#/components/schemas/EditableNodeProperties'
 
     EditHieraValue:
-      description: Create or edit a Hiera value
+      description: Create or edit a Hiera value at a specified level and key
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              value:
-                nullable: true
-                description: The value of the key at the level
+            allOf:
+            - $ref: '#/components/schemas/EditableHieraValueProperties'
+            - required: ['value']
+
+    EditHieraValues:
+      description: Create or edit a set of Hiera values
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: '#/components/schemas/ImmutableHieraValueProperties'
+              - $ref: '#/components/schemas/EditableHieraValueProperties'
+              - required: ['level', 'key', 'value']
+
+    ListHieraValues:
+      description: List a set of Hiera values
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: '#/components/schemas/ImmutableHieraValueProperties'
+              - required: ['level', 'key']
 
   responses:
+    200Ok:
+      description: Successful operation
+      content: {}
+
+    201Created:
+      description: Successful operation
+      content: {}
+
+    204NoContent:
+      description: No content
+
     HieraValue:
       description: successful operation
       content:
