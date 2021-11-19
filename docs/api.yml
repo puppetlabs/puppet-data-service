@@ -450,9 +450,9 @@ components:
         type: string
 
     OptionalHieraLevel:
-      name: key
+      name: level
       in: query
-      description: "The Hiera key"
+      description: "The Hiera level"
       required: false
       schema:
         type: string
