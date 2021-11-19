@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: 'WIP: Puppet Data Service API'
-  description: 'This is the API documentation for the Puppet Data Service API.  You can find out more about     the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization     filters.'
+  title: "WIP: Puppet Data Service API"
+  description: "This is the API documentation for the Puppet Data Service API.  You can find out more about     the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization     filters."
   termsOfService: http://swagger.io/terms/
   contact:
     email: solarch-team@puppet.com
@@ -13,263 +13,267 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-- url: localhost:3000/v1
+  - url: localhost:3000/v1
 tags:
-- name: users
-  description: Every config change should be started with an authorized User
-  externalDocs:
-    description: TBD Find out more
-    url: https://puppet.com/
-- name: nodes
-  description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
-- name: hiera-data
-  description: Hiera data levels and key/value pairs
+  - name: hiera-data
+    description: Hiera data levels and key/value pairs
+  - name: nodes
+    description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
+  - name: users
+    description: Every config change should be started with an authorized User
+    externalDocs:
+      description: TBD Find out more
+      url: https://puppet.com/
 
 paths:
   /users:
     get:
       tags:
-      - users
+        - users
       summary: Get all available users
       description: This can only be done by the logged in user with a superadmin role.
       operationId: getAllUsers
       responses:
-        200:
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
     post:
       tags:
-      - users
+        - users
       summary: Create user
       description: This can only be done by the logged in user.
       operationId: createUser
       requestBody:
-        $ref: '#/components/requestBodies/NewUser'
+        $ref: "#/components/requestBodies/NewUser"
       responses:
-        201:
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
       x-codegen-request-body-name: body
 
   /users/{username}:
     get:
       tags:
-      - users
+        - users
       summary: Get user by username
+      description: Retrieve a specific user.
       operationId: getUserByUsername
       parameters:
-      - $ref: '#/components/parameters/Username'
+        - $ref: "#/components/parameters/Username"
       responses:
-        200:
+        "200":
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        400:
-          description: 'Invalid user supplied'
-        404:
-          description: 'User not found'
+                $ref: "#/components/schemas/User"
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
 
   /users/{username}/token:
     get:
       tags:
-      - users
+        - users
       summary: Get API token by username
+      description: Retrieve an API token for the user
       operationId: getTokenByUsername
       parameters:
-      - $ref: '#/components/parameters/Username'
+        - $ref: "#/components/parameters/Username"
       responses:
-        200:
+        "200":
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
-        400:
-          description: 'Invalid user supplied'
-        404:
-          description: 'User not found'
+                $ref: "#/components/schemas/Token"
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
 
   /nodes:
     get:
       tags:
-      - nodes
+        - nodes
       summary: Get all available nodes
       description: This can only be done by the logged in user.
       operationId: getAllNodes
       responses:
-        200:
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Node'
+                  $ref: "#/components/schemas/Node"
 
   /nodes/{name}:
     get:
       tags:
-      - nodes
+        - nodes
       summary: Get node by node name
+      description: Retrieve a specific node.
       operationId: getNodeByName
       parameters:
-      - $ref: '#/components/parameters/NodeName'
+        - $ref: "#/components/parameters/NodeName"
       responses:
-        200:
+        "200":
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-        400:
+                $ref: "#/components/schemas/Node"
+        "400":
           description: Invalid node-name supplied
-        404:
+        "404":
           description: Node not found
 
     put:
       tags:
-      - nodes
+        - nodes
       summary: Create a new node or replace an existing node
       description: This can only be done by the logged in user.
       operationId: putNodeByName
       parameters:
-      - $ref: '#/components/parameters/NodeName'
+        - $ref: "#/components/parameters/NodeName"
       requestBody:
-        $ref: '#/components/requestBodies/NewNode'
+        $ref: "#/components/requestBodies/NewNode"
       responses:
-        200:
+        "200":
           description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-        201:
+                $ref: "#/components/schemas/Node"
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-        400:
+                $ref: "#/components/schemas/Node"
+        "400":
           description: Invalid node-name supplied
-        404:
+        "404":
           description: Node not found
 
     patch:
       tags:
-      - nodes
+        - nodes
       summary: Edit properties of an existing node
       description: This can only be done by the logged in user.
       operationId: editNode
       parameters:
-      - $ref: '#/components/parameters/NodeName'
+        - $ref: "#/components/parameters/NodeName"
       requestBody:
-        $ref: '#/components/requestBodies/EditNode'
+        $ref: "#/components/requestBodies/EditNode"
       responses:
-        200:
+        "200":
           description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-        400:
+                $ref: "#/components/schemas/Node"
+        "400":
           description: Invalid node-name supplied
-        404:
+        "404":
           description: Node not found
 
     delete:
       tags:
-      - nodes
+        - nodes
       summary: Deletes a node
+      description: This can only be done by the logged in user.
       operationId: deleteNode
       parameters:
-      - $ref: '#/components/parameters/NodeName'
+        - $ref: "#/components/parameters/NodeName"
       responses:
-        200:
+        "200":
           description: Ok
           content: {}
-        400:
+        "400":
           description: Invalid Node name supplied
           content: {}
-        404:
+        "404":
           description: Nodedata not found
           content: {}
 
   /hiera/value:
     get:
       tags:
-      - hiera-data
+        - 'hiera-data'
       summary: Get a specific Hiera value
       description: Get a specific Hiera data value, from a particular level and key
       operationId: getHieraData
       parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
       responses:
-        200:
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HieraValue'
+                  $ref: "#/components/schemas/HieraValue"
     put:
       tags:
-      - hiera-data
+        - 'hiera-data'
       summary: Set a specific Hiera value
       description: Set a specific Hiera value, at a particular level and key
       operationId: putHieraData
       parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
       requestBody:
-        $ref: '#/components/requestBodies/EditHieraValue'
+        $ref: "#/components/requestBodies/EditHieraValue"
       responses:
-        200:
-          $ref: '#/components/responses/HieraValue'
-        201:
-          $ref: '#/components/responses/HieraValue'
+        "200":
+          $ref: "#/components/responses/HieraValue"
+        "201":
+          $ref: "#/components/responses/HieraValue"
     delete:
       tags:
-      - hiera-data
+        - hiera-data
       summary: Delete a specific Hiera value
       description: Delete a specific Hiera value, at a particular level and key
       operationId: deleteHieraData
       parameters:
-      - $ref: '#/components/parameters/HieraLevel'
-      - $ref: '#/components/parameters/HieraKey'
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
       responses:
-        200:
-          $ref: '#/components/responses/HieraValue'
-        201:
-          $ref: '#/components/responses/HieraValue'
+        "200":
+          $ref: "#/components/responses/HieraValue"
+        "201":
+          $ref: "#/components/responses/HieraValue"
 
   /hiera/level:
     get:
       tags:
-      - hiera-data
+        - hiera-data
       summary: Get all hiera data at a level
       description: Get all Hiera data by level, or specific key by level
       operationId: getHieraLevel
       parameters:
-      - $ref: '#/components/parameters/HieraLevel'
+        - $ref: "#/components/parameters/HieraLevel"
       responses:
-        200:
+        "200":
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HieraLevel'
+                $ref: "#/components/schemas/HieraLevel"
 
 components:
   schemas:
@@ -291,7 +295,7 @@ components:
       type: object
       properties:
         username:
-          $ref: '#/components/schemas/Username'
+          $ref: "#/components/schemas/Username"
 
     EditableUserProperties:
       type: object
@@ -303,22 +307,22 @@ components:
           description: User role
           default: operator
           enum:
-          - operator
-          - superadmin
+            - operator
+            - superadmin
         status:
           type: string
           description: User status
           default: active
           enum:
-          - active
-          - inactive
-          - deleted
+            - active
+            - inactive
+            - deleted
 
     User:
       allOf:
-      - $ref: '#/components/schemas/ImmutableUserProperties'
-      - $ref: '#/components/schemas/EditableUserProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableUserProperties"
+        - $ref: "#/components/schemas/EditableUserProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
 
     Token:
       type: object
@@ -340,9 +344,9 @@ components:
           type: string
           description: Code environment
           enum:
-          - staging
-          - production
-          - compliance
+            - staging
+            - production
+            - compliance
         classes:
           type: object
           additionalProperties:
@@ -353,9 +357,9 @@ components:
 
     Node:
       allOf:
-      - $ref: '#/components/schemas/ImmutableNodeProperties'
-      - $ref: '#/components/schemas/EditableNodeProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableNodeProperties"
+        - $ref: "#/components/schemas/EditableNodeProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
 
     ImmutableHieraValueProperties:
       type: object
@@ -374,9 +378,9 @@ components:
 
     HieraValue:
       allOf:
-      - $ref: '#/components/schemas/ImmutableHieraValueProperties'
-      - $ref: '#/components/schemas/EditableHieraValueProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableHieraValueProperties"
+        - $ref: "#/components/schemas/EditableHieraValueProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
 
     HieraLevel:
       type: object
@@ -391,30 +395,30 @@ components:
           additionalProperties:
             type: string
 
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
+    # ApiResponse:
+    #   type: object
+    #   properties:
+    #     code:
+    #       type: integer
+    #       format: int32
+    #     type:
+    #       type: string
+    #     message:
+    #       type: string
 
   parameters:
     Username:
       name: username
       in: path
-      description: 'The username'
+      description: "The username"
       required: true
       schema:
-        $ref: '#/components/schemas/Username'
+        $ref: "#/components/schemas/Username"
 
     NodeName:
       name: name
       in: path
-      description: 'The node name to be fetched or modified. Use node1 for testing.'
+      description: "The node name to be fetched or modified. Use node1 for testing."
       required: true
       schema:
         type: string
@@ -422,7 +426,7 @@ components:
     HieraLevel:
       name: level
       in: query
-      description: 'The Hiera level'
+      description: "The Hiera level"
       required: true
       schema:
         type: string
@@ -430,7 +434,7 @@ components:
     HieraKey:
       name: key
       in: query
-      description: 'The Hiera key'
+      description: "The Hiera key"
       required: true
       schema:
         type: string
@@ -442,9 +446,9 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/ImmutableUserProperties'
-              - $ref: '#/components/schemas/EditableUserProperties'
-              - required: ['username']
+              - $ref: "#/components/schemas/ImmutableUserProperties"
+              - $ref: "#/components/schemas/EditableUserProperties"
+              - required: ["username"]
 
     NewNode:
       description: Create node object
@@ -452,9 +456,9 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/ImmutableNodeProperties'
-              - $ref: '#/components/schemas/EditableNodeProperties'
-              - required: ['name']
+              - $ref: "#/components/schemas/ImmutableNodeProperties"
+              - $ref: "#/components/schemas/EditableNodeProperties"
+              - required: ["name"]
 
     EditNode:
       description: Edit existing node object
@@ -462,7 +466,7 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/EditableNodeProperties'
+              - $ref: "#/components/schemas/EditableNodeProperties"
 
     EditHieraValue:
       description: Create or edit a Hiera value
@@ -481,7 +485,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/HieraValue'
+            $ref: "#/components/schemas/HieraValue"
 
   securitySchemes:
     pds_auth:
