@@ -16,34 +16,51 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
+	"log"
+
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
 	"github.com/spf13/cobra"
 )
 
 // nodeCmd represents the node command
 var nodeCmd = &cobra.Command{
 	Use:   "node",
-	Short: "A brief description of your command",
-// 	Long: `A longer description that spans multiple lines and likely contains examples
-// and usage of using your command. For example:
+	Short: "Operations on nodes",
+}
 
-// Cobra is a CLI library for Go that empowers applications.
-// This application is a tool to generate the needed files
-// to quickly create a Cobra application.`,
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		fmt.Println("node called")
-// 	},
+var listNodesCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List nodes",
+	Run: func(cmd *cobra.Command, args []string) {
+		response, err := pdsClient.GetAllNodesWithResponse(context.Background())
+		if err != nil {
+			log.Fatalf("Couldn't get nodes %s", err)
+		}
+		dump(response.JSON200)
+	},
+}
+
+var getNodeCmd = &cobra.Command{
+	Use:   "get NODENAME",
+	Args:  cobra.ExactArgs(1),
+	Short: "Retrieve node with nodename NODENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		// username, _ := cmd.Flags().GetString("username")
+		nodename := args[0]
+		response, err := pdsClient.GetNodeByNameWithResponse(context.Background(), client.NodeName(nodename))
+		if err != nil {
+			log.Fatalf("Couldn't get user %s: %s", nodename, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.JSON200)
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(nodeCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// nodeCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// nodeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	nodeCmd.AddCommand(listNodesCmd)
+	nodeCmd.AddCommand(getNodeCmd)
 }

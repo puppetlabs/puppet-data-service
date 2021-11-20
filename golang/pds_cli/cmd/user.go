@@ -16,33 +16,69 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
+	"log"
+
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
 	"github.com/spf13/cobra"
 )
 
-// userCmd represents the user command
 var userCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Operations on users",
-	// Long: `List users, like so:
+}
 
-  //  pds_cli users list
+var listUsersCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List users",
+	Run: func(cmd *cobra.Command, args []string) {
+		// fmt.Println("listusers called")
+		response, err := pdsClient.GetAllUsersWithResponse(context.Background())
+		if err != nil {
+			log.Fatalf("Couldn't get users %s", err)
+		}
+		dump(response.JSON200)
+	},
+}
 
-	//  `,
-	// Run: func(cmd *cobra.Command, args []string) {
-	// 	fmt.Println("user called")
-	// },
+var getUserCmd = &cobra.Command{
+	Use:   "get USERNAME",
+	Args:  cobra.ExactArgs(1),
+	Short: "Retrieve user with username USERNAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		// username, _ := cmd.Flags().GetString("username")
+		username := args[0]
+		response, err := pdsClient.GetUserByUsernameWithResponse(context.Background(), client.Username(username))
+		if err != nil {
+			log.Fatalf("Couldn't get user %s: %s", username, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.JSON200)
+	},
+}
+
+var getUserTokenCmd = &cobra.Command{
+	Use:   "get-token USERNAME",
+	Args:  cobra.ExactArgs(1),
+	Short: "Retrieve token for user with username USERNAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		username := args[0]
+		response, err := pdsClient.GetTokenByUsernameWithResponse(context.Background(), client.Username(username))
+		if err != nil {
+			log.Fatalf("Couldn't get token for user %s: %s", username, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.JSON200)
+	},
 }
 
 func init() {
 	rootCmd.AddCommand(userCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// userCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// userCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	userCmd.AddCommand(listUsersCmd)
+	userCmd.AddCommand(getUserCmd)
+	userCmd.AddCommand(getUserTokenCmd)
 }
