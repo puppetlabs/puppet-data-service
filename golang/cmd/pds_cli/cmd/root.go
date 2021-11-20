@@ -24,12 +24,18 @@ package cmd
 import (
 	"fmt"
 	"os"
+
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile  string
+	endpoint string
+	pdsClient *client.ClientWithResponses
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -44,6 +50,13 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
+	Version: "0.1",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// fmt.Printf("Inside rootCmd PersistentPreRun with args: %v\n", args)
+		// fmt.Println("endpoint: ", endpoint)
+		pdsClient = createPDSClient()
+	
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -60,6 +73,8 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pds_cli.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&endpoint, "endpoint", "e", "http://127.0.0.1:4010", "Endpoint for the PDS API")
+	// rootCmd.MarkFlagRequired("endpoint")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

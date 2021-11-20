@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/puppetlabs/puppet-data-service/golang/cmd/pds_cli"
+import "github.com/puppetlabs/puppet-data-service/golang/cmd/pds_cli/cmd"
 
 func main() {
 	cmd.Execute()
