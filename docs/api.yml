@@ -117,6 +117,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+    post:
+      tags:
+        - nodes
+      summary: Create new node(s)
+      description: This can only be done by the logged in user.
+      operationId: createNode
+      requestBody:
+        $ref: "#/components/requestBodies/NewNodes"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Node"
 
   /nodes/{name}:
     get:
@@ -204,6 +221,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+    post:
+      tags:
+        - hiera-data
+      summary: Create new Hiera data value(s)
+      description: This can only be done by the logged in user.
+      operationId: createHieraData
+      requestBody:
+        $ref: "#/components/requestBodies/NewHieraData"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HieraValue"
+      x-codegen-request-body-name: body
 
   /hiera-data/{level}/{key}:
     get:
@@ -427,6 +462,18 @@ components:
               - $ref: "#/components/schemas/EditableUserProperties"
               - required: ["username"]
 
+    NewNodes:
+      description: Create node object(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/components/schemas/ImmutableNodeProperties"
+                - $ref: "#/components/schemas/EditableNodeProperties"
+                - required: ["name"]
+
     NewNode:
       description: Create node object
       content:
@@ -444,6 +491,18 @@ components:
           schema:
             allOf:
               - $ref: "#/components/schemas/EditableNodeProperties"
+
+    NewHieraData:
+      description: Create new Hiera data value(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/components/schemas/ImmutableHieraValueProperties"
+              - $ref: "#/components/schemas/EditableHieraValueProperties"
+              - required: ["level", "key", "value"]
 
     EditHieraValue:
       description: Create or edit a Hiera value at a specified level and key
