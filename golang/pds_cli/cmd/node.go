@@ -50,7 +50,7 @@ var getNodeCmd = &cobra.Command{
 		nodename := args[0]
 		response, err := pdsClient.GetNodeByNameWithResponse(context.Background(), client.NodeName(nodename))
 		if err != nil {
-			log.Fatalf("Couldn't get user %s: %s", nodename, err)
+			log.Fatalf("Couldn't get node %s: %s", nodename, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -59,8 +59,46 @@ var getNodeCmd = &cobra.Command{
 	},
 }
 
+var deleteNodeCmd = &cobra.Command{
+	Use:   "delete NODENAME",
+	Args:  cobra.ExactArgs(1),
+	Short: "Delete node with nodename NODENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		// username, _ := cmd.Flags().GetString("username")
+		nodename := args[0]
+		response, err := pdsClient.DeleteNodeWithResponse(context.Background(), client.NodeName(nodename))
+		if err != nil {
+			log.Fatalf("Couldn't delete node %s: %s", nodename, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.Status())
+	},
+}
+
+// var putNodeCmd = &cobra.Command{
+// 	Use:   "put NODENAME",
+// 	Args:  cobra.ExactArgs(1),
+// 	Short: "Put node with nodename NODENAME",
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		// username, _ := cmd.Flags().GetString("username")
+// 		nodename := args[0]
+// 		body := client.No
+// 		response, err := pdsClient.PutNodeByNameWithBodyWithResponse(context.Background(), client.NodeName(nodename), "application/json", body)
+// 		if err != nil {
+// 			log.Fatalf("Couldn't delete node %s: %s", nodename, err)
+// 		}
+// 		if response.HTTPResponse.StatusCode > 299 {
+// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+// 		}
+// 		dump(response.Status())
+// 	},
+// }
+
 func init() {
 	rootCmd.AddCommand(nodeCmd)
 	nodeCmd.AddCommand(listNodesCmd)
 	nodeCmd.AddCommand(getNodeCmd)
+	nodeCmd.AddCommand(deleteNodeCmd)
 }

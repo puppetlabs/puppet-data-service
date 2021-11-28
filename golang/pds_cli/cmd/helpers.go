@@ -14,9 +14,9 @@ func dump(o interface{}) {
 }
 
 func createPDSClient() *client.ClientWithResponses {
-	client, err := client.NewClientWithResponses("http://127.0.0.1:4010")
+	client, err := client.NewClientWithResponses(endpoint)
 	if err != nil {
-		log.Fatalf("Couldn't instantiate client: %s", err)
+		log.Fatalf("Couldn't instantiate PDS client: %s", err)
 	}
 	return client
 }
