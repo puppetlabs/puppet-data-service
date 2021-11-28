@@ -83,20 +83,6 @@ type EditableUserPropertiesRole string
 // User status
 type EditableUserPropertiesStatus string
 
-// Key-value pairs of Hiera data for a particular level
-type HieraLevel struct {
-	// key-value pairs of Hiera data for the level
-	Data *HieraLevel_Data `json:"data,omitempty"`
-
-	// The level of the data being returned
-	Level *string `json:"level,omitempty"`
-}
-
-// key-value pairs of Hiera data for the level
-type HieraLevel_Data struct {
-	AdditionalProperties map[string]string `json:"-"`
-}
-
 // HieraValue defines model for HieraValue.
 type HieraValue struct {
 	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
@@ -158,37 +144,22 @@ type User struct {
 // Username defines model for Username.
 type Username string
 
+// HieraKey defines model for HieraKey.
+type HieraKey string
+
+// HieraLevel defines model for HieraLevel.
+type HieraLevel string
+
 // NodeName defines model for NodeName.
 type NodeName string
-
-// OptionalHieraKey defines model for OptionalHieraKey.
-type OptionalHieraKey string
 
 // OptionalHieraLevel defines model for OptionalHieraLevel.
 type OptionalHieraLevel string
 
-// EditHieraLevel defines model for EditHieraLevel.
-type EditHieraLevel []struct {
-	// Embedded fields due to inline allOf schema
-	Key *string `json:"key,omitempty"`
+// EditHieraValue defines model for EditHieraValue.
+type EditHieraValue struct {
 	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
 	EditableHieraValueProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-}
-
-// EditHieraValues defines model for EditHieraValues.
-type EditHieraValues []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
-	ImmutableHieraValueProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
-	EditableHieraValueProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-}
-
-// ListHieraValues defines model for ListHieraValues.
-type ListHieraValues []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
-	ImmutableHieraValueProperties `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
 }
 
@@ -210,41 +181,14 @@ type NewUser struct {
 	// Embedded fields due to inline allOf schema
 }
 
-// DeleteHieraLevelParams defines parameters for DeleteHieraLevel.
-type DeleteHieraLevelParams struct {
-	// The Hiera level
-	Level HieraLevel `json:"level"`
-}
-
-// GetHieraLevelParams defines parameters for GetHieraLevel.
-type GetHieraLevelParams struct {
-	// The Hiera level
-	Level HieraLevel `json:"level"`
-}
-
-// PutHieraLevelParams defines parameters for PutHieraLevel.
-type PutHieraLevelParams struct {
-	// The Hiera level
-	Level HieraLevel `json:"level"`
-}
-
-// GetHieraValuesParams defines parameters for GetHieraValues.
-type GetHieraValuesParams struct {
-	// The Hiera level
+// GetHieraDataParams defines parameters for GetHieraData.
+type GetHieraDataParams struct {
+	// (Optional) This will filter by Hiera level (URL encoded), e.g. 'level%2Fone%2Fglobal'
 	Level *OptionalHieraLevel `json:"level,omitempty"`
-
-	// The Hiera key
-	Key *OptionalHieraKey `json:"key,omitempty"`
 }
 
-// PutHieraLevelJSONRequestBody defines body for PutHieraLevel for application/json ContentType.
-type PutHieraLevelJSONRequestBody EditHieraLevel
-
-// DeleteHieraValuesJSONRequestBody defines body for DeleteHieraValues for application/json ContentType.
-type DeleteHieraValuesJSONRequestBody ListHieraValues
-
-// UpsertHieraValuesJSONRequestBody defines body for UpsertHieraValues for application/json ContentType.
-type UpsertHieraValuesJSONRequestBody EditHieraValues
+// UpsertHieraDataWithLevelAndKeyJSONRequestBody defines body for UpsertHieraDataWithLevelAndKey for application/json ContentType.
+type UpsertHieraDataWithLevelAndKeyJSONRequestBody EditHieraValue
 
 // PutNodeByNameJSONRequestBody defines body for PutNodeByName for application/json ContentType.
 type PutNodeByNameJSONRequestBody NewNode
@@ -293,59 +237,6 @@ func (a *EditableNodeProperties_Classes) UnmarshalJSON(b []byte) error {
 
 // Override default JSON handling for EditableNodeProperties_Classes to handle AdditionalProperties
 func (a EditableNodeProperties_Classes) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for HieraLevel_Data. Returns the specified
-// element and whether it was found
-func (a HieraLevel_Data) Get(fieldName string) (value string, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for HieraLevel_Data
-func (a *HieraLevel_Data) Set(fieldName string, value string) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]string)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for HieraLevel_Data to handle AdditionalProperties
-func (a *HieraLevel_Data) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]string)
-		for fieldName, fieldBuf := range object {
-			var fieldVal string
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for HieraLevel_Data to handle AdditionalProperties
-func (a HieraLevel_Data) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
@@ -431,32 +322,19 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// DeleteHieraLevel request
-	DeleteHieraLevel(ctx context.Context, params *DeleteHieraLevelParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetHieraData request
+	GetHieraData(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHieraLevel request
-	GetHieraLevel(ctx context.Context, params *GetHieraLevelParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteHieraDataObject request
+	DeleteHieraDataObject(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PutHieraLevel request with any body
-	PutHieraLevelWithBody(ctx context.Context, params *PutHieraLevelParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetHieraDataWithLevelAndKey request
+	GetHieraDataWithLevelAndKey(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PutHieraLevel(ctx context.Context, params *PutHieraLevelParams, body PutHieraLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// UpsertHieraDataWithLevelAndKey request with any body
+	UpsertHieraDataWithLevelAndKeyWithBody(ctx context.Context, level HieraLevel, key HieraKey, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetHieraLevels request
-	GetHieraLevels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetHieraValues request
-	GetHieraValues(ctx context.Context, params *GetHieraValuesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteHieraValues request with any body
-	DeleteHieraValuesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	DeleteHieraValues(ctx context.Context, body DeleteHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpsertHieraValues request with any body
-	UpsertHieraValuesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	UpsertHieraValues(ctx context.Context, body UpsertHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpsertHieraDataWithLevelAndKey(ctx context.Context, level HieraLevel, key HieraKey, body UpsertHieraDataWithLevelAndKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetAllNodes request
 	GetAllNodes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -487,8 +365,8 @@ type ClientInterface interface {
 	GetTokenByUsername(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) DeleteHieraLevel(ctx context.Context, params *DeleteHieraLevelParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteHieraLevelRequest(c.Server, params)
+func (c *Client) GetHieraData(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHieraDataRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -499,8 +377,8 @@ func (c *Client) DeleteHieraLevel(ctx context.Context, params *DeleteHieraLevelP
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHieraLevel(ctx context.Context, params *GetHieraLevelParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHieraLevelRequest(c.Server, params)
+func (c *Client) DeleteHieraDataObject(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteHieraDataObjectRequest(c.Server, level, key)
 	if err != nil {
 		return nil, err
 	}
@@ -511,8 +389,8 @@ func (c *Client) GetHieraLevel(ctx context.Context, params *GetHieraLevelParams,
 	return c.Client.Do(req)
 }
 
-func (c *Client) PutHieraLevelWithBody(ctx context.Context, params *PutHieraLevelParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutHieraLevelRequestWithBody(c.Server, params, contentType, body)
+func (c *Client) GetHieraDataWithLevelAndKey(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetHieraDataWithLevelAndKeyRequest(c.Server, level, key)
 	if err != nil {
 		return nil, err
 	}
@@ -523,8 +401,8 @@ func (c *Client) PutHieraLevelWithBody(ctx context.Context, params *PutHieraLeve
 	return c.Client.Do(req)
 }
 
-func (c *Client) PutHieraLevel(ctx context.Context, params *PutHieraLevelParams, body PutHieraLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutHieraLevelRequest(c.Server, params, body)
+func (c *Client) UpsertHieraDataWithLevelAndKeyWithBody(ctx context.Context, level HieraLevel, key HieraKey, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertHieraDataWithLevelAndKeyRequestWithBody(c.Server, level, key, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -535,68 +413,8 @@ func (c *Client) PutHieraLevel(ctx context.Context, params *PutHieraLevelParams,
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetHieraLevels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHieraLevelsRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetHieraValues(ctx context.Context, params *GetHieraValuesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHieraValuesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteHieraValuesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteHieraValuesRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteHieraValues(ctx context.Context, body DeleteHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteHieraValuesRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpsertHieraValuesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpsertHieraValuesRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) UpsertHieraValues(ctx context.Context, body UpsertHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpsertHieraValuesRequest(c.Server, body)
+func (c *Client) UpsertHieraDataWithLevelAndKey(ctx context.Context, level HieraLevel, key HieraKey, body UpsertHieraDataWithLevelAndKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertHieraDataWithLevelAndKeyRequest(c.Server, level, key, body)
 	if err != nil {
 		return nil, err
 	}
@@ -727,8 +545,8 @@ func (c *Client) GetTokenByUsername(ctx context.Context, username Username, reqE
 	return c.Client.Do(req)
 }
 
-// NewDeleteHieraLevelRequest generates requests for DeleteHieraLevel
-func NewDeleteHieraLevelRequest(server string, params *DeleteHieraLevelParams) (*http.Request, error) {
+// NewGetHieraDataRequest generates requests for GetHieraData
+func NewGetHieraDataRequest(server string, params *GetHieraDataParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -736,176 +554,7 @@ func NewDeleteHieraLevelRequest(server string, params *DeleteHieraLevelParams) (
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hiera/level")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	queryValues := queryURL.Query()
-
-	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "level", runtime.ParamLocationQuery, params.Level); err != nil {
-		return nil, err
-	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-		return nil, err
-	} else {
-		for k, v := range parsed {
-			for _, v2 := range v {
-				queryValues.Add(k, v2)
-			}
-		}
-	}
-
-	queryURL.RawQuery = queryValues.Encode()
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetHieraLevelRequest generates requests for GetHieraLevel
-func NewGetHieraLevelRequest(server string, params *GetHieraLevelParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/hiera/level")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	queryValues := queryURL.Query()
-
-	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "level", runtime.ParamLocationQuery, params.Level); err != nil {
-		return nil, err
-	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-		return nil, err
-	} else {
-		for k, v := range parsed {
-			for _, v2 := range v {
-				queryValues.Add(k, v2)
-			}
-		}
-	}
-
-	queryURL.RawQuery = queryValues.Encode()
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPutHieraLevelRequest calls the generic PutHieraLevel builder with application/json body
-func NewPutHieraLevelRequest(server string, params *PutHieraLevelParams, body PutHieraLevelJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutHieraLevelRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewPutHieraLevelRequestWithBody generates requests for PutHieraLevel with any type of body
-func NewPutHieraLevelRequestWithBody(server string, params *PutHieraLevelParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/hiera/level")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	queryValues := queryURL.Query()
-
-	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "level", runtime.ParamLocationQuery, params.Level); err != nil {
-		return nil, err
-	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-		return nil, err
-	} else {
-		for k, v := range parsed {
-			for _, v2 := range v {
-				queryValues.Add(k, v2)
-			}
-		}
-	}
-
-	queryURL.RawQuery = queryValues.Encode()
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewGetHieraLevelsRequest generates requests for GetHieraLevels
-func NewGetHieraLevelsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/hiera/levels")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetHieraValuesRequest generates requests for GetHieraValues
-func NewGetHieraValuesRequest(server string, params *GetHieraValuesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/hiera/values")
+	operationPath := fmt.Sprintf("/hiera-data")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -933,22 +582,6 @@ func NewGetHieraValuesRequest(server string, params *GetHieraValuesParams) (*htt
 
 	}
 
-	if params.Key != nil {
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "key", runtime.ParamLocationQuery, *params.Key); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-	}
-
 	queryURL.RawQuery = queryValues.Encode()
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -959,27 +592,30 @@ func NewGetHieraValuesRequest(server string, params *GetHieraValuesParams) (*htt
 	return req, nil
 }
 
-// NewDeleteHieraValuesRequest calls the generic DeleteHieraValues builder with application/json body
-func NewDeleteHieraValuesRequest(server string, body DeleteHieraValuesJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
+// NewDeleteHieraDataObjectRequest generates requests for DeleteHieraDataObject
+func NewDeleteHieraDataObjectRequest(server string, level HieraLevel, key HieraKey) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "level", runtime.ParamLocationPath, level)
 	if err != nil {
 		return nil, err
 	}
-	bodyReader = bytes.NewReader(buf)
-	return NewDeleteHieraValuesRequestWithBody(server, "application/json", bodyReader)
-}
 
-// NewDeleteHieraValuesRequestWithBody generates requests for DeleteHieraValues with any type of body
-func NewDeleteHieraValuesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "key", runtime.ParamLocationPath, key)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hiera/values/delete")
+	operationPath := fmt.Sprintf("/hiera-data/%s/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -989,37 +625,38 @@ func NewDeleteHieraValuesRequestWithBody(server string, contentType string, body
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), body)
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
 
-// NewUpsertHieraValuesRequest calls the generic UpsertHieraValues builder with application/json body
-func NewUpsertHieraValuesRequest(server string, body UpsertHieraValuesJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
+// NewGetHieraDataWithLevelAndKeyRequest generates requests for GetHieraDataWithLevelAndKey
+func NewGetHieraDataWithLevelAndKeyRequest(server string, level HieraLevel, key HieraKey) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "level", runtime.ParamLocationPath, level)
 	if err != nil {
 		return nil, err
 	}
-	bodyReader = bytes.NewReader(buf)
-	return NewUpsertHieraValuesRequestWithBody(server, "application/json", bodyReader)
-}
 
-// NewUpsertHieraValuesRequestWithBody generates requests for UpsertHieraValues with any type of body
-func NewUpsertHieraValuesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "key", runtime.ParamLocationPath, key)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/hiera/values/upsert")
+	operationPath := fmt.Sprintf("/hiera-data/%s/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1029,7 +666,59 @@ func NewUpsertHieraValuesRequestWithBody(server string, contentType string, body
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), body)
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpsertHieraDataWithLevelAndKeyRequest calls the generic UpsertHieraDataWithLevelAndKey builder with application/json body
+func NewUpsertHieraDataWithLevelAndKeyRequest(server string, level HieraLevel, key HieraKey, body UpsertHieraDataWithLevelAndKeyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpsertHieraDataWithLevelAndKeyRequestWithBody(server, level, key, "application/json", bodyReader)
+}
+
+// NewUpsertHieraDataWithLevelAndKeyRequestWithBody generates requests for UpsertHieraDataWithLevelAndKey with any type of body
+func NewUpsertHieraDataWithLevelAndKeyRequestWithBody(server string, level HieraLevel, key HieraKey, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "level", runtime.ParamLocationPath, level)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "key", runtime.ParamLocationPath, key)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/hiera-data/%s/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -1359,32 +1048,19 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// DeleteHieraLevel request
-	DeleteHieraLevelWithResponse(ctx context.Context, params *DeleteHieraLevelParams, reqEditors ...RequestEditorFn) (*DeleteHieraLevelResponse, error)
+	// GetHieraData request
+	GetHieraDataWithResponse(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*GetHieraDataResponse, error)
 
-	// GetHieraLevel request
-	GetHieraLevelWithResponse(ctx context.Context, params *GetHieraLevelParams, reqEditors ...RequestEditorFn) (*GetHieraLevelResponse, error)
+	// DeleteHieraDataObject request
+	DeleteHieraDataObjectWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*DeleteHieraDataObjectResponse, error)
 
-	// PutHieraLevel request with any body
-	PutHieraLevelWithBodyWithResponse(ctx context.Context, params *PutHieraLevelParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutHieraLevelResponse, error)
+	// GetHieraDataWithLevelAndKey request
+	GetHieraDataWithLevelAndKeyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*GetHieraDataWithLevelAndKeyResponse, error)
 
-	PutHieraLevelWithResponse(ctx context.Context, params *PutHieraLevelParams, body PutHieraLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*PutHieraLevelResponse, error)
+	// UpsertHieraDataWithLevelAndKey request with any body
+	UpsertHieraDataWithLevelAndKeyWithBodyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertHieraDataWithLevelAndKeyResponse, error)
 
-	// GetHieraLevels request
-	GetHieraLevelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHieraLevelsResponse, error)
-
-	// GetHieraValues request
-	GetHieraValuesWithResponse(ctx context.Context, params *GetHieraValuesParams, reqEditors ...RequestEditorFn) (*GetHieraValuesResponse, error)
-
-	// DeleteHieraValues request with any body
-	DeleteHieraValuesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteHieraValuesResponse, error)
-
-	DeleteHieraValuesWithResponse(ctx context.Context, body DeleteHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteHieraValuesResponse, error)
-
-	// UpsertHieraValues request with any body
-	UpsertHieraValuesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertHieraValuesResponse, error)
-
-	UpsertHieraValuesWithResponse(ctx context.Context, body UpsertHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertHieraValuesResponse, error)
+	UpsertHieraDataWithLevelAndKeyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, body UpsertHieraDataWithLevelAndKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertHieraDataWithLevelAndKeyResponse, error)
 
 	// GetAllNodes request
 	GetAllNodesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllNodesResponse, error)
@@ -1415,100 +1091,14 @@ type ClientWithResponsesInterface interface {
 	GetTokenByUsernameWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*GetTokenByUsernameResponse, error)
 }
 
-type DeleteHieraLevelResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteHieraLevelResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteHieraLevelResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetHieraLevelResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *HieraLevel
-}
-
-// Status returns HTTPResponse.Status
-func (r GetHieraLevelResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetHieraLevelResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutHieraLevelResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PutHieraLevelResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutHieraLevelResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetHieraLevelsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *[]string
-}
-
-// Status returns HTTPResponse.Status
-func (r GetHieraLevelsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetHieraLevelsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetHieraValuesResponse struct {
+type GetHieraDataResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *[]HieraValue
 }
 
 // Status returns HTTPResponse.Status
-func (r GetHieraValuesResponse) Status() string {
+func (r GetHieraDataResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1516,20 +1106,20 @@ func (r GetHieraValuesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetHieraValuesResponse) StatusCode() int {
+func (r GetHieraDataResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type DeleteHieraValuesResponse struct {
+type DeleteHieraDataObjectResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteHieraValuesResponse) Status() string {
+func (r DeleteHieraDataObjectResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1537,20 +1127,21 @@ func (r DeleteHieraValuesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteHieraValuesResponse) StatusCode() int {
+func (r DeleteHieraDataObjectResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type UpsertHieraValuesResponse struct {
+type GetHieraDataWithLevelAndKeyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *HieraValue
 }
 
 // Status returns HTTPResponse.Status
-func (r UpsertHieraValuesResponse) Status() string {
+func (r GetHieraDataWithLevelAndKeyResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1558,7 +1149,29 @@ func (r UpsertHieraValuesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r UpsertHieraValuesResponse) StatusCode() int {
+func (r GetHieraDataWithLevelAndKeyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpsertHieraDataWithLevelAndKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *HieraValue
+}
+
+// Status returns HTTPResponse.Status
+func (r UpsertHieraDataWithLevelAndKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpsertHieraDataWithLevelAndKeyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1741,91 +1354,48 @@ func (r GetTokenByUsernameResponse) StatusCode() int {
 	return 0
 }
 
-// DeleteHieraLevelWithResponse request returning *DeleteHieraLevelResponse
-func (c *ClientWithResponses) DeleteHieraLevelWithResponse(ctx context.Context, params *DeleteHieraLevelParams, reqEditors ...RequestEditorFn) (*DeleteHieraLevelResponse, error) {
-	rsp, err := c.DeleteHieraLevel(ctx, params, reqEditors...)
+// GetHieraDataWithResponse request returning *GetHieraDataResponse
+func (c *ClientWithResponses) GetHieraDataWithResponse(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*GetHieraDataResponse, error) {
+	rsp, err := c.GetHieraData(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteHieraLevelResponse(rsp)
+	return ParseGetHieraDataResponse(rsp)
 }
 
-// GetHieraLevelWithResponse request returning *GetHieraLevelResponse
-func (c *ClientWithResponses) GetHieraLevelWithResponse(ctx context.Context, params *GetHieraLevelParams, reqEditors ...RequestEditorFn) (*GetHieraLevelResponse, error) {
-	rsp, err := c.GetHieraLevel(ctx, params, reqEditors...)
+// DeleteHieraDataObjectWithResponse request returning *DeleteHieraDataObjectResponse
+func (c *ClientWithResponses) DeleteHieraDataObjectWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*DeleteHieraDataObjectResponse, error) {
+	rsp, err := c.DeleteHieraDataObject(ctx, level, key, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHieraLevelResponse(rsp)
+	return ParseDeleteHieraDataObjectResponse(rsp)
 }
 
-// PutHieraLevelWithBodyWithResponse request with arbitrary body returning *PutHieraLevelResponse
-func (c *ClientWithResponses) PutHieraLevelWithBodyWithResponse(ctx context.Context, params *PutHieraLevelParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutHieraLevelResponse, error) {
-	rsp, err := c.PutHieraLevelWithBody(ctx, params, contentType, body, reqEditors...)
+// GetHieraDataWithLevelAndKeyWithResponse request returning *GetHieraDataWithLevelAndKeyResponse
+func (c *ClientWithResponses) GetHieraDataWithLevelAndKeyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*GetHieraDataWithLevelAndKeyResponse, error) {
+	rsp, err := c.GetHieraDataWithLevelAndKey(ctx, level, key, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutHieraLevelResponse(rsp)
+	return ParseGetHieraDataWithLevelAndKeyResponse(rsp)
 }
 
-func (c *ClientWithResponses) PutHieraLevelWithResponse(ctx context.Context, params *PutHieraLevelParams, body PutHieraLevelJSONRequestBody, reqEditors ...RequestEditorFn) (*PutHieraLevelResponse, error) {
-	rsp, err := c.PutHieraLevel(ctx, params, body, reqEditors...)
+// UpsertHieraDataWithLevelAndKeyWithBodyWithResponse request with arbitrary body returning *UpsertHieraDataWithLevelAndKeyResponse
+func (c *ClientWithResponses) UpsertHieraDataWithLevelAndKeyWithBodyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertHieraDataWithLevelAndKeyResponse, error) {
+	rsp, err := c.UpsertHieraDataWithLevelAndKeyWithBody(ctx, level, key, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutHieraLevelResponse(rsp)
+	return ParseUpsertHieraDataWithLevelAndKeyResponse(rsp)
 }
 
-// GetHieraLevelsWithResponse request returning *GetHieraLevelsResponse
-func (c *ClientWithResponses) GetHieraLevelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHieraLevelsResponse, error) {
-	rsp, err := c.GetHieraLevels(ctx, reqEditors...)
+func (c *ClientWithResponses) UpsertHieraDataWithLevelAndKeyWithResponse(ctx context.Context, level HieraLevel, key HieraKey, body UpsertHieraDataWithLevelAndKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertHieraDataWithLevelAndKeyResponse, error) {
+	rsp, err := c.UpsertHieraDataWithLevelAndKey(ctx, level, key, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetHieraLevelsResponse(rsp)
-}
-
-// GetHieraValuesWithResponse request returning *GetHieraValuesResponse
-func (c *ClientWithResponses) GetHieraValuesWithResponse(ctx context.Context, params *GetHieraValuesParams, reqEditors ...RequestEditorFn) (*GetHieraValuesResponse, error) {
-	rsp, err := c.GetHieraValues(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetHieraValuesResponse(rsp)
-}
-
-// DeleteHieraValuesWithBodyWithResponse request with arbitrary body returning *DeleteHieraValuesResponse
-func (c *ClientWithResponses) DeleteHieraValuesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteHieraValuesResponse, error) {
-	rsp, err := c.DeleteHieraValuesWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteHieraValuesResponse(rsp)
-}
-
-func (c *ClientWithResponses) DeleteHieraValuesWithResponse(ctx context.Context, body DeleteHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*DeleteHieraValuesResponse, error) {
-	rsp, err := c.DeleteHieraValues(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteHieraValuesResponse(rsp)
-}
-
-// UpsertHieraValuesWithBodyWithResponse request with arbitrary body returning *UpsertHieraValuesResponse
-func (c *ClientWithResponses) UpsertHieraValuesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertHieraValuesResponse, error) {
-	rsp, err := c.UpsertHieraValuesWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpsertHieraValuesResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpsertHieraValuesWithResponse(ctx context.Context, body UpsertHieraValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertHieraValuesResponse, error) {
-	rsp, err := c.UpsertHieraValues(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpsertHieraValuesResponse(rsp)
+	return ParseUpsertHieraDataWithLevelAndKeyResponse(rsp)
 }
 
 // GetAllNodesWithResponse request returning *GetAllNodesResponse
@@ -1916,99 +1486,15 @@ func (c *ClientWithResponses) GetTokenByUsernameWithResponse(ctx context.Context
 	return ParseGetTokenByUsernameResponse(rsp)
 }
 
-// ParseDeleteHieraLevelResponse parses an HTTP response from a DeleteHieraLevelWithResponse call
-func ParseDeleteHieraLevelResponse(rsp *http.Response) (*DeleteHieraLevelResponse, error) {
+// ParseGetHieraDataResponse parses an HTTP response from a GetHieraDataWithResponse call
+func ParseGetHieraDataResponse(rsp *http.Response) (*GetHieraDataResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteHieraLevelResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetHieraLevelResponse parses an HTTP response from a GetHieraLevelWithResponse call
-func ParseGetHieraLevelResponse(rsp *http.Response) (*GetHieraLevelResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetHieraLevelResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HieraLevel
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePutHieraLevelResponse parses an HTTP response from a PutHieraLevelWithResponse call
-func ParsePutHieraLevelResponse(rsp *http.Response) (*PutHieraLevelResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutHieraLevelResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetHieraLevelsResponse parses an HTTP response from a GetHieraLevelsWithResponse call
-func ParseGetHieraLevelsResponse(rsp *http.Response) (*GetHieraLevelsResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetHieraLevelsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetHieraValuesResponse parses an HTTP response from a GetHieraValuesWithResponse call
-func ParseGetHieraValuesResponse(rsp *http.Response) (*GetHieraValuesResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetHieraValuesResponse{
+	response := &GetHieraDataResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2026,15 +1512,15 @@ func ParseGetHieraValuesResponse(rsp *http.Response) (*GetHieraValuesResponse, e
 	return response, nil
 }
 
-// ParseDeleteHieraValuesResponse parses an HTTP response from a DeleteHieraValuesWithResponse call
-func ParseDeleteHieraValuesResponse(rsp *http.Response) (*DeleteHieraValuesResponse, error) {
+// ParseDeleteHieraDataObjectResponse parses an HTTP response from a DeleteHieraDataObjectWithResponse call
+func ParseDeleteHieraDataObjectResponse(rsp *http.Response) (*DeleteHieraDataObjectResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteHieraValuesResponse{
+	response := &DeleteHieraDataObjectResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2042,17 +1528,53 @@ func ParseDeleteHieraValuesResponse(rsp *http.Response) (*DeleteHieraValuesRespo
 	return response, nil
 }
 
-// ParseUpsertHieraValuesResponse parses an HTTP response from a UpsertHieraValuesWithResponse call
-func ParseUpsertHieraValuesResponse(rsp *http.Response) (*UpsertHieraValuesResponse, error) {
+// ParseGetHieraDataWithLevelAndKeyResponse parses an HTTP response from a GetHieraDataWithLevelAndKeyWithResponse call
+func ParseGetHieraDataWithLevelAndKeyResponse(rsp *http.Response) (*GetHieraDataWithLevelAndKeyResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &UpsertHieraValuesResponse{
+	response := &GetHieraDataWithLevelAndKeyResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HieraValue
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpsertHieraDataWithLevelAndKeyResponse parses an HTTP response from a UpsertHieraDataWithLevelAndKeyWithResponse call
+func ParseUpsertHieraDataWithLevelAndKeyResponse(rsp *http.Response) (*UpsertHieraDataWithLevelAndKeyResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpsertHieraDataWithLevelAndKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest HieraValue
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil
