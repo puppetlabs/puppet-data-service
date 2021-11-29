@@ -42,6 +42,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - users
@@ -59,6 +61,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
 
   /users/{username}:
@@ -79,6 +83,8 @@ paths:
                 $ref: "#/components/schemas/User"
         "400":
           description: "Invalid user supplied"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: "User not found"
     delete:
@@ -96,6 +102,8 @@ paths:
         "400":
           description: Invalid username supplied
           content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Username not found
           content: {}
@@ -118,6 +126,8 @@ paths:
                 $ref: "#/components/schemas/Token"
         "400":
           description: "Invalid user supplied"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: "User not found"
 
@@ -137,6 +147,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - nodes
@@ -154,6 +166,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
 
   /nodes/{name}:
     get:
@@ -173,6 +187,8 @@ paths:
                 $ref: "#/components/schemas/Node"
         "400":
           description: Invalid node-name supplied
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Node not found
 
@@ -201,6 +217,8 @@ paths:
                 $ref: "#/components/schemas/Node"
         "400":
           description: Invalid node-name supplied
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Node not found
 
@@ -219,6 +237,8 @@ paths:
         "400":
           description: Invalid Node name supplied
           content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Nodedata not found
           content: {}
@@ -241,6 +261,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - hiera-data
@@ -258,6 +280,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
 
   /hiera-data/{level}/{key}:
@@ -277,6 +301,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HieraValue"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
     put:
       tags:
         - hiera-data
@@ -295,6 +321,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HieraValue"
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
 
     delete:
       tags:
@@ -312,6 +340,8 @@ paths:
         "400":
           description: Invalid level or key supplied
           content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Hieradata not found
           content: {}
@@ -523,17 +553,14 @@ components:
             allOf:
               - $ref: "#/components/schemas/EditableHieraValueProperties"
               - required: ["value"]
+  responses:
+    UnauthorizedError:
+      description: Access (Bearer) token is missing or invalid
 
   securitySchemes:
-    pds_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: http://tbd.swagger.io/oauth/dialog
-          scopes:
-            write:pets: modify data in your account
-            read:pets: read your data
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: [] 
