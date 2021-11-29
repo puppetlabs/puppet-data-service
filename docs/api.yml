@@ -117,6 +117,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+    post:
+      tags:
+        - nodes
+      summary: Create new node(s)
+      description: This can only be done by the logged in user.
+      operationId: createNode
+      requestBody:
+        $ref: "#/components/requestBodies/NewNodes"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Node"
 
   /nodes/{name}:
     get:
@@ -204,6 +221,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+    post:
+      tags:
+        - hiera-data
+      summary: Create new Hiera data value(s)
+      description: This can only be done by the logged in user.
+      operationId: createHieraData
+      requestBody:
+        $ref: "#/components/requestBodies/NewHieraData"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HieraValue"
+      x-codegen-request-body-name: body
 
   /hiera-data/{level}/{key}:
     get:
@@ -408,14 +443,6 @@ components:
       schema:
         type: string
 
-    OptionalHieraKey:
-      name: key
-      in: query
-      description: "The Hiera key"
-      required: false
-      schema:
-        type: string
-
   requestBodies:
     NewUser:
       description: Create user object
@@ -427,6 +454,18 @@ components:
               - $ref: "#/components/schemas/EditableUserProperties"
               - required: ["username"]
 
+    NewNodes:
+      description: Create node object(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/components/schemas/ImmutableNodeProperties"
+                - $ref: "#/components/schemas/EditableNodeProperties"
+                - required: ["name"]
+
     NewNode:
       description: Create node object
       content:
@@ -437,13 +476,17 @@ components:
               - $ref: "#/components/schemas/EditableNodeProperties"
               - required: ["name"]
 
-    EditNode:
-      description: Edit existing node object
+    NewHieraData:
+      description: Create new Hiera data value(s)
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/EditableNodeProperties"
+            type: array
+            items:
+              allOf:
+              - $ref: "#/components/schemas/ImmutableHieraValueProperties"
+              - $ref: "#/components/schemas/EditableHieraValueProperties"
+              - required: ["level", "key", "value"]
 
     EditHieraValue:
       description: Create or edit a Hiera value at a specified level and key
@@ -453,51 +496,6 @@ components:
             allOf:
               - $ref: "#/components/schemas/EditableHieraValueProperties"
               - required: ["value"]
-
-    EditHieraLevel:
-      description: Create or edit a set of Hiera values at a particular level
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              allOf:
-                - type: object
-                  properties:
-                    key:
-                      type: string
-                - $ref: "#/components/schemas/EditableHieraValueProperties"
-                - required: ["key", "value"]
-
-    ListHieraValues:
-      description: List a set of Hiera values
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              allOf:
-                - $ref: "#/components/schemas/ImmutableHieraValueProperties"
-                - required: ["level", "key"]
-
-  responses:
-    200Ok:
-      description: Successful operation
-      content: {}
-
-    201Created:
-      description: Successful operation
-      content: {}
-
-    204NoContent:
-      description: No content
-
-    HieraValue:
-      description: successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/HieraValue"
 
   securitySchemes:
     pds_auth:
