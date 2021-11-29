@@ -429,14 +429,6 @@ components:
               - $ref: "#/components/schemas/EditableNodeProperties"
               - required: ["name"]
 
-    EditNode:
-      description: Edit existing node object
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/EditableNodeProperties"
-
     EditHieraValue:
       description: Create or edit a Hiera value at a specified level and key
       content:
