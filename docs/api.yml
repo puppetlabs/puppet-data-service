@@ -81,6 +81,24 @@ paths:
           description: "Invalid user supplied"
         "404":
           description: "User not found"
+    delete:
+      tags:
+        - users
+      summary: Deletes a user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      responses:
+        "200":
+          description: Ok
+          content: {}
+        "400":
+          description: Invalid username supplied
+          content: {}
+        "404":
+          description: Username not found
+          content: {}
 
   /users/{username}/token:
     get:
