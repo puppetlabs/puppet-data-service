@@ -332,6 +332,10 @@ components:
           enum:
             - operator
             - superadmin
+
+    ReadOnlyUserProperties:
+      type: object
+      properties:
         status:
           type: string
           description: User status
@@ -345,6 +349,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/ImmutableUserProperties"
         - $ref: "#/components/schemas/EditableUserProperties"
+        - $ref: "#/components/schemas/ReadOnlyUserProperties"
         - $ref: "#/components/schemas/TimestampProperties"
 
     Token:
