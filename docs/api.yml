@@ -446,18 +446,6 @@ components:
               - $ref: "#/components/schemas/EditableHieraValueProperties"
               - required: ["value"]
 
-  responses:
-    200Ok:
-      description: Successful operation
-      content: {}
-
-    201Created:
-      description: Successful operation
-      content: {}
-
-    204NoContent:
-      description: No content
-
   securitySchemes:
     pds_auth:
       type: oauth2
