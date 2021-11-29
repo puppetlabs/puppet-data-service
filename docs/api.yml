@@ -87,6 +87,35 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: "User not found"
+    put:
+      tags:
+        - users
+      summary: Create a new user or replace an existing user
+      description: This can only be done by the logged in user.
+      operationId: putUser
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      requestBody:
+        $ref: "#/components/requestBodies/NewUser"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid username supplied
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Username not found
     delete:
       tags:
         - users
@@ -499,8 +528,18 @@ components:
         type: string
 
   requestBodies:
+    NewUser:
+      description: Create or edit user object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ImmutableUserProperties"
+              - $ref: "#/components/schemas/EditableUserProperties"
+              - required: ["username"]
+
     NewUsers:
-      description: Create user object
+      description: Create user object(s)
       content:
         application/json:
           schema:
@@ -510,6 +549,16 @@ components:
                 - $ref: "#/components/schemas/ImmutableUserProperties"
                 - $ref: "#/components/schemas/EditableUserProperties"
                 - required: ["username"]
+
+    NewNode:
+      description: Create or edit node object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ImmutableNodeProperties"
+              - $ref: "#/components/schemas/EditableNodeProperties"
+              - required: ["name"]
 
     NewNodes:
       description: Create node object(s)
@@ -522,16 +571,6 @@ components:
                 - $ref: "#/components/schemas/ImmutableNodeProperties"
                 - $ref: "#/components/schemas/EditableNodeProperties"
                 - required: ["name"]
-
-    NewNode:
-      description: Create node object
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/ImmutableNodeProperties"
-              - $ref: "#/components/schemas/EditableNodeProperties"
-              - required: ["name"]
 
     NewHieraData:
       description: Create new Hiera data value(s)
