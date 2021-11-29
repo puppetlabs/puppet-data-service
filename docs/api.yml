@@ -49,14 +49,16 @@ paths:
       description: This can only be done by the logged in user.
       operationId: createUser
       requestBody:
-        $ref: "#/components/requestBodies/NewUser"
+        $ref: "#/components/requestBodies/NewUsers"
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
       x-codegen-request-body-name: body
 
   /users/{username}:
@@ -444,15 +446,17 @@ components:
         type: string
 
   requestBodies:
-    NewUser:
+    NewUsers:
       description: Create user object
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/ImmutableUserProperties"
-              - $ref: "#/components/schemas/EditableUserProperties"
-              - required: ["username"]
+            type: array
+            items:
+              allOf:
+                - $ref: "#/components/schemas/ImmutableUserProperties"
+                - $ref: "#/components/schemas/EditableUserProperties"
+                - required: ["username"]
 
     NewNodes:
       description: Create node object(s)
