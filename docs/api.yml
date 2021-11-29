@@ -443,14 +443,6 @@ components:
       schema:
         type: string
 
-    OptionalHieraKey:
-      name: key
-      in: query
-      description: "The Hiera key"
-      required: false
-      schema:
-        type: string
-
   requestBodies:
     NewUser:
       description: Create user object
@@ -484,14 +476,6 @@ components:
               - $ref: "#/components/schemas/EditableNodeProperties"
               - required: ["name"]
 
-    EditNode:
-      description: Edit existing node object
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/EditableNodeProperties"
-
     NewHieraData:
       description: Create new Hiera data value(s)
       content:
@@ -512,51 +496,6 @@ components:
             allOf:
               - $ref: "#/components/schemas/EditableHieraValueProperties"
               - required: ["value"]
-
-    EditHieraLevel:
-      description: Create or edit a set of Hiera values at a particular level
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              allOf:
-                - type: object
-                  properties:
-                    key:
-                      type: string
-                - $ref: "#/components/schemas/EditableHieraValueProperties"
-                - required: ["key", "value"]
-
-    ListHieraValues:
-      description: List a set of Hiera values
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              allOf:
-                - $ref: "#/components/schemas/ImmutableHieraValueProperties"
-                - required: ["level", "key"]
-
-  responses:
-    200Ok:
-      description: Successful operation
-      content: {}
-
-    201Created:
-      description: Successful operation
-      content: {}
-
-    204NoContent:
-      description: No content
-
-    HieraValue:
-      description: successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/HieraValue"
 
   securitySchemes:
     pds_auth:
