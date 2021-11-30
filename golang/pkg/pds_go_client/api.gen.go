@@ -163,8 +163,26 @@ type EditHieraValue struct {
 	// Embedded fields due to inline allOf schema
 }
 
+// NewHieraData defines model for NewHieraData.
+type NewHieraData []struct {
+	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
+	ImmutableHieraValueProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
+	EditableHieraValueProperties `yaml:",inline"`
+	// Embedded fields due to inline allOf schema
+}
+
 // NewNode defines model for NewNode.
 type NewNode struct {
+	// Embedded struct due to allOf(#/components/schemas/ImmutableNodeProperties)
+	ImmutableNodeProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
+	EditableNodeProperties `yaml:",inline"`
+	// Embedded fields due to inline allOf schema
+}
+
+// NewNodes defines model for NewNodes.
+type NewNodes []struct {
 	// Embedded struct due to allOf(#/components/schemas/ImmutableNodeProperties)
 	ImmutableNodeProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
@@ -187,8 +205,14 @@ type GetHieraDataParams struct {
 	Level *OptionalHieraLevel `json:"level,omitempty"`
 }
 
+// CreateHieraDataJSONRequestBody defines body for CreateHieraData for application/json ContentType.
+type CreateHieraDataJSONRequestBody NewHieraData
+
 // UpsertHieraDataWithLevelAndKeyJSONRequestBody defines body for UpsertHieraDataWithLevelAndKey for application/json ContentType.
 type UpsertHieraDataWithLevelAndKeyJSONRequestBody EditHieraValue
+
+// CreateNodeJSONRequestBody defines body for CreateNode for application/json ContentType.
+type CreateNodeJSONRequestBody NewNodes
 
 // PutNodeByNameJSONRequestBody defines body for PutNodeByName for application/json ContentType.
 type PutNodeByNameJSONRequestBody NewNode
@@ -325,6 +349,11 @@ type ClientInterface interface {
 	// GetHieraData request
 	GetHieraData(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// CreateHieraData request with any body
+	CreateHieraDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateHieraData(ctx context.Context, body CreateHieraDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteHieraDataObject request
 	DeleteHieraDataObject(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -338,6 +367,11 @@ type ClientInterface interface {
 
 	// GetAllNodes request
 	GetAllNodes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateNode request with any body
+	CreateNodeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateNode(ctx context.Context, body CreateNodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteNode request
 	DeleteNode(ctx context.Context, name NodeName, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -367,6 +401,30 @@ type ClientInterface interface {
 
 func (c *Client) GetHieraData(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetHieraDataRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateHieraDataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateHieraDataRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateHieraData(ctx context.Context, body CreateHieraDataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateHieraDataRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -427,6 +485,30 @@ func (c *Client) UpsertHieraDataWithLevelAndKey(ctx context.Context, level Hiera
 
 func (c *Client) GetAllNodes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAllNodesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateNodeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateNodeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateNode(ctx context.Context, body CreateNodeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateNodeRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -592,6 +674,46 @@ func NewGetHieraDataRequest(server string, params *GetHieraDataParams) (*http.Re
 	return req, nil
 }
 
+// NewCreateHieraDataRequest calls the generic CreateHieraData builder with application/json body
+func NewCreateHieraDataRequest(server string, body CreateHieraDataJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateHieraDataRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateHieraDataRequestWithBody generates requests for CreateHieraData with any type of body
+func NewCreateHieraDataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/hiera-data")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteHieraDataObjectRequest generates requests for DeleteHieraDataObject
 func NewDeleteHieraDataObjectRequest(server string, level HieraLevel, key HieraKey) (*http.Request, error) {
 	var err error
@@ -751,6 +873,46 @@ func NewGetAllNodesRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewCreateNodeRequest calls the generic CreateNode builder with application/json body
+func NewCreateNodeRequest(server string, body CreateNodeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateNodeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateNodeRequestWithBody generates requests for CreateNode with any type of body
+func NewCreateNodeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/nodes")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1051,6 +1213,11 @@ type ClientWithResponsesInterface interface {
 	// GetHieraData request
 	GetHieraDataWithResponse(ctx context.Context, params *GetHieraDataParams, reqEditors ...RequestEditorFn) (*GetHieraDataResponse, error)
 
+	// CreateHieraData request with any body
+	CreateHieraDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHieraDataResponse, error)
+
+	CreateHieraDataWithResponse(ctx context.Context, body CreateHieraDataJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHieraDataResponse, error)
+
 	// DeleteHieraDataObject request
 	DeleteHieraDataObjectWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*DeleteHieraDataObjectResponse, error)
 
@@ -1064,6 +1231,11 @@ type ClientWithResponsesInterface interface {
 
 	// GetAllNodes request
 	GetAllNodesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAllNodesResponse, error)
+
+	// CreateNode request with any body
+	CreateNodeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateNodeResponse, error)
+
+	CreateNodeWithResponse(ctx context.Context, body CreateNodeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateNodeResponse, error)
 
 	// DeleteNode request
 	DeleteNodeWithResponse(ctx context.Context, name NodeName, reqEditors ...RequestEditorFn) (*DeleteNodeResponse, error)
@@ -1107,6 +1279,28 @@ func (r GetHieraDataResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetHieraDataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateHieraDataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]HieraValue
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateHieraDataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateHieraDataResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1194,6 +1388,28 @@ func (r GetAllNodesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetAllNodesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateNodeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Node
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateNodeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateNodeResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1363,6 +1579,23 @@ func (c *ClientWithResponses) GetHieraDataWithResponse(ctx context.Context, para
 	return ParseGetHieraDataResponse(rsp)
 }
 
+// CreateHieraDataWithBodyWithResponse request with arbitrary body returning *CreateHieraDataResponse
+func (c *ClientWithResponses) CreateHieraDataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateHieraDataResponse, error) {
+	rsp, err := c.CreateHieraDataWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateHieraDataResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateHieraDataWithResponse(ctx context.Context, body CreateHieraDataJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateHieraDataResponse, error) {
+	rsp, err := c.CreateHieraData(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateHieraDataResponse(rsp)
+}
+
 // DeleteHieraDataObjectWithResponse request returning *DeleteHieraDataObjectResponse
 func (c *ClientWithResponses) DeleteHieraDataObjectWithResponse(ctx context.Context, level HieraLevel, key HieraKey, reqEditors ...RequestEditorFn) (*DeleteHieraDataObjectResponse, error) {
 	rsp, err := c.DeleteHieraDataObject(ctx, level, key, reqEditors...)
@@ -1405,6 +1638,23 @@ func (c *ClientWithResponses) GetAllNodesWithResponse(ctx context.Context, reqEd
 		return nil, err
 	}
 	return ParseGetAllNodesResponse(rsp)
+}
+
+// CreateNodeWithBodyWithResponse request with arbitrary body returning *CreateNodeResponse
+func (c *ClientWithResponses) CreateNodeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateNodeResponse, error) {
+	rsp, err := c.CreateNodeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateNodeResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateNodeWithResponse(ctx context.Context, body CreateNodeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateNodeResponse, error) {
+	rsp, err := c.CreateNode(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateNodeResponse(rsp)
 }
 
 // DeleteNodeWithResponse request returning *DeleteNodeResponse
@@ -1512,6 +1762,32 @@ func ParseGetHieraDataResponse(rsp *http.Response) (*GetHieraDataResponse, error
 	return response, nil
 }
 
+// ParseCreateHieraDataResponse parses an HTTP response from a CreateHieraDataWithResponse call
+func ParseCreateHieraDataResponse(rsp *http.Response) (*CreateHieraDataResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateHieraDataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest []HieraValue
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteHieraDataObjectResponse parses an HTTP response from a DeleteHieraDataObjectWithResponse call
 func ParseDeleteHieraDataObjectResponse(rsp *http.Response) (*DeleteHieraDataObjectResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -1600,6 +1876,32 @@ func ParseGetAllNodesResponse(rsp *http.Response) (*GetAllNodesResponse, error) 
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateNodeResponse parses an HTTP response from a CreateNodeWithResponse call
+func ParseCreateNodeResponse(rsp *http.Response) (*CreateNodeResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateNodeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest []Node
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	}
 
