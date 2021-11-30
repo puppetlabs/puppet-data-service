@@ -48,7 +48,7 @@ paths:
       tags:
         - users
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of users. This endpoint supports bulk operations, you can create one or 1000 users in a single POST request.
       operationId: createUser
       requestBody:
         $ref: "#/components/requestBodies/NewUsers"
@@ -180,7 +180,7 @@ paths:
       tags:
         - nodes
       summary: Create new node(s)
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of node's data. This endpoint supports bulk operations, you can create one or 1000 nodedata in a single POST request.
       operationId: createNode
       requestBody:
         $ref: "#/components/requestBodies/NewNodes"
@@ -292,7 +292,7 @@ paths:
       tags:
         - hiera-data
       summary: Create new Hiera data value(s)
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of Hieradata. This endpoint supports bulk operations, you can create one or 1000 hieradata in a single POST request.
       operationId: createHieraData
       requestBody:
         $ref: "#/components/requestBodies/NewHieraData"
