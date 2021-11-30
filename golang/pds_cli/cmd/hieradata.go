@@ -34,11 +34,11 @@ var listHieradataCmd = &cobra.Command{
 	Short: "List all hieradata or hieradata for LEVEL",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.OptionalHieraLevel("")
+		params := &client.GetHieraDataParams{}
 		if len(args) > 0 {
-			level = client.OptionalHieraLevel(args[0])
+			level := client.OptionalHieraLevel(args[0])
+			params.Level = &level
 		}
-		params := &client.GetHieraDataParams{Level: &level}
 		response, err := pdsClient.GetHieraDataWithResponse(context.Background(), params)
 		if err != nil {
 			log.Fatalf("Couldn't list hieradata: %s", err)
