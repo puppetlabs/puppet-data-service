@@ -476,6 +476,7 @@ components:
       properties:
         value:
           nullable: true
+          type: string
           description: The value to set the Hiera key to
 
     HieraValue:
