@@ -16,14 +16,14 @@ servers:
   - url: localhost:3000/v1
 tags:
   - name: users
-    description: Every config change should be started with an authorized User
+    description: Every config change should be started with an authorized Admin User
     externalDocs:
       description: TBD Find out more
       url: https://puppet.com/
   - name: nodes
-    description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
+    description: Node details and configuration data, Nodedata stores configuration details for a specific node
   - name: hiera-data
-    description: Hiera data key/value pairs
+    description: Hierdata manages your Hiera Key:Value as a service
 
 paths:
   /users:
