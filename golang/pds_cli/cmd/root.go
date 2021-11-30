@@ -26,6 +26,7 @@ import (
 	"os"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
+
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
@@ -33,7 +34,8 @@ import (
 
 var (
 	cfgFile  string
-	endpoint string
+	baseuri string
+	token string
 	pdsClient *client.ClientWithResponses
 )
 
@@ -54,7 +56,7 @@ to quickly create a Cobra application.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// fmt.Printf("Inside rootCmd PersistentPreRun with args: %v\n", args)
 		// fmt.Println("endpoint: ", endpoint)
-		pdsClient = createPDSClient()
+		pdsClient = createPDSClient(baseuri, token)
 	
 	},
 }
@@ -73,12 +75,13 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pds_cli.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&endpoint, "endpoint", "e", "http://127.0.0.1:4010", "Endpoint for the PDS API")
+	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "e", "http://127.0.0.1:4010", "Base URI for the PDS API")
+	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "MY_SECRET_TOKEN", "API token")
 	// rootCmd.MarkFlagRequired("endpoint")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

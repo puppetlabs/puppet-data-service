@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
 )
 
@@ -13,10 +14,15 @@ func dump(o interface{}) {
 	fmt.Println(string(bytes))
 }
 
-func createPDSClient() *client.ClientWithResponses {
-	client, err := client.NewClientWithResponses(endpoint)
+func createPDSClient(baseuri, token string) *client.ClientWithResponses {
+	bearerTokenProvider, bearerTokenProviderErr := securityprovider.NewSecurityProviderBearerToken(token)
+	if bearerTokenProviderErr != nil {
+			panic(bearerTokenProviderErr)
+	}
+	client, err := client.NewClientWithResponses(baseuri, client.WithRequestEditorFn(bearerTokenProvider.Intercept))
 	if err != nil {
 		log.Fatalf("Couldn't instantiate PDS client: %s", err)
 	}
 	return client
 }
+

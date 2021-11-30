@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
@@ -38,7 +39,9 @@ var listHieradataCmd = &cobra.Command{
 		if len(args) > 0 {
 			level = client.OptionalHieraLevel(args[0])
 		}
+		fmt.Printf("%v\n", level)
 		params := &client.GetHieraDataParams{Level: &level}
+		fmt.Printf("%v\n", *params.Level)
 		response, err := pdsClient.GetHieraDataWithResponse(context.Background(), params)
 		if err != nil {
 			log.Fatalf("Couldn't get hieradatas %s", err)

@@ -18,6 +18,10 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
 
+const (
+	BearerAuthScopes = "bearerAuth.Scopes"
+)
+
 // Defines values for EditableNodePropertiesCodeEnvironment.
 const (
 	EditableNodePropertiesCodeEnvironmentCompliance EditableNodePropertiesCodeEnvironment = "compliance"
@@ -34,13 +38,13 @@ const (
 	EditableUserPropertiesRoleSuperadmin EditableUserPropertiesRole = "superadmin"
 )
 
-// Defines values for EditableUserPropertiesStatus.
+// Defines values for ReadOnlyUserPropertiesStatus.
 const (
-	EditableUserPropertiesStatusActive EditableUserPropertiesStatus = "active"
+	ReadOnlyUserPropertiesStatusActive ReadOnlyUserPropertiesStatus = "active"
 
-	EditableUserPropertiesStatusDeleted EditableUserPropertiesStatus = "deleted"
+	ReadOnlyUserPropertiesStatusDeleted ReadOnlyUserPropertiesStatus = "deleted"
 
-	EditableUserPropertiesStatusInactive EditableUserPropertiesStatus = "inactive"
+	ReadOnlyUserPropertiesStatusInactive ReadOnlyUserPropertiesStatus = "inactive"
 )
 
 // EditableHieraValueProperties defines model for EditableHieraValueProperties.
@@ -72,16 +76,10 @@ type EditableUserProperties struct {
 
 	// User role
 	Role *EditableUserPropertiesRole `json:"role,omitempty"`
-
-	// User status
-	Status *EditableUserPropertiesStatus `json:"status,omitempty"`
 }
 
 // User role
 type EditableUserPropertiesRole string
-
-// User status
-type EditableUserPropertiesStatus string
 
 // HieraValue defines model for HieraValue.
 type HieraValue struct {
@@ -119,6 +117,15 @@ type Node struct {
 	TimestampProperties `yaml:",inline"`
 }
 
+// ReadOnlyUserProperties defines model for ReadOnlyUserProperties.
+type ReadOnlyUserProperties struct {
+	// User status
+	Status *ReadOnlyUserPropertiesStatus `json:"status,omitempty"`
+}
+
+// User status
+type ReadOnlyUserPropertiesStatus string
+
 // TimestampProperties defines model for TimestampProperties.
 type TimestampProperties struct {
 	CreatedAt *time.Time `json:"created-at,omitempty"`
@@ -137,6 +144,8 @@ type User struct {
 	ImmutableUserProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
 	EditableUserProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/ReadOnlyUserProperties)
+	ReadOnlyUserProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/TimestampProperties)
 	TimestampProperties `yaml:",inline"`
 }
@@ -199,6 +208,15 @@ type NewUser struct {
 	// Embedded fields due to inline allOf schema
 }
 
+// NewUsers defines model for NewUsers.
+type NewUsers []struct {
+	// Embedded struct due to allOf(#/components/schemas/ImmutableUserProperties)
+	ImmutableUserProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
+	EditableUserProperties `yaml:",inline"`
+	// Embedded fields due to inline allOf schema
+}
+
 // GetHieraDataParams defines parameters for GetHieraData.
 type GetHieraDataParams struct {
 	// (Optional) This will filter by Hiera level (URL encoded), e.g. 'level%2Fone%2Fglobal'
@@ -218,7 +236,10 @@ type CreateNodeJSONRequestBody NewNodes
 type PutNodeByNameJSONRequestBody NewNode
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
-type CreateUserJSONRequestBody NewUser
+type CreateUserJSONRequestBody NewUsers
+
+// PutUserJSONRequestBody defines body for PutUser for application/json ContentType.
+type PutUserJSONRequestBody NewUser
 
 // Getter for additional properties for EditableNodeProperties_Classes. Returns the specified
 // element and whether it was found
@@ -392,8 +413,16 @@ type ClientInterface interface {
 
 	CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteUser request
+	DeleteUser(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetUserByUsername request
 	GetUserByUsername(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutUser request with any body
+	PutUserWithBody(ctx context.Context, username Username, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutUser(ctx context.Context, username Username, body PutUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetTokenByUsername request
 	GetTokenByUsername(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -603,8 +632,44 @@ func (c *Client) CreateUser(ctx context.Context, body CreateUserJSONRequestBody,
 	return c.Client.Do(req)
 }
 
+func (c *Client) DeleteUser(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteUserRequest(c.Server, username)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetUserByUsername(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetUserByUsernameRequest(c.Server, username)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutUserWithBody(ctx context.Context, username Username, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutUserRequestWithBody(c.Server, username, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutUser(ctx context.Context, username Username, body PutUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutUserRequest(c.Server, username, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1099,6 +1164,40 @@ func NewCreateUserRequestWithBody(server string, contentType string, body io.Rea
 	return req, nil
 }
 
+// NewDeleteUserRequest generates requests for DeleteUser
+func NewDeleteUserRequest(server string, username Username) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "username", runtime.ParamLocationPath, username)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetUserByUsernameRequest generates requests for GetUserByUsername
 func NewGetUserByUsernameRequest(server string, username Username) (*http.Request, error) {
 	var err error
@@ -1129,6 +1228,53 @@ func NewGetUserByUsernameRequest(server string, username Username) (*http.Reques
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewPutUserRequest calls the generic PutUser builder with application/json body
+func NewPutUserRequest(server string, username Username, body PutUserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutUserRequestWithBody(server, username, "application/json", bodyReader)
+}
+
+// NewPutUserRequestWithBody generates requests for PutUser with any type of body
+func NewPutUserRequestWithBody(server string, username Username, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "username", runtime.ParamLocationPath, username)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/users/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1256,8 +1402,16 @@ type ClientWithResponsesInterface interface {
 
 	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
 
+	// DeleteUser request
+	DeleteUserWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*DeleteUserResponse, error)
+
 	// GetUserByUsername request
 	GetUserByUsernameWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*GetUserByUsernameResponse, error)
+
+	// PutUser request with any body
+	PutUserWithBodyWithResponse(ctx context.Context, username Username, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutUserResponse, error)
+
+	PutUserWithResponse(ctx context.Context, username Username, body PutUserJSONRequestBody, reqEditors ...RequestEditorFn) (*PutUserResponse, error)
 
 	// GetTokenByUsername request
 	GetTokenByUsernameWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*GetTokenByUsernameResponse, error)
@@ -1507,7 +1661,7 @@ func (r GetAllUsersResponse) StatusCode() int {
 type CreateUserResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *User
+	JSON201      *[]User
 }
 
 // Status returns HTTPResponse.Status
@@ -1520,6 +1674,27 @@ func (r CreateUserResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r CreateUserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteUserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteUserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteUserResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1542,6 +1717,29 @@ func (r GetUserByUsernameResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetUserByUsernameResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutUserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *User
+	JSON201      *User
+}
+
+// Status returns HTTPResponse.Status
+func (r PutUserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutUserResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1718,6 +1916,15 @@ func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body C
 	return ParseCreateUserResponse(rsp)
 }
 
+// DeleteUserWithResponse request returning *DeleteUserResponse
+func (c *ClientWithResponses) DeleteUserWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*DeleteUserResponse, error) {
+	rsp, err := c.DeleteUser(ctx, username, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteUserResponse(rsp)
+}
+
 // GetUserByUsernameWithResponse request returning *GetUserByUsernameResponse
 func (c *ClientWithResponses) GetUserByUsernameWithResponse(ctx context.Context, username Username, reqEditors ...RequestEditorFn) (*GetUserByUsernameResponse, error) {
 	rsp, err := c.GetUserByUsername(ctx, username, reqEditors...)
@@ -1725,6 +1932,23 @@ func (c *ClientWithResponses) GetUserByUsernameWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParseGetUserByUsernameResponse(rsp)
+}
+
+// PutUserWithBodyWithResponse request with arbitrary body returning *PutUserResponse
+func (c *ClientWithResponses) PutUserWithBodyWithResponse(ctx context.Context, username Username, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutUserResponse, error) {
+	rsp, err := c.PutUserWithBody(ctx, username, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutUserResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutUserWithResponse(ctx context.Context, username Username, body PutUserJSONRequestBody, reqEditors ...RequestEditorFn) (*PutUserResponse, error) {
+	rsp, err := c.PutUser(ctx, username, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutUserResponse(rsp)
 }
 
 // GetTokenByUsernameWithResponse request returning *GetTokenByUsernameResponse
@@ -2024,12 +2248,28 @@ func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest User
+		var dest []User
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON201 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseDeleteUserResponse parses an HTTP response from a DeleteUserWithResponse call
+func ParseDeleteUserResponse(rsp *http.Response) (*DeleteUserResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteUserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil
@@ -2055,6 +2295,39 @@ func ParseGetUserByUsernameResponse(rsp *http.Response) (*GetUserByUsernameRespo
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutUserResponse parses an HTTP response from a PutUserWithResponse call
+func ParsePutUserResponse(rsp *http.Response) (*PutUserResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutUserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest User
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest User
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	}
 
