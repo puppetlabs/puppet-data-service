@@ -91,7 +91,7 @@ paths:
       tags:
         - users
       summary: Create a new user or replace an existing user
-      description: This can only be done by the logged in user.
+      description: If the username does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putUser
       parameters:
         - $ref: "#/components/parameters/Username"
@@ -223,7 +223,7 @@ paths:
       tags:
         - nodes
       summary: Create a new node or replace an existing node
-      description: This can only be done by the logged in user.
+      description: If the node name does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putNodeByName
       parameters:
         - $ref: "#/components/parameters/NodeName"
@@ -334,7 +334,7 @@ paths:
       tags:
         - hiera-data
       summary: Upserts a specific hiera object
-      description: Create/Update Hiera data using {level} and {key} as the identifier
+      description: If the hieradata with the compound ID {level} and {key} does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: upsertHieraDataWithLevelAndKey
       parameters:
         - $ref: "#/components/parameters/HieraLevel"
