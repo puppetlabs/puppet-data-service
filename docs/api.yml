@@ -16,14 +16,14 @@ servers:
   - url: localhost:3000/v1
 tags:
   - name: users
-    description: Every config change should be started with an authorized User
+    description: Every config change should be started with an authorized Admin User
     externalDocs:
       description: TBD Find out more
       url: https://puppet.com/
   - name: nodes
-    description: Node details and configuration data, Nodedata stores configuration details for a specific node and Hierdata manages your Hiera Key:Value as a service
+    description: Node details and configuration data, Nodedata stores configuration details for a specific node
   - name: hiera-data
-    description: Hiera data key/value pairs
+    description: Hierdata manages your Hiera Key:Value as a service
 
 paths:
   /users:
@@ -48,7 +48,7 @@ paths:
       tags:
         - users
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of users. This endpoint supports bulk operations, you can create one or 1000 users in a single POST request.
       operationId: createUser
       requestBody:
         $ref: "#/components/requestBodies/NewUsers"
@@ -91,7 +91,7 @@ paths:
       tags:
         - users
       summary: Create a new user or replace an existing user
-      description: This can only be done by the logged in user.
+      description: If the username does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putUser
       parameters:
         - $ref: "#/components/parameters/Username"
@@ -114,8 +114,6 @@ paths:
           description: Invalid username supplied
         "401":
           $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Username not found
     delete:
       tags:
         - users
@@ -182,7 +180,7 @@ paths:
       tags:
         - nodes
       summary: Create new node(s)
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of node's data. This endpoint supports bulk operations, you can create one or 1000 nodedata in a single POST request.
       operationId: createNode
       requestBody:
         $ref: "#/components/requestBodies/NewNodes"
@@ -225,7 +223,7 @@ paths:
       tags:
         - nodes
       summary: Create a new node or replace an existing node
-      description: This can only be done by the logged in user.
+      description: If the node name does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putNodeByName
       parameters:
         - $ref: "#/components/parameters/NodeName"
@@ -248,8 +246,6 @@ paths:
           description: Invalid node-name supplied
         "401":
           $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Node not found
 
     delete:
       tags:
@@ -296,7 +292,7 @@ paths:
       tags:
         - hiera-data
       summary: Create new Hiera data value(s)
-      description: This can only be done by the logged in user.
+      description: The body params are required to be a JSON object with an array of Hieradata. This endpoint supports bulk operations, you can create one or 1000 hieradata in a single POST request.
       operationId: createHieraData
       requestBody:
         $ref: "#/components/requestBodies/NewHieraData"
@@ -332,11 +328,13 @@ paths:
                 $ref: "#/components/schemas/HieraValue"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Hiera data not found for the given level and key
     put:
       tags:
         - hiera-data
       summary: Upserts a specific hiera object
-      description: Create/Update Hiera data using {level} and {key} as the identifier
+      description: If the hieradata with the compound ID {level} and {key} does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: upsertHieraDataWithLevelAndKey
       parameters:
         - $ref: "#/components/parameters/HieraLevel"
