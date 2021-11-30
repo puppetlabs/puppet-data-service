@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
@@ -31,42 +30,43 @@ var hieradataCmd = &cobra.Command{
 }
 
 var listHieradataCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List hiera-data [LEVEL]",
+	Use:   "list [LEVEL]",
+	Short: "List all hieradata or hieradata for LEVEL",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		level := client.OptionalHieraLevel("")
 		if len(args) > 0 {
 			level = client.OptionalHieraLevel(args[0])
 		}
-		fmt.Printf("%v\n", level)
 		params := &client.GetHieraDataParams{Level: &level}
-		fmt.Printf("%v\n", *params.Level)
 		response, err := pdsClient.GetHieraDataWithResponse(context.Background(), params)
 		if err != nil {
-			log.Fatalf("Couldn't get hieradatas %s", err)
+			log.Fatalf("Couldn't list hieradata: %s", err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
 		}
 		dump(response.JSON200)
 	},
 }
 
-// var gethieradataCmd = &cobra.Command{
-// 	Use:   "get hieradataNAME",
-// 	Args:  cobra.ExactArgs(1),
-// 	Short: "Retrieve hieradata with hieradataname hieradataNAME",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		// username, _ := cmd.Flags().GetString("username")
-// 		hieradataname := args[0]
-// 		response, err := pdsClient.GethieradataByNameWithResponse(context.Background(), client.hieradataName(hieradataname))
-// 		if err != nil {
-// 			log.Fatalf("Couldn't get hieradata %s: %s", hieradataname, err)
-// 		}
-// 		if response.HTTPResponse.StatusCode > 299 {
-// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
-// 		}
-// 		dump(response.JSON200)
-// 	},
-// }
+var getHieradataCmd = &cobra.Command{
+	Use:   "get hiera LEVEL KEY",
+	Args:  cobra.ExactArgs(2),
+	Short: "Retrieve hieradata with LEVEL and KEY",
+	Run: func(cmd *cobra.Command, args []string) {
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
+		response, err := pdsClient.GetHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key)
+		if err != nil {
+			log.Fatalf("Couldn't get hieradata %s/%s: %s", level, key, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.JSON200)
+	},
+}
 
 // var deletehieradataCmd = &cobra.Command{
 // 	Use:   "delete hieradataNAME",
@@ -108,6 +108,6 @@ var listHieradataCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(hieradataCmd)
 	hieradataCmd.AddCommand(listHieradataCmd)
-	// hieradataCmd.AddCommand(gethieradataCmd)
+	hieradataCmd.AddCommand(getHieradataCmd)
 	// hieradataCmd.AddCommand(deletehieradataCmd)
 }
