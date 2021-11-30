@@ -114,8 +114,6 @@ paths:
           description: Invalid username supplied
         "401":
           $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Username not found
     delete:
       tags:
         - users
@@ -248,8 +246,6 @@ paths:
           description: Invalid node-name supplied
         "401":
           $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          description: Node not found
 
     delete:
       tags:
@@ -332,6 +328,8 @@ paths:
                 $ref: "#/components/schemas/HieraValue"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Hiera data not found for the given level and key
     put:
       tags:
         - hiera-data
