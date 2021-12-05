@@ -26,7 +26,7 @@ import (
 // hieradataCmd represents the hieradata command
 var hieradataCmd = &cobra.Command{
 	Use:   "hiera",
-	Short: "Operations on hiera-data",
+	Short: "Operations on hieradata",
 }
 
 var listHieradataCmd = &cobra.Command{
@@ -51,7 +51,7 @@ var listHieradataCmd = &cobra.Command{
 }
 
 var getHieradataCmd = &cobra.Command{
-	Use:   "get hiera LEVEL KEY",
+	Use:   "get LEVEL KEY",
 	Args:  cobra.ExactArgs(2),
 	Short: "Retrieve hieradata with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -68,7 +68,45 @@ var getHieradataCmd = &cobra.Command{
 	},
 }
 
-// var deletehieradataCmd = &cobra.Command{
+var deleteHieradataCmd = &cobra.Command{
+	Use:   "delete LEVEL KEY",
+	Args:  cobra.ExactArgs(2),
+	Short: "Delete hieradata with LEVEL and KEY",
+	Run: func(cmd *cobra.Command, args []string) {
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
+		response, err := pdsClient.DeleteHieraDataObjectWithResponse(context.Background(), level, key)
+		if err != nil {
+			log.Fatalf("Couldn't delete hieradata %s/%s: %s", level, key, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.Status())
+	},
+}
+
+// var putHieradataCmd = &cobra.Command{
+// 	Use:   "update LEVEL KEY",
+// 	Args:  cobra.ExactArgs(2),
+// 	Short: "Update hieradata with LEVEL and KEY",
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		level := client.HieraLevel(args[0])
+// 		key := client.HieraKey(args[1])
+// 		response, err := pdsClient.PutHieradataByNameWithBodyWithResponse()
+// 		// PutHieradataByNameWithBodyWithResponse()
+// 		// PutHieraDataObjectWithResponse(context.Background(), level, key)
+// 		if err != nil {
+// 			log.Fatalf("Couldn't delete hieradata %s/%s: %s", level, key, err)
+// 		}
+// 		if response.HTTPResponse.StatusCode > 299 {
+// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+// 		}
+// 		dump(response.Status())
+// 	},
+// }
+
+// // var deletehieradataCmd = &cobra.Command{
 // 	Use:   "delete hieradataNAME",
 // 	Args:  cobra.ExactArgs(1),
 // 	Short: "Delete hieradata with hieradataname hieradataNAME",
@@ -109,5 +147,5 @@ func init() {
 	rootCmd.AddCommand(hieradataCmd)
 	hieradataCmd.AddCommand(listHieradataCmd)
 	hieradataCmd.AddCommand(getHieradataCmd)
-	// hieradataCmd.AddCommand(deletehieradataCmd)
+	hieradataCmd.AddCommand(deleteHieradataCmd)
 }

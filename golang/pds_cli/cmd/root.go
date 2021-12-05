@@ -42,20 +42,9 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "pds_cli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Short: "Interact with Puppet Data Service from the command line",
 	Version: "0.1",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// fmt.Printf("Inside rootCmd PersistentPreRun with args: %v\n", args)
-		// fmt.Println("endpoint: ", endpoint)
 		pdsClient = createPDSClient(baseuri, token)
 	
 	},
@@ -76,6 +65,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pds_cli.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "e", "http://127.0.0.1:4010", "Base URI for the PDS API")
+	// TODO FIXME remove token before production
 	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "MY_SECRET_TOKEN", "API token")
 	// rootCmd.MarkFlagRequired("endpoint")
 
