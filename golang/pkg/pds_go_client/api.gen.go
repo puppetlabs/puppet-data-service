@@ -50,7 +50,7 @@ const (
 // EditableHieraValueProperties defines model for EditableHieraValueProperties.
 type EditableHieraValueProperties struct {
 	// The value to set the Hiera key to
-	Value *interface{} `json:"value"`
+	Value *string `json:"value"`
 }
 
 // EditableNodeProperties defines model for EditableNodeProperties.

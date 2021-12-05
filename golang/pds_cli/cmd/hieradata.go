@@ -86,25 +86,25 @@ var deleteHieradataCmd = &cobra.Command{
 	},
 }
 
-// var putHieradataCmd = &cobra.Command{
-// 	Use:   "update LEVEL KEY",
-// 	Args:  cobra.ExactArgs(2),
-// 	Short: "Update hieradata with LEVEL and KEY",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		level := client.HieraLevel(args[0])
-// 		key := client.HieraKey(args[1])
-// 		response, err := pdsClient.PutHieradataByNameWithBodyWithResponse()
-// 		// PutHieradataByNameWithBodyWithResponse()
-// 		// PutHieraDataObjectWithResponse(context.Background(), level, key)
-// 		if err != nil {
-// 			log.Fatalf("Couldn't delete hieradata %s/%s: %s", level, key, err)
-// 		}
-// 		if response.HTTPResponse.StatusCode > 299 {
-// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
-// 		}
-// 		dump(response.Status())
-// 	},
-// }
+var upsertHieradataCmd = &cobra.Command{
+	Use:   "upsert LEVEL KEY VALUE",
+	Args:  cobra.ExactArgs(3),
+	Short: "Upsert hieradata VALUE with LEVEL and KEY",
+	Run: func(cmd *cobra.Command, args []string) {
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
+		props := client.EditableHieraValueProperties{Value: &args[2]}
+		body := client.UpsertHieraDataWithLevelAndKeyJSONRequestBody{EditableHieraValueProperties: props}
+		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key, body)
+		if err != nil {
+			log.Fatalf("Couldn't upsert hieradata %s/%s: %s", level, key, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.JSON200)
+	},
+}
 
 // // var deletehieradataCmd = &cobra.Command{
 // 	Use:   "delete hieradataNAME",
@@ -148,4 +148,5 @@ func init() {
 	hieradataCmd.AddCommand(listHieradataCmd)
 	hieradataCmd.AddCommand(getHieradataCmd)
 	hieradataCmd.AddCommand(deleteHieradataCmd)
+	hieradataCmd.AddCommand(upsertHieradataCmd)
 }
