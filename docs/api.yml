@@ -31,7 +31,7 @@ paths:
       tags:
         - users
       summary: Get all available users
-      description: This can only be done by the logged in user with a superadmin role.
+      description: This can only be done by the logged in user with an administrator role.
       operationId: getAllUsers
       responses:
         "200":
@@ -405,8 +405,8 @@ components:
           description: User role
           default: operator
           enum:
+            - administrator
             - operator
-            - superadmin
 
     ReadOnlyUserProperties:
       type: object
@@ -451,8 +451,8 @@ components:
             - production
             - compliance
         classes:
-          type: object
-          additionalProperties:
+          type: array
+          items:
             type: string
         trusted-data:
           type: object
