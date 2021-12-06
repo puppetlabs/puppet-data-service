@@ -3,7 +3,7 @@ require_relative 'base'
 
 module PDS
   module DataAdapter
-    class PostgreSQL < 
+    class PostgreSQL < PDS::DataAdapter::Base
       def initialize(config)
         @config = config
       end
