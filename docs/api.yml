@@ -451,8 +451,8 @@ components:
             - production
             - compliance
         classes:
-          type: object
-          additionalProperties:
+          type: array
+          items:
             type: string
         trusted-data:
           type: object
