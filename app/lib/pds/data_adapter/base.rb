@@ -7,25 +7,25 @@ module PDS
         raise "Cannot initialize an abstract PDS::DataAdapter::Base class"
       end
 
-      def create(entity: , filter: )
+      def create(entity , filter: nil)
         raise NotImplementedError
       end
 
-      def read(entity: , filter: )
+      def read(entity , filter: nil)
         raise NotImplementedErrors
       end
 
-      def upsert(entity: , filter: )
+      def upsert(entity , filter: nil)
         raise NotImplementedError
       end
 
-      def delete(entity: , filter: )
+      def delete(entity , filter: nil)
         raise NotImplementedError
       end
 
       # @return Symbol an identifier indicating the type of DataAdapter
       def type
-        raise "Not implemented!"
+        raise NotImplementedError
       end
     end
   end
