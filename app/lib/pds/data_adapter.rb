@@ -1,15 +1,15 @@
-require_relative 'backend/postgresql'
+require_relative 'data_adapter/postgresql'
 
 module PDS
-  module Backend
+  module DataAdapter
     def self.new(config)
       raise "Invalid configuration!" unless config.is_a?(Hash)
       # Determine the appropriate implementation class
       implementation = case config['type']
                        when 'postgresql'
-                         PDS::Backend::PostgreSQL
+                         PDS::DataAdapter::PostgreSQL
                        else
-                         raise "Unsupported backend type '#{config['type']}'!"
+                         raise "Unsupported data adapter type '#{config['type']}'!"
                        end
 
       # Create and return a new instance of the implementation class

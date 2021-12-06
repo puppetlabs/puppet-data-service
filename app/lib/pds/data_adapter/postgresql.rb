@@ -1,8 +1,8 @@
-require_relative '../backend'
+require_relative '../data_adapter'
 require_relative 'base'
 
 module PDS
-  module Backend
+  module DataAdapter
     class PostgreSQL < 
       def initialize(config)
         @config = config
