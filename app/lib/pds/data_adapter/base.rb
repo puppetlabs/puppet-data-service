@@ -7,19 +7,19 @@ module PDS
         raise "Cannot initialize an abstract PDS::DataAdapter::Base class"
       end
 
-      def create
+      def create(entity: , filter: )
         raise NotImplementedError
       end
 
-      def read
+      def read(entity: , filter: )
         raise NotImplementedErrors
       end
 
-      def upsert
+      def upsert(entity: , filter: )
         raise NotImplementedError
       end
 
-      def delete
+      def delete(entity: , filter: )
         raise NotImplementedError
       end
 
