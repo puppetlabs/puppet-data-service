@@ -11,13 +11,14 @@ class PDSApp < OpenAPIing
   # Set required defaults, then load full config from file.
   # File values, if given, will replace defaults.
   set :logger, Logger.new(STDOUT)
+
   set :default_content_type, :json
   set 'database', { 'type' => 'unconfigured' }
   config_file '/etc/puppetlabs/pds/pds.yaml', File.join(__dir__, 'pds.yaml')
 
   # Based on the user-supplied hash 'database', set data adapter to an appropriate
   # DataAdapter object
-  set(:data_adapter, PDS::DataAdapter.new(settings.database, logger: logger))
+  set(:data_adapter, PDS::DataAdapter.new(settings.database))
 
   self.configure do |config|
     config.api_version = '1.0.0'

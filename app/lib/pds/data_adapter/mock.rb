@@ -5,9 +5,8 @@ require 'date'
 module PDS
   module DataAdapter
     class Mock < PDS::DataAdapter::Base
-      def initialize(config, logger: nil)
-        super
-        logger.info 'Loading mock DataAdapter'
+      def initialize(config)
+        PDSApp.logger.info 'Loading mock DataAdapter'
         @data = sample_data
         true
       end
@@ -24,7 +23,7 @@ module PDS
       # @param filter [Array] an array of filters to apply
       # @return [Array] an array of resources
       def read(entity_type, filter: [])
-        logger.debug "Reading #{entity_type} with filter #{filter}"
+        PDSApp.logger.debug "Reading #{entity_type} with filter #{filter}"
 
         dat = @data[entity_type]
 
