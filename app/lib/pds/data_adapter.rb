@@ -1,4 +1,5 @@
 require_relative 'data_adapter/postgresql'
+require_relative 'data_adapter/mock'
 
 module PDS
   module DataAdapter
@@ -8,6 +9,8 @@ module PDS
       implementation = case config['type']
                        when 'postgresql'
                          PDS::DataAdapter::PostgreSQL
+                       when 'mock'
+                         PDS::DataAdapter::Mock
                        else
                          raise "Unsupported data adapter type '#{config['type']}'!"
                        end
