@@ -35,4 +35,4 @@ go run pds-cli/main
 
 ## Generating CLI docs
 
-run `pds-cli doc <dir>` to generate cli's documentation in Markdown format into `<dir>`.
+run `pds-cli doc -d <dir>` to generate cli's documentation in Markdown format into `<dir>`.
