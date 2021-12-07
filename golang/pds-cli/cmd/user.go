@@ -19,9 +19,27 @@ import (
 	"context"
 	"log"
 
-	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
 	"github.com/spf13/cobra"
 )
+
+var userCmd = &cobra.Command{
+	Use:   "user",
+	Short: "Operations on users",
+}
+
+var listUsersCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List users",
+	Run: func(cmd *cobra.Command, args []string) {
+		// fmt.Println("listusers called")
+		response, err := pdsClient.GetAllUsersWithResponse(context.Background())
+		if err != nil {
+			log.Fatalf("Couldn't get users %s", err)
+		}
+		dump(response.JSON200)
+	},
+}
 
 var getUserCmd = &cobra.Command{
 	Use:   "get USERNAME",
@@ -59,6 +77,8 @@ var getUserTokenCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(userCmd)
+	userCmd.AddCommand(listUsersCmd)
 	userCmd.AddCommand(getUserCmd)
 	userCmd.AddCommand(getUserTokenCmd)
 }

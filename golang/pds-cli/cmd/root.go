@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"os"
 
-	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
 
 	"github.com/spf13/cobra"
 

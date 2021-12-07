@@ -19,7 +19,7 @@ import (
 	"context"
 	"log"
 
-	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
 	"github.com/spf13/cobra"
 )
 
@@ -107,6 +107,6 @@ func init() {
 	nodeCmd.AddCommand(listNodesCmd)
 	nodeCmd.AddCommand(getNodeCmd)
 	nodeCmd.AddCommand(deleteNodeCmd)
-	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted_external_command", false, 
+	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted-external-command", false, 
 		"for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.")
 }

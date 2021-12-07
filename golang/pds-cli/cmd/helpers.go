@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/deepmap/oapi-codegen/pkg/securityprovider"
-	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds_go_client"
+	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
 )
 
 func dump(o interface{}) {
