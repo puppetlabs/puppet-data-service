@@ -1,3 +1,5 @@
+require 'logger'
+
 module PDS
   module DataAdapter
     # This is an abstract base class documenting the required methods that
@@ -9,8 +11,8 @@ module PDS
       #   - :hiera_data
 
       # @parama config [Hash] configuration needed to initialize the DataAdapter
-      def initialize(config)
-        raise NotImplementedError
+      def initialize(config, logger: nil)
+        @logger = logger || Logger.new(STDOUT)
       end
 
       # @param entity_type [Symbol] the entity type to operate on
@@ -42,6 +44,10 @@ module PDS
       def type
         raise NotImplementedError
       end
+
+      private
+
+      attr_reader :logger
     end
   end
 end

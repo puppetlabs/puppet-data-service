@@ -5,7 +5,9 @@ require 'date'
 module PDS
   module DataAdapter
     class Mock < PDS::DataAdapter::Base
-      def initialize(config)
+      def initialize(config, logger: nil)
+        super
+        logger.info 'Loading mock DataAdapter'
         @data = sample_data
         true
       end
