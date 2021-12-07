@@ -15,7 +15,7 @@ module PDS
 
       # @param entity_type [Symbol] the entity type to operate on
       # @param resources [Array] an array of resources to create
-      def create(entity_type, resources:)
+      def create(entity_type, resources: nil)
         raise NotImplementedError
       end
 
@@ -28,7 +28,7 @@ module PDS
 
       # @param entity_type [Symbol] the entity type to operate on
       # @param resources [Array] an array of resources to upsert
-      def upsert(entity_type, resources:)
+      def upsert(entity_type, resources: nil)
         raise NotImplementedError
       end
 
