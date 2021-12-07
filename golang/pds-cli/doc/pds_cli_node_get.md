@@ -10,7 +10,7 @@ pds_cli node get NODENAME [flags]
 
 ```
   -h, --help                       help for get
-      --trusted_external_command   for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.
+      --trusted-external-command   for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.
 ```
 
 ### Options inherited from parent commands
