@@ -2,7 +2,7 @@
 
 This directory contains:
 
-* `pds_go_client`: the auto-generated golang client for the PDS API
+* `pkg/pds_go_client`: the auto-generated golang client for the PDS API
 * `pds_cli`: the cli tool for querying the api, `pds_cli`.
 
 ## Pre-requisites
@@ -22,8 +22,9 @@ cd pds_cli
 go build
 ```
 
-This will result in a binary called `pds_cli` which you can run, it it self-documenting.
-*NOTE* the cli is very much WIP.
+This will result in a binary called `pds_cli` which you can run. If you run it with `--help`, it will explain how to use it.
+
+To have a mock server to test the cli against, you can use `prism` - see [the API README](../docs/README.md) on instructions on how to use it.
 
 Alternatively, you can run the cli by doing:
 
@@ -31,3 +32,7 @@ Alternatively, you can run the cli by doing:
 cd pds_cli
 go run pds_cli/main
 ```
+
+## Generating CLI docs
+
+run `pds_cli doc <dir>` to generate cli's documentation in Markdown format into `<dir>`.

@@ -23,6 +23,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var trustedExternalCommand bool
+
 // nodeCmd represents the node command
 var nodeCmd = &cobra.Command{
 	Use:   "node",
@@ -55,7 +57,11 @@ var getNodeCmd = &cobra.Command{
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
 		}
-		dump(response.JSON200)
+		if (trustedExternalCommand) {
+			dump(response.JSON200.EditableNodeProperties)
+		} else {
+			dump(response.JSON200)
+		}
 	},
 }
 
@@ -101,4 +107,6 @@ func init() {
 	nodeCmd.AddCommand(listNodesCmd)
 	nodeCmd.AddCommand(getNodeCmd)
 	nodeCmd.AddCommand(deleteNodeCmd)
+	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted_external_command", false, 
+		"for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.")
 }

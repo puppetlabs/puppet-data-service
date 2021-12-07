@@ -1,15 +1,15 @@
-## pds_cli node list
+## pds_cli node delete
 
-List nodes
+Delete node with nodename NODENAME
 
 ```
-pds_cli node list [flags]
+pds_cli node delete NODENAME [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for list
+  -h, --help   help for delete
 ```
 
 ### Options inherited from parent commands
