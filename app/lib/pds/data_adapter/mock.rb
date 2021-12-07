@@ -23,9 +23,19 @@ module PDS
       # @param entity_type [Symbol] the entity type to operate on
       # @param filter [Array] an array of filters to apply
       # @return [Array] an array of resources
-      def read(entity_type, filter: nil)
-        # TODO: implement filter
-        @data[entity_type]
+      def read(entity_type, filter: [])
+        logger.debug "Reading #{entity_type} with filter #{filter}"
+
+        dat = @data[entity_type]
+
+        filter.reduce(dat) do |memo, fil|
+          case fil[0]
+          when '='
+            memo.select { |entity| entity[fil[1]] == fil[2] }
+          else
+            raise "Invalid filter: #{fil}"
+          end
+        end
       end
 
       # @param entity_type [Symbol] the entity type to operate on
@@ -38,7 +48,7 @@ module PDS
 
       # @param entity_type [Symbol] the entity type to operate on
       # @return [Integer] the number of resources deleted
-      def delete(entity_type, filter: nil)
+      def delete(entity_type, filter: [])
         # TODO: implement filter
         size = @data[entity_type].size
         @data[entity_type].clear
@@ -60,6 +70,7 @@ module PDS
               'email'      => 'user1@example.com',
               'role'       => 'administrator',
               'status'     => 'active',
+              'temp_token' => 'abc123',
               'created-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
               'updated-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
             },
@@ -67,6 +78,7 @@ module PDS
               'email'      => 'user2@example.com',
               'role'       => 'operator',
               'status'     => 'active',
+              'temp_token' => 'def456',
               'created-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
               'updated-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
             },

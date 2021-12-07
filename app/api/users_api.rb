@@ -19,7 +19,9 @@ PDSApp.add_route('POST', '/v1/users', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validation
+  body = JSON.parse(request.body)
+  data_adapter.create(:users, resources: body)
 end
 
 
@@ -57,7 +59,9 @@ PDSApp.add_route('GET', '/v1/users', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  data_adapter.read(:users)
+              .map { |hash| hash.select { |key,_| key != 'temp_token' }}
+              .to_json
 end
 
 
@@ -79,7 +83,12 @@ PDSApp.add_route('GET', '/v1/users/{username}/token', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  user = data_adapter.read(:users, filter: [['=', 'username', params['username']]])
+  if user.empty?
+    status 404
+  else
+    { 'token' => user.first['temp_token']}.to_json
+  end
 end
 
 
