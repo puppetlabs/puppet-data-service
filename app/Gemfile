@@ -4,3 +4,4 @@ gem "webrick"
 gem "sinatra"
 gem "sinatra-cross_origin"
 gem "sinatra-contrib"
+gem 'pg', '~> 1.2.3'
