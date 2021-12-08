@@ -18,5 +18,8 @@ module PDS
       # Create and return a new instance of the implementation class
       implementation.new(config)
     end
+
+    # Used for raising exceptions
+    class Conflict < StandardError; end
   end
 end
