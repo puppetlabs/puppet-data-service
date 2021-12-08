@@ -42,6 +42,13 @@ module PDS
       def type
         raise NotImplementedError
       end
+
+      private
+
+      # @return [Logger]
+      def logger
+        PDSApp.logger
+      end
     end
   end
 end
