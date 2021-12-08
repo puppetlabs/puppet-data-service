@@ -1,13 +1,12 @@
 require_relative '../data_adapter'
 require_relative 'base'
-require 'pg'
+require "sinatra/activerecord"
 
 module PDS
   module DataAdapter
     class PostgreSQL < PDS::DataAdapter::Base
       def initialize(config)
         @config = config
-        @dbconn = PG::Connection.new(@config)
       end
 
       def create(entity_type, resources: nil)
@@ -18,10 +17,7 @@ module PDS
 
       def read(entity_type, filter: [])
         PDSApp.logger.debug "Reading #{entity_type} with filter #{filter}"
-
-        dat = @data[entity_type]
-
-        response = @dbconn.exec_params('SELECT * FROM $entity_type', [entity_type])
+        User.all
       end
 
       def upsert(entity_type, resources: nil)
