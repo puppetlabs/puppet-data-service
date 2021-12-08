@@ -16,10 +16,10 @@ module PDS
       def create(entity_type, resources:)
         # TODO: implement uniqueness check(s)
         conflict = resources.any? do |resource|
-                     @data[entity_type].any? do |existing|
-                       resource_eql?(entity_type, resource, existing)
-                     end
-                   end
+          @data[entity_type].any? do |existing|
+            resource_eql?(entity_type, resource, existing)
+          end
+        end
 
         # TODO: return more meaningful information
         raise PDS::DataAdapter::Conflict if conflict
