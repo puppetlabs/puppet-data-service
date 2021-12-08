@@ -1,0 +1,18 @@
+---
+database:
+  adapter: unconfigured
+# Use the mock database for quick testing/validation.
+#
+#database:
+#  adapter: mock
+
+# Use PostgreSQL for production deployments.
+#
+#database:
+#  adapter: postgresql
+#  encoding: unicode
+#  pool: 5
+#  host: <%= ENV['DATABASE_HOST'] %>
+#  database: <%= ENV['DATABASE_NAME'] %>
+#  username: <%= ENV['DATABASE_USER'] %>
+#  password: <%= ENV['DATABASE_PASSWORD'] %>

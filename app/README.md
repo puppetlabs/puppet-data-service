@@ -30,11 +30,26 @@ The API documentation was made following the OpenAPIv3 specifications and can be
 
 ### Connect your DataAdapter
 
-Inside the `pds_app.rb` file, make sure to change your `DataAdapter`
+In the `config/pds.yaml` configuration file, set the `database` key.
 
-```
+```yaml
 # Use mock for a quick test
-set 'database', { 'type' => 'unconfigured' }
+---
+database:
+  adapter: mock
+```
+
+```yaml
+# Use postgresql for a real deployment
+---
+database:
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: <%= ENV['DATABASE_HOST'] %>
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
 ```
 
 ### Running the service

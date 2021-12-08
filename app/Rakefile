@@ -1,4 +1,13 @@
 # Rakefile
 require 'sinatra/activerecord'
 require 'sinatra/activerecord/rake'
-require './pds_app'
+
+namespace :db do
+  task :load_config do
+    require './pds_app'
+  end
+
+  # All other db:* tasks should start by loading the app config
+  db_tasks = Rake.application.tasks.select { |t| t.name =~ %r{^db:(?!load_config$)} }
+  db_tasks.each { |t| t.enhance ['db:load_config'] }
+end
