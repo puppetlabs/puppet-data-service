@@ -15,7 +15,7 @@ class PDSApp < OpenAPIing
   set :logger, Logger.new(STDOUT)
 
   set :default_content_type, :json
-  set 'database', { 'type' => 'unconfigured' }
+  set 'database', { 'type' => 'mock' }
   config_file '/etc/puppetlabs/pds/pds.yaml', File.join(__dir__, 'pds.yaml')
 
   # Based on the user-supplied hash 'database', set data adapter to an appropriate
