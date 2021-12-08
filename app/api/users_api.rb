@@ -21,7 +21,13 @@ PDSApp.add_route('POST', '/v1/users', {
 
   # TODO: validation
   body = JSON.parse(request.body)
-  data_adapter.create(:users, resources: body)
+
+  begin
+    data_adapter.create(:users, resources: body)
+  rescue PDS::DataAdapter::Conflict => e
+    status 409
+    e.message
+  end
 end
 
 
@@ -41,9 +47,13 @@ PDSApp.add_route('DELETE', '/v1/users/{username}', {
     },
     ]}) do
   cross_origin
-  # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  deleted = data_adapter.delete(:users, filters: [['=', 'username', params['username']]])
+  if deleted.zero?
+    status 404
+  else
+    status 200
+  end
 end
 
 
@@ -83,7 +93,7 @@ PDSApp.add_route('GET', '/v1/users/{username}/token', {
   cross_origin
   # the guts live here
 
-  user = data_adapter.read(:users, filter: [['=', 'username', params['username']]])
+  user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if user.empty?
     status 404
   else
@@ -110,7 +120,9 @@ PDSApp.add_route('GET', '/v1/users/{username}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  data_adapter.read(:users, filters: [['=', 'username', params['username']]])
+              .map { |hash| hash.select { |key,_| key != 'temp_token' }}
+              .to_json
 end
 
 
@@ -138,6 +150,8 @@ PDSApp.add_route('PUT', '/v1/users/{username}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  body = JSON.parse(request.body)
+  # TODO: validate input
+  data_adapter.upsert(:users, resources: [body])
 end
 
