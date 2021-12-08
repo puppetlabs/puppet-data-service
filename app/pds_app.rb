@@ -3,6 +3,8 @@ require './lib/pds/data_adapter'
 require 'sinatra/config_file'
 require 'sinatra/custom_logger'
 require 'logger'
+require "sinatra" # TODO: Should we require everything?
+require 'sinatra/activerecord'
 
 # only need to extend if you want special configuration!
 class PDSApp < OpenAPIing

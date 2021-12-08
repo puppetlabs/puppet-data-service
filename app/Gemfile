@@ -1,7 +1,10 @@
 source 'https://rubygems.org'
 
-gem "webrick"
-gem "sinatra"
-gem "sinatra-cross_origin"
-gem "sinatra-contrib"
+gem 'webrick'
+gem 'sinatra'
+gem 'sinatra-cross_origin'
+gem 'sinatra-contrib'
+
 gem 'pg', '~> 1.2.3'
+gem 'rake', '~> 13.0.6'
+gem 'sinatra-activerecord', '~> 2.0', '>= 2.0.23'
