@@ -30,8 +30,11 @@ module PDS
     def self.load_postgresql_adapter(app)
       require_relative 'data_adapter/postgresql'
 
-      # Set migrations_paths to a directory specific to the PostgreSQL adapter
-      ActiveRecord::Migrator.migrations_paths = ['db/postgresql/migrate']
+      # Configure ActiveRecord rake tasks to use adapter-specific db paths
+      if defined?(ActiveRecord::Tasks::DatabaseTasks)
+        ActiveRecord::Tasks::DatabaseTasks.db_dir = 'db/postgresql'
+        ActiveRecord::Migrator.migrations_paths = ['db/postgresql/migrate']
+      end
 
       app.register Sinatra::ActiveRecordExtension
 

@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2021_12_08_173927) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "changelog", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
