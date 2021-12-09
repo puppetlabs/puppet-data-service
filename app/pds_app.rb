@@ -1,10 +1,10 @@
-require './lib/openapiing'
-require './lib/pds/data_adapter'
+require 'sinatra/base'
 require 'sinatra/config_file'
 require 'sinatra/custom_logger'
+require "sinatra/activerecord"
 require 'logger'
-require "sinatra" # TODO: Should we require everything?
-require 'sinatra/activerecord'
+require './lib/openapiing'
+require './lib/pds/data_adapter'
 
 # only need to extend if you want special configuration!
 class PDSApp < OpenAPIing
@@ -13,22 +13,25 @@ class PDSApp < OpenAPIing
   # Set required defaults, then load full config from file.
   # File values, if given, will replace defaults.
   set :logger, Logger.new(STDOUT)
-
   set :default_content_type, :json
-  set 'database', { 'type' => 'postgresql' }
-  config_file '/etc/puppetlabs/pds/pds.yaml', File.join(__dir__, 'pds.yaml')
+  set :database, { 'adapter' => 'unconfigured' }
 
-  # Based on the user-supplied hash 'database', set data adapter to an appropriate
-  # DataAdapter object
-  set(:data_adapter, PDS::DataAdapter.new(settings.database))
+  # Users should configure their app settings using a pds.yaml file in one of
+  # these locations
+  config_file '/etc/puppetlabs/pds/pds.yaml', File.expand_path(File.join(__dir__, 'config', 'pds.yaml'))
 
   self.configure do |config|
     config.api_version = '1.0.0'
   end
 end
 
+# Based on the user-supplied hash 'database', set :data_adapter to an
+# appropriate DataAdapter object. This is performed here so that it is
+# universally invoked when this file is required.
+PDSApp.set :data_adapter, PDS::DataAdapter.new(PDSApp.settings.database)
+
 # include the helpers
-Dir["./helpers/*.rb", "./models/*.rb"].each { |file|
+Dir["./helpers/*.rb"].each { |file|
   require file
 }
 
