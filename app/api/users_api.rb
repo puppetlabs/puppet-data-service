@@ -19,14 +19,14 @@ PDSApp.add_route('POST', '/v1/users', {
   cross_origin
 
   # TODO: validate input
-  body = JSON.parse(request.body.read)
+  new_users = JSON.parse(request.body.read)
 
   begin
-    body.each { |user| user['status'] = 'active' }
-    set_new_timestamps!(body)
-    data_adapter.create(:users, resources: body)
+    new_users.each { |user| user['status'] = 'active' }
+    set_new_timestamps!(new_users)
+    data_adapter.create(:users, resources: new_users)
     status 201
-    body.to_json
+    new_users.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
     e.message
@@ -72,8 +72,8 @@ PDSApp.add_route('GET', '/v1/users', {
     ]}) do
   cross_origin
 
-  all_users = data_adapter.read(:users)
-  all_users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
+  users = data_adapter.read(:users)
+  users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
 end
 
 
@@ -155,17 +155,17 @@ PDSApp.add_route('PUT', '/v1/users/{username}', {
   cross_origin
 
   # TODO: validate input
-  body = JSON.parse(request.body.read)
-  body['status'] = 'active'
-  update_or_set_new_timestamps!(:users, [body])
-  data_adapter.upsert(:users, resources: [body])
+  user = JSON.parse(request.body.read)
+  user['status'] = 'active'
+  update_or_set_new_timestamps!(:users, [user])
+  data_adapter.upsert(:users, resources: [user])
 
-  if body['created-at'] == body['updated-at']
+  if user['created-at'] == user['updated-at']
     status 201
   else
     status 200
   end
 
-  body.to_json
+  user.to_json
 end
 
