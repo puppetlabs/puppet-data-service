@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'sinatra/config_file'
 require 'sinatra/custom_logger'
+require "sinatra/activerecord"
 require 'logger'
 require './lib/openapiing'
 require './lib/pds/data_adapter'
