@@ -126,7 +126,7 @@ PDSApp.add_route('GET', '/v1/users/{username}', {
   if users.empty?
     status 404
   else
-    users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
+    users.first.select { |key,_| key != 'temp_token' }.to_json
   end
 end
 
