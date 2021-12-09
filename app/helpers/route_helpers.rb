@@ -1,6 +1,12 @@
 require_relative '../pds_app.rb'
 
 PDSApp.helpers do
+  # Syntactic sugar. We're using the settings object to store this globally,
+  # but it's not really a setting. So, make it cleaner elsewhere in code.
+  def data_adapter
+    settings.data_adapter
+  end
+
   # @param entity_type [Symbol] the type of resources. Not used; passed for
   #   consistency with #update_or_set_new_timestamps!
   # @param resources [Array] an array of resources as submitted by a user

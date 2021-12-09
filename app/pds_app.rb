@@ -25,14 +25,6 @@ class PDSApp < OpenAPIing
   self.configure do |config|
     config.api_version = '1.0.0'
   end
-
-  helpers do
-    # Syntactic sugar. We're using the settings object to store this globally,
-    # but it's not really a setting. So, make it cleaner elsewhere in code.
-    def data_adapter
-      settings.data_adapter
-    end
-  end
 end
 
 # include the helpers
