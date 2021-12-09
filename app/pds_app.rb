@@ -3,6 +3,8 @@ require './lib/pds/data_adapter'
 require 'sinatra/config_file'
 require 'sinatra/custom_logger'
 require 'logger'
+require "sinatra" # TODO: Should we require everything?
+require 'sinatra/activerecord'
 
 # only need to extend if you want special configuration!
 class PDSApp < OpenAPIing
@@ -13,7 +15,7 @@ class PDSApp < OpenAPIing
   set :logger, Logger.new(STDOUT)
 
   set :default_content_type, :json
-  set 'database', { 'type' => 'unconfigured' }
+  set 'database', { 'type' => 'postgresql' }
   config_file '/etc/puppetlabs/pds/pds.yaml', File.join(__dir__, 'pds.yaml')
 
   # Based on the user-supplied hash 'database', set data adapter to an appropriate
@@ -34,7 +36,12 @@ class PDSApp < OpenAPIing
 end
 
 # include the helpers
-Dir["./helpers/*.rb"].each { |file|
+Dir["./helpers/*.rb", "./models/*.rb"].each { |file|
+  require file
+}
+
+# include the models
+Dir["./models/*.rb"].each { |file|
   require file
 }
 

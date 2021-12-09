@@ -1,33 +1,43 @@
-# OpenAPI for Sinatra
+# Puppet Data Service API
 
 ## Overview
-This is a project to provide Swagger support inside the [Sinatra](http://www.sinatrarb.com/) framework.  You can find
-out more about both the spec and the framework at http://swagger.io.  For more information about 
-Wordnik's APIs, please visit http://developer.wordnik.com.
+
+The Puppet Data Service (PDS) API uses the [Sinatra](http://www.sinatrarb.com/) framework to support a RESTful API.
+
+The API documentation was made following the OpenAPIv3 specifications and can be found in the `../docs` folder
 
 ## Prerequisites
-As of ruby 3.0.0, the webrick web server library was removed.
-You need to install a rack-supported web server, such as webrick and thin.
 
-The default Gemfile is as follows. 
-Update the name of the web server as your prefer.
-
-```
-source 'https://rubygems.org'
-
-gem "webrick"
-gem "sinatra"
-gem "sinatra-cross_origin"
-```
+* Ruby 3.0.0
+* PostgreSQL
 
 ## Getting started
-To generate a ruby-sinatra server for petstore.yaml, please run the following:
+
+### Install the dependencies
+
+* Install the Gems listed in the Gemfile
+
+    cd app/
+    bundle install
+
+* Create the DB (PostgreSQL)
+
+    rake db:create
+
+* Make sure you have the latest DB schema
+
+    rake db:migrate
+
+### Connect your DataAdapter
+
+Inside the `pds_app.rb` file, make sure to change your `DataAdapter`
 
 ```
-openapi-generator-cli generate \
-  -i https://raw.githubusercontent.com/openapitools/openapi-generator/master/modules/openapi-generator/src/test/resources/3_0/petstore.yaml \
-  -g ruby-sinatra -o code
+# Use mock for a quick test
+set 'database', { 'type' => 'unconfigured' }
 ```
+
+### Running the service
 
 To run the generated server, please run the following:
 
