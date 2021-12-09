@@ -17,9 +17,19 @@ PDSApp.add_route('POST', '/v1/hiera-data', {
     }
     ]}) do
   cross_origin
-  # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  hiera_data = JSON.parse(request.body.read)
+
+  begin
+    set_new_timestamps!(hiera_data)
+    data_adapter.create(:hiera_data, resources: hiera_data)
+    status 201
+    hiera_data.to_json
+  rescue PDS::DataAdapter::Conflict => e
+    status 400
+    e.message
+  end
 end
 
 
@@ -47,7 +57,13 @@ PDSApp.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  deleted = data_adapter.delete(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
+  if deleted.zero?
+    status 404
+  else
+    status 200
+  end
 end
 
 
@@ -70,7 +86,10 @@ PDSApp.add_route('GET', '/v1/hiera-data', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  # TODO: filter
+  hiera_data = data_adapter.read(:hiera_data)
+  hiera_data.to_json
 end
 
 
@@ -98,7 +117,13 @@ PDSApp.add_route('GET', '/v1/hiera-data/{level}/{key}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  hiera_data = data_adapter.reid(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
+  if hiera_data.empty?
+    status 404
+  else
+    hiera_data.first.to_json
+  end
 end
 
 
@@ -132,6 +157,17 @@ PDSApp.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  hiera_data = JSON.parse(request.body.read)
+  update_or_set_new_timestamps!(:hiera_data, [hiera_data])
+  data_adapter.upsert(:hiera_data, resources: [hiera_data])
+
+  if hiera_data['created-at'] == hiera_data['updated-at']
+    status 201
+  else
+    status 200
+  end
+
+  hiera_data.to_json
 end
 
