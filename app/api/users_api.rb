@@ -17,13 +17,16 @@ PDSApp.add_route('POST', '/v1/users', {
     }
     ]}) do
   cross_origin
-  # the guts live here
 
-  # TODO: validation
-  body = JSON.parse(request.body)
+  # TODO: validate input
+  body = JSON.parse(request.body.read)
 
   begin
+    body.each { |user| user['status'] = 'active' }
+    set_new_timestamps!(body)
     data_adapter.create(:users, resources: body)
+    status 201
+    body.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
     e.message
@@ -48,6 +51,7 @@ PDSApp.add_route('DELETE', '/v1/users/{username}', {
     ]}) do
   cross_origin
 
+  # TODO: validate input
   deleted = data_adapter.delete(:users, filters: [['=', 'username', params['username']]])
   if deleted.zero?
     status 404
@@ -67,7 +71,6 @@ PDSApp.add_route('GET', '/v1/users', {
   "parameters" => [
     ]}) do
   cross_origin
-  # the guts live here
 
   all_users = data_adapter.read(:users)
   all_users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
@@ -90,8 +93,8 @@ PDSApp.add_route('GET', '/v1/users/{username}/token', {
     },
     ]}) do
   cross_origin
-  # the guts live here
 
+  # TODO: validate input
   user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if user.empty?
     status 404
@@ -117,14 +120,13 @@ PDSApp.add_route('GET', '/v1/users/{username}', {
     },
     ]}) do
   cross_origin
-  # the guts live here
 
-  user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
-
-  if user
-    user.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
-  else
+  # TODO: validate input
+  users = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
+  if users.empty?
     status 404
+  else
+    users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
   end
 end
 
@@ -151,10 +153,19 @@ PDSApp.add_route('PUT', '/v1/users/{username}', {
     }
     ]}) do
   cross_origin
-  # the guts live here
 
-  body = JSON.parse(request.body)
   # TODO: validate input
+  body = JSON.parse(request.body.read)
+  body['status'] = 'active'
+  update_or_set_new_timestamps!(:users, [body])
   data_adapter.upsert(:users, resources: [body])
+
+  if body['created-at'] == body['updated-at']
+    status 201
+  else
+    status 200
+  end
+
+  body.to_json
 end
 

@@ -33,6 +33,11 @@ class PDSApp < OpenAPIing
   end
 end
 
+# include the helpers
+Dir["./helpers/*.rb"].each { |file|
+  require file
+}
+
 # include the api files
 Dir["./api/*.rb"].each { |file|
   require file
