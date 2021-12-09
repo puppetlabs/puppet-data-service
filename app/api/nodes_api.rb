@@ -17,9 +17,19 @@ PDSApp.add_route('POST', '/v1/nodes', {
     }
     ]}) do
   cross_origin
-  # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  nodes = JSON.parse(request.body.read)
+
+  begin
+    set_new_timestamps!(nodes)
+    data_adapter.create(:nodes, resources: nodes)
+    status 201
+    nodes.to_json
+  rescue PDS::DataAdapter::Conflict => e
+    status 400
+    e.message
+  end
 end
 
 
@@ -41,7 +51,13 @@ PDSApp.add_route('DELETE', '/v1/nodes/{name}', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  deleted = data_adapter.delete(:nodes, filters: [['=', 'name', params['name']]])
+  if deleted.zero?
+    status 404
+  else
+    status 200
+  end
 end
 
 
@@ -57,7 +73,8 @@ PDSApp.add_route('GET', '/v1/nodes', {
   cross_origin
   # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  nodes = data_adapter.read(:nodes)
+  nodes.to_json
 end
 
 
@@ -77,9 +94,14 @@ PDSApp.add_route('GET', '/v1/nodes/{name}', {
     },
     ]}) do
   cross_origin
-  # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  nodes = data_adapter.read(:nodes, filters: [['=', 'name', params['name']]])
+  if nodes.empty?
+    status 404
+  else
+    nodes.first.to_json
+  end
 end
 
 
@@ -105,8 +127,18 @@ PDSApp.add_route('PUT', '/v1/nodes/{name}', {
     }
     ]}) do
   cross_origin
-  # the guts live here
 
-  {"message" => "yes, it worked"}.to_json
+  # TODO: validate input
+  node = JSON.parse(request.body.read)
+  update_or_set_new_timestamps!(:nodes, [node])
+  data_adapter.upsert(:nodes, resources: [node])
+
+  if node['created-at'] == node['updated-at']
+    status 201
+  else
+    status 200
+  end
+
+  node.to_json
 end
 
