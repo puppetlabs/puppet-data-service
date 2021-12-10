@@ -20,7 +20,8 @@ module PDS
             expected_field_value =  filter[2]
             logger.debug "field_name: #{field_name}, expected_field_value: #{expected_field_value}"
 
-            return User.find_by(field_name => expected_field_value)
+            found = User.find_by(field_name => expected_field_value)
+            return [found].compact
           end
         else
           return User.all
