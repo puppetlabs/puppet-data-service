@@ -26,36 +26,35 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.index ["username"], name: "index_changelog_on_username"
   end
 
-  create_table "hieradata", primary_key: ["level", "key"], force: :cascade do |t|
-    t.string "level", null: false
-    t.string "key", null: false
+  create_table "hiera_data", id: false, force: :cascade do |t|
+    t.string "level"
+    t.string "key"
     t.string "value"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["key"], name: "index_hieradata_on_key"
-    t.index ["level"], name: "index_hieradata_on_level"
+    t.index ["key"], name: "index_hiera_data_on_key"
+    t.index ["level", "key"], name: "index_hiera_data_on_level_and_key", unique: true
+    t.index ["level"], name: "index_hiera_data_on_level"
   end
 
-  create_table "nodes", force: :cascade do |t|
+  create_table "nodes", id: false, force: :cascade do |t|
     t.string "name"
-    t.string "primary_key"
     t.string "code_environment"
     t.jsonb "classes"
     t.jsonb "trusted_data"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_nodes_on_name"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: false, force: :cascade do |t|
     t.string "username"
-    t.string "primary_key"
     t.string "email"
     t.string "role"
+    t.string "status"
     t.string "temp_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["username"], name: "index_users_on_username"
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
 end
