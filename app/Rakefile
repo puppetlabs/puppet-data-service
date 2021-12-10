@@ -11,3 +11,26 @@ namespace :db do
   db_tasks = Rake.application.tasks.select { |t| t.name =~ %r{^db:(?!load_config$)} }
   db_tasks.each { |t| t.enhance ['db:load_config'] }
 end
+
+namespace :app do
+  task :set_admin_token, [:token] => :'db:load_config' do |t, args|
+    require_relative 'lib/pds/helpers/timestamp_helpers'
+    include PDS::Helpers::TimestampHelpers
+
+    # Define the helper-required data_adapter method in a way that works for
+    # rake tasks
+    def data_adapter
+      App.settings.data_adapter
+    end
+
+    admin = {
+      'username'   => 'admin',
+      'role'       => 'administrator',
+      'status'     => 'active',
+      'temp_token' => args[:token],
+    }
+
+    update_or_set_new_timestamps!(:users, [admin])
+    data_adapter.upsert(:users, resources: [admin])
+  end
+end
