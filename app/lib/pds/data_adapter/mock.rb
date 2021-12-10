@@ -5,10 +5,10 @@ require 'date'
 module PDS
   module DataAdapter
     class Mock < PDS::DataAdapter::Base
-      def initialize(config)
+      def initialize(app)
+        super
         logger.info 'Loading mock DataAdapter'
         @data = sample_data
-        true
       end
 
       # @param entity_type [Symbol] the entity type to operate on

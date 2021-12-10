@@ -1,7 +1,7 @@
 require 'json'
 
 
-PDSApp.add_route('POST', '/v1/nodes', {
+App.add_route('POST', '/v1/nodes', {
   "resourcePath" => "/Nodes",
   "summary" => "Create new node(s)",
   "nickname" => "create_node",
@@ -33,7 +33,7 @@ PDSApp.add_route('POST', '/v1/nodes', {
 end
 
 
-PDSApp.add_route('DELETE', '/v1/nodes/{name}', {
+App.add_route('DELETE', '/v1/nodes/{name}', {
   "resourcePath" => "/Nodes",
   "summary" => "Deletes a node",
   "nickname" => "delete_node",
@@ -61,7 +61,7 @@ PDSApp.add_route('DELETE', '/v1/nodes/{name}', {
 end
 
 
-PDSApp.add_route('GET', '/v1/nodes', {
+App.add_route('GET', '/v1/nodes', {
   "resourcePath" => "/Nodes",
   "summary" => "Get all available nodes",
   "nickname" => "get_all_nodes",
@@ -78,7 +78,7 @@ PDSApp.add_route('GET', '/v1/nodes', {
 end
 
 
-PDSApp.add_route('GET', '/v1/nodes/{name}', {
+App.add_route('GET', '/v1/nodes/{name}', {
   "resourcePath" => "/Nodes",
   "summary" => "Get node by node name",
   "nickname" => "get_node_by_name",
@@ -105,7 +105,7 @@ PDSApp.add_route('GET', '/v1/nodes/{name}', {
 end
 
 
-PDSApp.add_route('PUT', '/v1/nodes/{name}', {
+App.add_route('PUT', '/v1/nodes/{name}', {
   "resourcePath" => "/Nodes",
   "summary" => "Create a new node or replace an existing node",
   "nickname" => "put_node_by_name",

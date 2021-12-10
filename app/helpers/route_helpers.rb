@@ -1,6 +1,6 @@
-require_relative '../pds_app.rb'
+require_relative '../app.rb'
 
-PDSApp.helpers do
+App.helpers do
   # Syntactic sugar. We're using the settings object to store this globally,
   # but it's not really a setting. So, make it cleaner elsewhere in code.
   def data_adapter

@@ -1,7 +1,7 @@
 require 'json'
 
 
-PDSApp.add_route('POST', '/v1/hiera-data', {
+App.add_route('POST', '/v1/hiera-data', {
   "resourcePath" => "/HieraData",
   "summary" => "Create new Hiera data value(s)",
   "nickname" => "create_hiera_data",
@@ -33,7 +33,7 @@ PDSApp.add_route('POST', '/v1/hiera-data', {
 end
 
 
-PDSApp.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
+App.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
   "resourcePath" => "/HieraData",
   "summary" => "Deletes a Hieradata object",
   "nickname" => "delete_hiera_data_object",
@@ -67,7 +67,7 @@ PDSApp.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
 end
 
 
-PDSApp.add_route('GET', '/v1/hiera-data', {
+App.add_route('GET', '/v1/hiera-data', {
   "resourcePath" => "/HieraData",
   "summary" => "Get all hiera data available in the system",
   "nickname" => "get_hiera_data",
@@ -93,7 +93,7 @@ PDSApp.add_route('GET', '/v1/hiera-data', {
 end
 
 
-PDSApp.add_route('GET', '/v1/hiera-data/{level}/{key}', {
+App.add_route('GET', '/v1/hiera-data/{level}/{key}', {
   "resourcePath" => "/HieraData",
   "summary" => "Get a specific hiera value",
   "nickname" => "get_hiera_data_with_level_and_key",
@@ -127,7 +127,7 @@ PDSApp.add_route('GET', '/v1/hiera-data/{level}/{key}', {
 end
 
 
-PDSApp.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
+App.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
   "resourcePath" => "/HieraData",
   "summary" => "Upserts a specific hiera object",
   "nickname" => "upsert_hiera_data_with_level_and_key",

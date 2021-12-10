@@ -1,6 +1,9 @@
-
 module PDS
   module DataAdapter
+
+    # Used for raising exceptions
+    class Conflict < StandardError; end
+
     def self.new(app)
       database_config = app.settings.config.dig('database')
       implementation = app.settings.config.dig('database', 'adapter')
@@ -9,17 +12,14 @@ module PDS
       case implementation
       when 'postgresql'
         load_postgresql_adapter(app)
-        PDS::DataAdapter::PostgreSQL.new(database_config)
+        PDS::DataAdapter::PostgreSQL.new(app)
       when 'mock'
         load_mock_adapter(app)
-        PDS::DataAdapter::Mock.new(database_config)
+        PDS::DataAdapter::Mock.new(app)
       else
         raise "Unsupported data adapter '#{implementation}'!"
       end
     end
-
-    # Used for raising exceptions
-    class Conflict < StandardError; end
 
     private
 

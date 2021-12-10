@@ -7,7 +7,7 @@ require 'logger'
 require 'yaml'
 
 # only need to extend if you want special configuration!
-class PDSApp < OpenAPIing
+class App < OpenAPIing
   # Set required defaults, then load full config from file.
   # File values, if given, will replace defaults.
   set :logger, Logger.new(STDOUT)
@@ -31,19 +31,13 @@ end
 # Based on the user-supplied hash 'database', set :data_adapter to an
 # appropriate DataAdapter object. This is performed here so that it is
 # universally invoked when this file is required.
-PDSApp.set :data_adapter, PDS::DataAdapter.new(PDSApp)
+App.set :data_adapter, PDS::DataAdapter.new(App)
 
 # include the helpers
-Dir["./helpers/*.rb"].each { |file|
-  require file
-}
+Dir["./helpers/*.rb"].each { |file| require file }
 
 # include the models
-Dir["./models/*.rb"].each { |file|
-  require file
-}
+Dir["./models/*.rb"].each { |file| require file }
 
 # include the api files
-Dir["./api/*.rb"].each { |file|
-  require file
-}
+Dir["./api/*.rb"].each { |file| require file }

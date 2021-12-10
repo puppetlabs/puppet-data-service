@@ -8,9 +8,10 @@ module PDS
       #   - :nodes
       #   - :hiera_data
 
-      # @parama config [Hash] configuration needed to initialize the DataAdapter
-      def initialize(config)
-        raise "Cannot initialize an abstract PDS::DataAdapter::Base class"
+      # @param app [Sinatra::Base] app containing configuration needed to
+      #   initialize the DataAdapter
+      def initialize(app)
+        @app = app
       end
 
       # @param entity_type [Symbol] the entity type to operate on
@@ -50,9 +51,11 @@ module PDS
 
       private
 
+      attr_reader :app
+
       # @return [Logger]
       def logger
-        PDSApp.logger
+        app.logger
       end
     end
   end

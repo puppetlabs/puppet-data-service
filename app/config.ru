@@ -1,2 +1,2 @@
-require './pds_app'
-run PDSApp
+require './app'
+run App

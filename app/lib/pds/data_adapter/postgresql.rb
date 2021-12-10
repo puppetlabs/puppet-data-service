@@ -5,10 +5,6 @@ require "sinatra/activerecord"
 module PDS
   module DataAdapter
     class PostgreSQL < PDS::DataAdapter::Base
-      def initialize(config)
-        @config = config
-      end
-
       def create(entity_type, resources:)
         # TODO: implement uniqueness check(s)
         # TODO: validate input

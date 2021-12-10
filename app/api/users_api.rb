@@ -1,7 +1,7 @@
 require 'json'
 
 
-PDSApp.add_route('POST', '/v1/users', {
+App.add_route('POST', '/v1/users', {
   "resourcePath" => "/Users",
   "summary" => "Create user",
   "nickname" => "create_user",
@@ -34,7 +34,7 @@ PDSApp.add_route('POST', '/v1/users', {
 end
 
 
-PDSApp.add_route('DELETE', '/v1/users/{username}', {
+App.add_route('DELETE', '/v1/users/{username}', {
   "resourcePath" => "/Users",
   "summary" => "Deletes a user",
   "nickname" => "delete_user",
@@ -61,7 +61,7 @@ PDSApp.add_route('DELETE', '/v1/users/{username}', {
 end
 
 
-PDSApp.add_route('GET', '/v1/users', {
+App.add_route('GET', '/v1/users', {
   "resourcePath" => "/Users",
   "summary" => "Get all available users",
   "nickname" => "get_all_users",
@@ -77,7 +77,7 @@ PDSApp.add_route('GET', '/v1/users', {
 end
 
 
-PDSApp.add_route('GET', '/v1/users/{username}/token', {
+App.add_route('GET', '/v1/users/{username}/token', {
   "resourcePath" => "/Users",
   "summary" => "Get API token by username",
   "nickname" => "get_token_by_username",
@@ -104,7 +104,7 @@ PDSApp.add_route('GET', '/v1/users/{username}/token', {
 end
 
 
-PDSApp.add_route('GET', '/v1/users/{username}', {
+App.add_route('GET', '/v1/users/{username}', {
   "resourcePath" => "/Users",
   "summary" => "Get user by username",
   "nickname" => "get_user_by_username",
@@ -131,7 +131,7 @@ PDSApp.add_route('GET', '/v1/users/{username}', {
 end
 
 
-PDSApp.add_route('PUT', '/v1/users/{username}', {
+App.add_route('PUT', '/v1/users/{username}', {
   "resourcePath" => "/Users",
   "summary" => "Create a new user or replace an existing user",
   "nickname" => "put_user",
