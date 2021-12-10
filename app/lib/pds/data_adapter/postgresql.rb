@@ -1,6 +1,6 @@
 require_relative '../data_adapter'
 require_relative 'base'
-require "sinatra/activerecord"
+require "active_record"
 
 module PDS
   module DataAdapter
@@ -46,6 +46,25 @@ module PDS
 
       def type
         :postgresql
+      end
+
+      private
+
+      # Models
+
+      class Changelog < ActiveRecord::Base; end
+
+      class HieraData < ActiveRecord::Base
+        validates_presence_of :level
+        validates_presence_of :key
+      end
+
+      class Node < ActiveRecord::Base
+        validates_presence_of :name
+      end
+
+      class User < ActiveRecord::Base
+        validates_presence_of :username
       end
     end
   end

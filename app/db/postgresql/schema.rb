@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.index ["level"], name: "index_hieradata_on_level"
   end
 
-  create_table "nodedata", force: :cascade do |t|
+  create_table "nodes", force: :cascade do |t|
     t.string "name"
     t.string "primary_key"
     t.string "code_environment"
@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.jsonb "trusted_data"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_nodedata_on_name"
+    t.index ["name"], name: "index_nodes_on_name"
   end
 
   create_table "users", force: :cascade do |t|

@@ -28,6 +28,7 @@ module PDS
     end
 
     def self.load_postgresql_adapter(app)
+      require 'sinatra/activerecord'
       require_relative 'data_adapter/postgresql'
 
       # Configure ActiveRecord rake tasks to use adapter-specific db paths

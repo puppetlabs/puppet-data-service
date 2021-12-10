@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require 'sinatra/custom_logger'
-require "sinatra/activerecord"
 require './lib/openapiing'
 require './lib/pds/data_adapter'
 require 'logger'
@@ -35,9 +34,6 @@ App.set :data_adapter, PDS::DataAdapter.new(App)
 
 # include the helpers
 Dir["./helpers/*.rb"].each { |file| require file }
-
-# include the models
-Dir["./models/*.rb"].each { |file| require file }
 
 # include the api files
 Dir["./api/*.rb"].each { |file| require file }
