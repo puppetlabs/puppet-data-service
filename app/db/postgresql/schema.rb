@@ -26,19 +26,17 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.index ["username"], name: "index_changelog_on_username"
   end
 
-  create_table "hiera_data", id: false, force: :cascade do |t|
-    t.string "level"
-    t.string "key"
+  create_table "hiera_data", primary_key: ["level", "key"], force: :cascade do |t|
+    t.string "level", null: false
+    t.string "key", null: false
     t.string "value"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["key"], name: "index_hiera_data_on_key"
-    t.index ["level", "key"], name: "index_hiera_data_on_level_and_key", unique: true
     t.index ["level"], name: "index_hiera_data_on_level"
   end
 
-  create_table "nodes", id: false, force: :cascade do |t|
-    t.string "name"
+  create_table "nodes", primary_key: "name", force: :cascade do |t|
     t.string "code_environment"
     t.jsonb "classes"
     t.jsonb "trusted_data"
@@ -46,15 +44,13 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "users", id: false, force: :cascade do |t|
-    t.string "username"
+  create_table "users", primary_key: "username", force: :cascade do |t|
     t.string "email"
     t.string "role"
     t.string "status"
     t.string "temp_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
 end
