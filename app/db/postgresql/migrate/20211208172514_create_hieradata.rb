@@ -1,8 +1,8 @@
 class CreateHieradata < ActiveRecord::Migration[6.1]
   def change
     create_table(:hiera_data, primary_key: [:level, :key]) do |t|
-      t.string :level
-      t.string :key
+      t.string :level, null: false
+      t.string :key, null: false
       t.string :value
       t.timestamps
     end
