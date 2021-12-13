@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.string "temp_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["temp_token"], name: "index_users_on_temp_token"
   end
 
 end
