@@ -76,7 +76,7 @@ App.add_route('GET', '/v1/users', {
   authenticate!
 
   users = data_adapter.read(:users)
-  users.map { |hash| hash.select { |key,_| key != 'temp_token' }}.to_json
+  users.map { |hash| hash.select { |key,_| key != 'temp-token' }}.to_json
 end
 
 
@@ -103,7 +103,7 @@ App.add_route('GET', '/v1/users/{username}/token', {
   if user.empty?
     status 404
   else
-    { 'token' => user.first['temp_token']}.to_json
+    { 'token' => user.first['temp-token']}.to_json
   end
 end
 
@@ -131,7 +131,7 @@ App.add_route('GET', '/v1/users/{username}', {
   if users.empty?
     status 404
   else
-    users.first.select { |key,_| key != 'temp_token' }.to_json
+    users.first.select { |key,_| key != 'temp-token' }.to_json
   end
 end
 
