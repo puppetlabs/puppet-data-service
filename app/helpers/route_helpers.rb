@@ -13,6 +13,12 @@ App.helpers do
   # Authorization filter
   # @return [Hash] user object for authorized user
   def authenticate!
+    # Development aid: disable authentication
+    if (settings.config['authenticate'] == false)
+      logger.warn('Authentication disabled! Permitting request without authenticating')
+      return true
+    end
+
     token = request.env['HTTP_AUTHORIZATION']
     halt 403 if token.nil?
     users = data_adapter.read(:users, filters: [['=', 'temp_token', token]])
