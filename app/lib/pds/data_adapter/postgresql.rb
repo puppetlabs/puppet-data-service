@@ -13,23 +13,23 @@ module PDS
         # TODO: implement uniqueness check(s)
         # TODO: validate input
         # TODO
+        model = entity_klass(entity_type)
+        begin
+          model.insert_all(resources)
+          resources
+        rescue
+          raise PDS::DataAdapter::Conflict
+        end
       end
 
       def read(entity_type, filters: [])
         logger.debug "Reading #{entity_type} with filter #{filters}"
         model = entity_klass(entity_type)
 
-        if filters.any?
-          filters.each do |filter|
-            field_name = filter[1]
-            expected_field_value =  filter[2]
-            logger.debug "field_name: #{field_name}, expected_field_value: #{expected_field_value}"
-
-            found = model.find_by(field_name => expected_field_value)
-            return models2api([found].compact)
-          end
+        if filters.empty?
+          models2api(model.all)
         else
-          return models2api(model.all)
+          models2api(model.where(filters2where(filters)))
         end
       end
 
@@ -42,13 +42,16 @@ module PDS
       end
 
       def delete(entity_type, filters: [])
-        # TODO: implement filter
-        if filters.empty?
-          return "Invalid #{entity_type} ID"
-        else
-          model = entity_klass(entity_type)
-          model.destroy(filters[0])
-        end
+        logger.debug "Deleting #{entity_type} with filter #{filters}"
+        model = entity_klass(entity_type)
+
+        deleted = if filters.empty?
+                    model.destroy_all
+                  else
+                    model.destroy_by(filters2where(filters))
+                  end
+
+        deleted.size
       end
 
       def type
@@ -76,6 +79,24 @@ module PDS
 
       def table2api_keys(hash)
         hash.transform_keys { |k| k.to_s.gsub('_', '-') }
+      end
+
+      def filters2where(filters)
+        # Reduce to [clauses, parameters]
+        clauses = filters.reduce([[], []]) do |memo,filter|
+          case filter[0]
+          when '='
+            memo[0] << "#{filter[1]} = ?"
+            memo[1] << filter[2]
+          else
+            raise "Invalid filter: '#{filter}'"
+          end
+
+          memo
+        end
+
+        # Combine clauses by and-ing together, return ActiveRecord where argument.
+        [clauses[0].join(' and '), *clauses[1]]
       end
 
       # Models

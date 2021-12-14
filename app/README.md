@@ -52,6 +52,23 @@ database:
   password: <%= ENV['DATABASE_PASSWORD'] %>
 ```
 
+#### PostgreSQL
+
+Create the database
+
+```
+rake db:create
+rake db:migrate
+```
+
+### Create the admin token
+
+A rake tasks exists to let you create an "admin" user and set its token to a supplied string, in order to gain initial access to the application.
+
+```
+rake app:create_admin_token[tokenstring]
+```
+
 ### Running the service
 
 To run the generated server, please run the following:

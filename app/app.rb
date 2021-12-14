@@ -7,6 +7,8 @@ require 'yaml'
 
 # only need to extend if you want special configuration!
 class App < OpenAPIing
+  helpers Sinatra::CustomLogger
+
   # Set required defaults, then load full config from file.
   # File values, if given, will replace defaults.
   set :logger, Logger.new(STDOUT)
@@ -24,6 +26,11 @@ class App < OpenAPIing
 
   self.configure do |config|
     config.api_version = '1.0.0'
+  end
+
+  # When debugging, return detailed response information
+  after do
+    logger.debug { "Response: #{response.body}" }
   end
 end
 

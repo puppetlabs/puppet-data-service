@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.index ["level"], name: "index_hiera_data_on_level"
   end
 
-  create_table "nodes", primary_key: "name", force: :cascade do |t|
+  create_table "nodes", primary_key: "name", id: :string, force: :cascade do |t|
     t.string "code_environment"
     t.jsonb "classes"
     t.jsonb "trusted_data"
@@ -44,13 +44,14 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "users", primary_key: "username", force: :cascade do |t|
+  create_table "users", primary_key: "username", id: :string, force: :cascade do |t|
     t.string "email"
     t.string "role"
     t.string "status"
     t.string "temp_token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["temp_token"], name: "index_users_on_temp_token"
   end
 
 end
