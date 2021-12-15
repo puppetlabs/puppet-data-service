@@ -81,10 +81,10 @@ var getUserTokenCmd = &cobra.Command{
 	},
 }
 
-var putUserCmd = &cobra.Command{
-	Use:   "put USERNAME",
+var upsertUserCmd = &cobra.Command{
+	Use:   "upsert USERNAME",
 	Args:  cobra.ExactArgs(1),
-	Short: "Put user with username USERNAME",
+	Short: "Upsert user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
 		username := args[0]
@@ -103,7 +103,7 @@ var putUserCmd = &cobra.Command{
 
 		// Handle errors
 		if err != nil {
-			log.Fatalf("Couldn't put user %s: %s", username, err)
+			log.Fatalf("Couldn't upsert user %s: %s", username, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -124,9 +124,9 @@ func init() {
 	userCmd.AddCommand(getUserCmd)
 	userCmd.AddCommand(getUserTokenCmd)
 
-	userCmd.AddCommand(putUserCmd)
-	putUserCmd.Flags().StringVarP(&userEmail, "email", "e", "", "User email address")
-	putUserCmd.Flags().StringVarP(&userRole, "role", "r", "", "User role")
-	putUserCmd.MarkFlagRequired("email")
-	putUserCmd.MarkFlagRequired("role")
+	userCmd.AddCommand(upsertUserCmd)
+	upsertUserCmd.Flags().StringVarP(&userEmail, "email", "e", "", "User email address")
+	upsertUserCmd.Flags().StringVarP(&userRole, "role", "r", "", "User role")
+	upsertUserCmd.MarkFlagRequired("email")
+	upsertUserCmd.MarkFlagRequired("role")
 }

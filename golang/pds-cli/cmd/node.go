@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"context"
 	"log"
 
@@ -23,7 +24,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var trustedExternalCommand bool
+var (
+	trustedExternalCommand bool
+	codeEnvironment string
+	classes []string
+	trustedDataStr string
+)
 
 // nodeCmd represents the node command
 var nodeCmd = &cobra.Command{
@@ -83,30 +89,63 @@ var deleteNodeCmd = &cobra.Command{
 	},
 }
 
-// var putNodeCmd = &cobra.Command{
-// 	Use:   "put NODENAME",
-// 	Args:  cobra.ExactArgs(1),
-// 	Short: "Put node with nodename NODENAME",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		// username, _ := cmd.Flags().GetString("username")
-// 		nodename := args[0]
-// 		body := client.No
-// 		response, err := pdsClient.PutNodeByNameWithBodyWithResponse(context.Background(), client.NodeName(nodename), "application/json", body)
-// 		if err != nil {
-// 			log.Fatalf("Couldn't delete node %s: %s", nodename, err)
-// 		}
-// 		if response.HTTPResponse.StatusCode > 299 {
-// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
-// 		}
-// 		dump(response.Status())
-// 	},
-// }
+var upsertNodeCmd = &cobra.Command{
+	Use:   "upsert NODENAME",
+	Args:  cobra.ExactArgs(1),
+	Short: "Upsert node with name NODENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		// Build the JSON body
+		name := args[0]
+		var trustedData map[string]interface{}
+		trustedDataErr := json.Unmarshal([]byte(trustedDataStr), &trustedData)
+
+		if trustedDataErr != nil {
+			log.Fatalf("Couldn't parse trusted-data JSON: %s", trustedDataErr)
+		}
+
+		body := client.PutNodeByNameJSONRequestBody{
+			ImmutableNodeProperties : client.ImmutableNodeProperties{
+				Name : &name,
+			},
+			EditableNodeProperties : client.EditableNodeProperties{
+				CodeEnvironment : (*client.EditableNodePropertiesCodeEnvironment)(&codeEnvironment),
+				Classes : &classes,
+				TrustedData : &trustedData,
+			},
+		}
+
+		// Submit the request
+		response, err := pdsClient.PutNodeByNameWithResponse(context.Background(), client.NodeName(name), body)
+
+		// Handle errors
+		if err != nil {
+			log.Fatalf("Couldn't upsert node %s: %s", name, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+
+		// Print results
+		if response.JSON201 == nil {
+			dump(response.JSON200)
+		} else {
+			dump(response.JSON201)
+		}
+	},
+}
 
 func init() {
 	rootCmd.AddCommand(nodeCmd)
 	nodeCmd.AddCommand(listNodesCmd)
+
 	nodeCmd.AddCommand(getNodeCmd)
-	nodeCmd.AddCommand(deleteNodeCmd)
 	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted-external-command", false, 
 		"for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.")
+
+	nodeCmd.AddCommand(deleteNodeCmd)
+
+	nodeCmd.AddCommand(upsertNodeCmd)
+	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
+	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
+	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "", "Node trusted data (as valid JSON object)")
 }
