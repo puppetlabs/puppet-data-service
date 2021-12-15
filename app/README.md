@@ -20,14 +20,6 @@ The API documentation was made following the OpenAPIv3 specifications and can be
     cd app/
     bundle install
 
-* Create the DB (PostgreSQL)
-
-    rake db:create
-
-* Make sure you have the latest DB schema
-
-    rake db:migrate
-
 ### Connect your DataAdapter
 
 In the `config/pds.yaml` configuration file, set the `database` key.
@@ -57,7 +49,10 @@ database:
 Create the database
 
 ```
+# Create the DB (PostgreSQL)
 rake db:create
+
+# Make sure you have the latest DB schema
 rake db:migrate
 ```
 
