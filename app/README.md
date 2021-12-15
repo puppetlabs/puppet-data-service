@@ -76,16 +76,13 @@ Note: If you have zsh installed in your local environment, [you will have troubl
 To run the generated server, please run the following:
 
 ```
-cd code/
-bundle config set path lib
-bundle install 
 bundle exec rackup -p 8080
 ```
 
 You can access the application by the following URL:
 
 ```
-http://localhost:8080/v2/store/inventory
+http://localhost:8080/v1/users
 ```
 
 ## Docker
