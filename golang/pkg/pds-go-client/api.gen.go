@@ -33,9 +33,9 @@ const (
 
 // Defines values for EditableUserPropertiesRole.
 const (
-	EditableUserPropertiesRoleOperator EditableUserPropertiesRole = "operator"
+	EditableUserPropertiesRoleAdministrator EditableUserPropertiesRole = "administrator"
 
-	EditableUserPropertiesRoleSuperadmin EditableUserPropertiesRole = "superadmin"
+	EditableUserPropertiesRoleOperator EditableUserPropertiesRole = "operator"
 )
 
 // Defines values for ReadOnlyUserPropertiesStatus.
@@ -55,16 +55,11 @@ type EditableHieraValueProperties struct {
 
 // EditableNodeProperties defines model for EditableNodeProperties.
 type EditableNodeProperties struct {
-	Classes *EditableNodeProperties_Classes `json:"classes,omitempty"`
+	Classes *[]string `json:"classes,omitempty"`
 
 	// Code environment
 	CodeEnvironment *EditableNodePropertiesCodeEnvironment `json:"code-environment,omitempty"`
 	TrustedData     *map[string]interface{}                `json:"trusted-data,omitempty"`
-}
-
-// EditableNodeProperties_Classes defines model for EditableNodeProperties.Classes.
-type EditableNodeProperties_Classes struct {
-	AdditionalProperties map[string]string `json:"-"`
 }
 
 // Code environment
@@ -240,59 +235,6 @@ type CreateUserJSONRequestBody NewUsers
 
 // PutUserJSONRequestBody defines body for PutUser for application/json ContentType.
 type PutUserJSONRequestBody NewUser
-
-// Getter for additional properties for EditableNodeProperties_Classes. Returns the specified
-// element and whether it was found
-func (a EditableNodeProperties_Classes) Get(fieldName string) (value string, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for EditableNodeProperties_Classes
-func (a *EditableNodeProperties_Classes) Set(fieldName string, value string) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]string)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for EditableNodeProperties_Classes to handle AdditionalProperties
-func (a *EditableNodeProperties_Classes) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]string)
-		for fieldName, fieldBuf := range object {
-			var fieldVal string
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for EditableNodeProperties_Classes to handle AdditionalProperties
-func (a EditableNodeProperties_Classes) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
