@@ -21,7 +21,9 @@ App.helpers do
 
     token = request.env['HTTP_AUTHORIZATION']
     halt 403 if token.nil?
-    users = data_adapter.read(:users, filters: [['=', 'temp_token', token]])
+    # Munge out auth-method prefix "Bearer " (case-insensitive) if present
+    munged_token = token.sub(/^bearer /i, '')
+    users = data_adapter.read(:users, filters: [['=', 'temp_token', munged_token]])
     halt 403 if users.size != 1
 
     users.first
