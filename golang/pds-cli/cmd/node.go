@@ -89,10 +89,10 @@ var deleteNodeCmd = &cobra.Command{
 	},
 }
 
-var putNodeCmd = &cobra.Command{
-	Use:   "put NODENAME",
+var upsertNodeCmd = &cobra.Command{
+	Use:   "upsert NODENAME",
 	Args:  cobra.ExactArgs(1),
-	Short: "Put node with name NODENAME",
+	Short: "Upsert node with name NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
 		name := args[0]
@@ -119,7 +119,7 @@ var putNodeCmd = &cobra.Command{
 
 		// Handle errors
 		if err != nil {
-			log.Fatalf("Couldn't put node %s: %s", name, err)
+			log.Fatalf("Couldn't upsert node %s: %s", name, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -144,8 +144,8 @@ func init() {
 
 	nodeCmd.AddCommand(deleteNodeCmd)
 
-	nodeCmd.AddCommand(putNodeCmd)
-	putNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
-	putNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
-	putNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "", "Node trusted data (as valid JSON object)")
+	nodeCmd.AddCommand(upsertNodeCmd)
+	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
+	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
+	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "", "Node trusted data (as valid JSON object)")
 }
