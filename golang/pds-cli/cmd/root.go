@@ -64,7 +64,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pds_cli.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "e", "http://127.0.0.1:4010", "Base URI for the PDS API")
+	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "b", "http://127.0.0.1:4010", "Base URI for the PDS API")
 	// TODO FIXME remove token before production
 	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "MY_SECRET_TOKEN", "API token")
 	// rootCmd.MarkFlagRequired("endpoint")
