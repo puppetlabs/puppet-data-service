@@ -12,7 +12,8 @@ namespace :db do
   db_tasks.each { |t| t.enhance ['db:load_config'] }
 end
 
-namespace :app do
+namespace :app do |args|
+  desc "creates and sets an admin token"
   task :set_admin_token, [:token] => :'db:load_config' do |t, args|
     require_relative 'lib/pds/helpers/timestamp_helpers'
     include PDS::Helpers::TimestampHelpers

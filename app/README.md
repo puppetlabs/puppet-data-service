@@ -66,8 +66,10 @@ rake db:migrate
 A rake tasks exists to let you create an "admin" user and set its token to a supplied string, in order to gain initial access to the application.
 
 ```
-rake app:create_admin_token[tokenstring]
+rake app:set_admin_token[tokenstring]
 ```
+
+Note: If you have zsh installed in your local environment, [you will have troubles running this rake task](https://thoughtbot.com/blog/how-to-use-arguments-in-a-rake-task), the quick solution is to run the task by wrapping the task name in quotes: `rake 'app:set_admin_token[tokenstring]'`
 
 ### Running the service
 
