@@ -27,7 +27,7 @@ var dir string
 // docCmd represents the doc command
 var docCmd = &cobra.Command{
 	Use:   "doc",
-	Short: "Generate markdown documentation for pds_cli",
+	Short: "Generate markdown documentation for pds-cli",
 	Run: func(cmd *cobra.Command, args []string) {
 		// fmt.Println("dir: ", dir)
 		err := doc.GenMarkdownTree(rootCmd, dir)
