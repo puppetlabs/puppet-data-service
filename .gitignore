@@ -6,3 +6,4 @@
 
 # App ignores
 /app/config/*
+/app/lib/ruby
