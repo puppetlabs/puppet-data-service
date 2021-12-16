@@ -7,3 +7,7 @@
 # App ignores
 /app/config/*
 /app/lib/ruby
+
+# Client ignores
+/golang/pds-cli/pds-cli
+/golang/pds-cli/pds-cli.yaml
