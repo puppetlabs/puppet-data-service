@@ -445,6 +445,7 @@ components:
       properties:
         code-environment:
           type: string
+          nullable: true
           description: Code environment
           enum:
             - staging

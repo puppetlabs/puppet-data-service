@@ -108,10 +108,13 @@ var upsertNodeCmd = &cobra.Command{
 				Name : &name,
 			},
 			EditableNodeProperties : client.EditableNodeProperties{
-				CodeEnvironment : (*client.EditableNodePropertiesCodeEnvironment)(&codeEnvironment),
 				Classes : &classes,
 				TrustedData : &trustedData,
 			},
+		}
+
+		if codeEnvironment != "" {
+			body.CodeEnvironment = (*client.EditableNodePropertiesCodeEnvironment)(&codeEnvironment)
 		}
 
 		// Submit the request
@@ -147,5 +150,5 @@ func init() {
 	nodeCmd.AddCommand(upsertNodeCmd)
 	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
 	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
-	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "", "Node trusted data (as valid JSON object)")
+	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
 }
