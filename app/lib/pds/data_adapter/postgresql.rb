@@ -1,8 +1,8 @@
 require 'active_record'
 require 'composite_primary_keys'
 require 'active_support/inflector'
-require_relative '../data_adapter'
-require_relative 'base'
+require 'pds/data_adapter'
+require 'pds/data_adapter/base'
 
 module PDS
   module DataAdapter

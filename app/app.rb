@@ -1,7 +1,7 @@
 require 'sinatra/base'
 require 'sinatra/custom_logger'
-require './lib/openapiing'
-require './lib/pds/data_adapter'
+require 'openapiing'
+require 'pds/data_adapter'
 require 'logger'
 require 'yaml'
 
