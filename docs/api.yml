@@ -461,7 +461,7 @@ components:
           type: array
           items:
             type: string
-        trusted-data:
+        data:
           type: object
 
     Node:
