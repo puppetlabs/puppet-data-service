@@ -91,6 +91,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".pds-cli" (without extension).
 		viper.AddConfigPath(home)
+		viper.AddConfigPath("/etc/puppetlabs/pds")
 		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("pds-cli")
