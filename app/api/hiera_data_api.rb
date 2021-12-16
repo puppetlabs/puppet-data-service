@@ -87,8 +87,9 @@ App.add_route('GET', '/v1/hiera-data', {
   # the guts live here
 
   # TODO: validate input
-  # TODO: filter
-  hiera_data = data_adapter.read(:hiera_data)
+  filters = []
+  filters << ['=', 'level', params['level']] unless params['level'].nil?
+  hiera_data = data_adapter.read(:hiera_data, filters: filters)
   hiera_data.to_json
 end
 
