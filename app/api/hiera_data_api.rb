@@ -159,6 +159,8 @@ App.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
 
   # TODO: validate input
   hiera_data = JSON.parse(request.body.read)
+  hiera_data['level'] = params['level']
+  hiera_data['key'] = params['key']
   update_or_set_new_timestamps!(:hiera_data, [hiera_data])
   data_adapter.upsert(:hiera_data, resources: [hiera_data])
 

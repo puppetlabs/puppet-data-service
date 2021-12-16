@@ -3,7 +3,7 @@ class CreateHieradata < ActiveRecord::Migration[6.1]
     create_table(:hiera_data, primary_key: [:level, :key]) do |t|
       t.string :level, null: false
       t.string :key, null: false
-      t.string :value
+      t.jsonb :value
       t.timestamps
     end
 
