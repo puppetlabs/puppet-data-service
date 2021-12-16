@@ -26,6 +26,7 @@ import (
 
 var (
 	trustedExternalCommand bool
+	nodename string
 	codeEnvironment string
 	classes []string
 	trustedDataStr string
@@ -90,12 +91,11 @@ var deleteNodeCmd = &cobra.Command{
 }
 
 var upsertNodeCmd = &cobra.Command{
-	Use:   "upsert NODENAME",
-	Args:  cobra.ExactArgs(1),
+	Use:   "upsert -n NODENAME",
+	Args:  cobra.ExactArgs(0),
 	Short: "Upsert node with name NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
-		name := args[0]
 		var trustedData map[string]interface{}
 		trustedDataErr := json.Unmarshal([]byte(trustedDataStr), &trustedData)
 
@@ -105,7 +105,7 @@ var upsertNodeCmd = &cobra.Command{
 
 		body := client.PutNodeByNameJSONRequestBody{
 			ImmutableNodeProperties : client.ImmutableNodeProperties{
-				Name : &name,
+				Name : &nodename,
 			},
 			EditableNodeProperties : client.EditableNodeProperties{
 				Classes : &classes,
@@ -118,11 +118,11 @@ var upsertNodeCmd = &cobra.Command{
 		}
 
 		// Submit the request
-		response, err := pdsClient.PutNodeByNameWithResponse(context.Background(), client.NodeName(name), body)
+		response, err := pdsClient.PutNodeByNameWithResponse(context.Background(), client.NodeName(nodename), body)
 
 		// Handle errors
 		if err != nil {
-			log.Fatalf("Couldn't upsert node %s: %s", name, err)
+			log.Fatalf("Couldn't upsert node %s: %s", nodename, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -148,7 +148,9 @@ func init() {
 	nodeCmd.AddCommand(deleteNodeCmd)
 
 	nodeCmd.AddCommand(upsertNodeCmd)
+	upsertNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
 	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
 	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
 	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
+	upsertNodeCmd.MarkFlagRequired("name")
 }

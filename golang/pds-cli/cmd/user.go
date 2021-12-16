@@ -24,6 +24,7 @@ import (
 )
 
 var (
+	username string
 	userEmail string
 	userRole string
 )
@@ -82,12 +83,11 @@ var getUserTokenCmd = &cobra.Command{
 }
 
 var upsertUserCmd = &cobra.Command{
-	Use:   "upsert USERNAME",
-	Args:  cobra.ExactArgs(1),
+	Use:   "upsert -n USERNAME",
+	Args:  cobra.ExactArgs(0),
 	Short: "Upsert user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
-		username := args[0]
 		body := client.PutUserJSONRequestBody{
 			ImmutableUserProperties : client.ImmutableUserProperties{
 				Username : (*client.Username)(&username),
@@ -125,8 +125,10 @@ func init() {
 	userCmd.AddCommand(getUserTokenCmd)
 
 	userCmd.AddCommand(upsertUserCmd)
+	upsertUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
 	upsertUserCmd.Flags().StringVarP(&userEmail, "email", "e", "", "User email address")
 	upsertUserCmd.Flags().StringVarP(&userRole, "role", "r", "", "User role")
+	upsertUserCmd.MarkFlagRequired("username")
 	upsertUserCmd.MarkFlagRequired("email")
 	upsertUserCmd.MarkFlagRequired("role")
 }
