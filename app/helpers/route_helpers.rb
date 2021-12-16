@@ -1,5 +1,4 @@
-require_relative '../app.rb'
-require_relative '../lib/pds/helpers/timestamp_helpers'
+require 'pds/helpers/timestamp_helpers'
 
 App.helpers do
   include PDS::Helpers::TimestampHelpers

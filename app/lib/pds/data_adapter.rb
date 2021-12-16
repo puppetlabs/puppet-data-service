@@ -24,12 +24,12 @@ module PDS
     private
 
     def self.load_mock_adapter(app)
-      require_relative 'data_adapter/mock'
+      require 'pds/data_adapter/mock'
     end
 
     def self.load_postgresql_adapter(app)
       require 'sinatra/activerecord'
-      require_relative 'data_adapter/postgresql'
+      require 'pds/data_adapter/postgresql'
 
       # Configure ActiveRecord rake tasks to use adapter-specific db paths
       if defined?(ActiveRecord::Tasks::DatabaseTasks)

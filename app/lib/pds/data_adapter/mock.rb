@@ -1,5 +1,5 @@
-require_relative '../data_adapter'
-require_relative 'base'
+require 'pds/data_adapter'
+require 'pds/data_adapter/base'
 require 'date'
 
 module PDS
