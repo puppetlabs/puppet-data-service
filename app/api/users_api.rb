@@ -160,10 +160,13 @@ App.add_route('PUT', '/v1/users/{username}', {
   authenticate!
 
   # TODO: validate input
-  return status 400 if request.body.read.empty?
+  body_params = request.body.read
+  return status 400 if body_params.empty?
 
-  user = JSON.parse(request.body.read)
+  user = JSON.parse(body_params)
+  user['username'] = params['username']
   user['status'] = 'active'
+
   update_or_set_new_timestamps!(:users, [user])
   data_adapter.upsert(:users, resources: [user])
 
