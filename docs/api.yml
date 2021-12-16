@@ -343,7 +343,13 @@ paths:
         $ref: "#/components/requestBodies/EditHieraValue"
       responses:
         "200":
-          description: successful operation
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HieraValue"
+        "201":
+          description: Created
           content:
             application/json:
               schema:
@@ -477,7 +483,6 @@ components:
       properties:
         value:
           nullable: true
-          type: string
           description: The value to set the Hiera key to
 
     HieraValue:
