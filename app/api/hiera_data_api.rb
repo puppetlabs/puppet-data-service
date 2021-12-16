@@ -118,7 +118,7 @@ App.add_route('GET', '/v1/hiera-data/{level}/{key}', {
   # the guts live here
 
   # TODO: validate input
-  hiera_data = data_adapter.reid(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
+  hiera_data = data_adapter.read(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
   if hiera_data.empty?
     status 404
   else
