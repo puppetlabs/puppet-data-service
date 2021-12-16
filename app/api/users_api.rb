@@ -19,7 +19,10 @@ App.add_route('POST', '/v1/users', {
   authenticate!
 
   # TODO: validate input
-  new_users = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  new_users = JSON.parse(body_params)
 
   begin
     new_users.each { |user| user['status'] = 'active' }
