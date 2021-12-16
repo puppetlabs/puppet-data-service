@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"context"
 	"log"
 
@@ -23,15 +24,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// hieradataCmd represents the hieradata command
-var hieradataCmd = &cobra.Command{
+var (
+	levelStr string
+	keyStr string
+	valueStr string
+)
+
+// hieraDataCmd represents the hieraData command
+var hieraDataCmd = &cobra.Command{
 	Use:   "hiera",
-	Short: "Operations on hieradata",
+	Short: "Operations on hieraData",
 }
 
-var listHieradataCmd = &cobra.Command{
+var listHieraDataCmd = &cobra.Command{
 	Use:   "list [LEVEL]",
-	Short: "List all hieradata or hieradata for LEVEL",
+	Short: "List all hieraData or hieraData for LEVEL",
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &client.GetHieraDataParams{}
@@ -41,7 +48,7 @@ var listHieradataCmd = &cobra.Command{
 		}
 		response, err := pdsClient.GetHieraDataWithResponse(context.Background(), params)
 		if err != nil {
-			log.Fatalf("Couldn't list hieradata: %s", err)
+			log.Fatalf("Couldn't list hieraData: %s", err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -50,16 +57,16 @@ var listHieradataCmd = &cobra.Command{
 	},
 }
 
-var getHieradataCmd = &cobra.Command{
+var getHieraDataCmd = &cobra.Command{
 	Use:   "get LEVEL KEY",
 	Args:  cobra.ExactArgs(2),
-	Short: "Retrieve hieradata with LEVEL and KEY",
+	Short: "Retrieve hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
 		level := client.HieraLevel(args[0])
 		key := client.HieraKey(args[1])
 		response, err := pdsClient.GetHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key)
 		if err != nil {
-			log.Fatalf("Couldn't get hieradata %s/%s: %s", level, key, err)
+			log.Fatalf("Couldn't get hieraData %s/%s: %s", level, key, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -68,16 +75,16 @@ var getHieradataCmd = &cobra.Command{
 	},
 }
 
-var deleteHieradataCmd = &cobra.Command{
+var deleteHieraDataCmd = &cobra.Command{
 	Use:   "delete LEVEL KEY",
 	Args:  cobra.ExactArgs(2),
-	Short: "Delete hieradata with LEVEL and KEY",
+	Short: "Delete hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
 		level := client.HieraLevel(args[0])
 		key := client.HieraKey(args[1])
 		response, err := pdsClient.DeleteHieraDataObjectWithResponse(context.Background(), level, key)
 		if err != nil {
-			log.Fatalf("Couldn't delete hieradata %s/%s: %s", level, key, err)
+			log.Fatalf("Couldn't delete hieraData %s/%s: %s", level, key, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -86,30 +93,46 @@ var deleteHieradataCmd = &cobra.Command{
 	},
 }
 
-var upsertHieradataCmd = &cobra.Command{
-	Use:   "upsert LEVEL KEY VALUE",
-	Args:  cobra.ExactArgs(3),
-	Short: "Upsert hieradata VALUE with LEVEL and KEY",
+var upsertHieraDataCmd = &cobra.Command{
+	Use:   "upsert -l=LEVEL -k=KEY -v=VALUE",
+	Args:  cobra.ExactArgs(0),
+	Short: "Upsert hiera data VALUE for KEY at LEVEL",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(args[0])
-		key := client.HieraKey(args[1])
-		props := client.EditableHieraValueProperties{Value: &args[2]}
-		body := client.UpsertHieraDataWithLevelAndKeyJSONRequestBody{EditableHieraValueProperties: props}
-		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key, body)
+		var value interface{}
+		valueErr := json.Unmarshal([]byte(valueStr), &value)
+
+		if valueErr != nil {
+			log.Fatalf("Value is not valid JSON: %s", valueErr)
+		}
+
+		body := client.UpsertHieraDataWithLevelAndKeyJSONRequestBody{
+			EditableHieraValueProperties : client.EditableHieraValueProperties{
+				Value : &value,
+			},
+		}
+
+		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), client.HieraLevel(levelStr), client.HieraKey(keyStr), body)
+
 		if err != nil {
-			log.Fatalf("Couldn't upsert hieradata %s/%s: %s", level, key, err)
+			log.Fatalf("Couldn't upsert hiera data %s/%s: %s", levelStr, keyStr, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
 		}
-		dump(response.JSON200)
+
+		// Print results
+		if response.JSON201 == nil {
+			dump(response.JSON200)
+		} else {
+			dump(response.JSON201)
+		}
 	},
 }
 
-// // var deletehieradataCmd = &cobra.Command{
-// 	Use:   "delete hieradataNAME",
+// // var deletehieraDataCmd = &cobra.Command{
+// 	Use:   "delete hieraDataNAME",
 // 	Args:  cobra.ExactArgs(1),
-// 	Short: "Delete hieradata with hieradataname hieradataNAME",
+// 	Short: "Delete hiera data with hieraDataname hieradataNAME",
 // 	Run: func(cmd *cobra.Command, args []string) {
 // 		// username, _ := cmd.Flags().GetString("username")
 // 		hieradataname := args[0]
@@ -124,29 +147,17 @@ var upsertHieradataCmd = &cobra.Command{
 // 	},
 // }
 
-// var puthieradataCmd = &cobra.Command{
-// 	Use:   "put hieradataNAME",
-// 	Args:  cobra.ExactArgs(1),
-// 	Short: "Put hieradata with hieradataname hieradataNAME",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		// username, _ := cmd.Flags().GetString("username")
-// 		hieradataname := args[0]
-// 		body := client.No
-// 		response, err := pdsClient.PuthieradataByNameWithBodyWithResponse(context.Background(), client.hieradataName(hieradataname), "application/json", body)
-// 		if err != nil {
-// 			log.Fatalf("Couldn't delete hieradata %s: %s", hieradataname, err)
-// 		}
-// 		if response.HTTPResponse.StatusCode > 299 {
-// 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
-// 		}
-// 		dump(response.Status())
-// 	},
-// }
-
 func init() {
-	rootCmd.AddCommand(hieradataCmd)
-	hieradataCmd.AddCommand(listHieradataCmd)
-	hieradataCmd.AddCommand(getHieradataCmd)
-	hieradataCmd.AddCommand(deleteHieradataCmd)
-	hieradataCmd.AddCommand(upsertHieradataCmd)
+	rootCmd.AddCommand(hieraDataCmd)
+	hieraDataCmd.AddCommand(listHieraDataCmd)
+	hieraDataCmd.AddCommand(getHieraDataCmd)
+	hieraDataCmd.AddCommand(deleteHieraDataCmd)
+
+	hieraDataCmd.AddCommand(upsertHieraDataCmd)
+	upsertHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Node code-environment")
+	upsertHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Node code-environment")
+	upsertHieraDataCmd.Flags().StringVarP(&valueStr, "value", "v", "", "Node code-environment")
+	upsertHieraDataCmd.MarkFlagRequired("level")
+	upsertHieraDataCmd.MarkFlagRequired("key")
+	upsertHieraDataCmd.MarkFlagRequired("value")
 }
