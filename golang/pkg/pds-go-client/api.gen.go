@@ -50,7 +50,7 @@ const (
 // EditableHieraValueProperties defines model for EditableHieraValueProperties.
 type EditableHieraValueProperties struct {
 	// The value to set the Hiera key to
-	Value *string `json:"value"`
+	Value *interface{} `json:"value"`
 }
 
 // EditableNodeProperties defines model for EditableNodeProperties.
@@ -1450,6 +1450,7 @@ type UpsertHieraDataWithLevelAndKeyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *HieraValue
+	JSON201      *HieraValue
 }
 
 // Status returns HTTPResponse.Status
@@ -2016,6 +2017,13 @@ func ParseUpsertHieraDataWithLevelAndKeyResponse(rsp *http.Response) (*UpsertHie
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest HieraValue
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
 
 	}
 
