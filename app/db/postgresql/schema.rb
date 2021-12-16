@@ -29,7 +29,7 @@ ActiveRecord::Schema.define(version: 2021_12_08_173927) do
   create_table "hiera_data", primary_key: ["level", "key"], force: :cascade do |t|
     t.string "level", null: false
     t.string "key", null: false
-    t.string "value"
+    t.jsonb "value"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["key"], name: "index_hiera_data_on_key"

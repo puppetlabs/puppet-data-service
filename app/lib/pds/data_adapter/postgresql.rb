@@ -1,4 +1,5 @@
 require 'active_record'
+require 'composite_primary_keys'
 require 'active_support/inflector'
 require_relative '../data_adapter'
 require_relative 'base'
@@ -15,7 +16,7 @@ module PDS
         # TODO
         model = entity_klass(entity_type)
         begin
-          model.insert_all(resources)
+          model.insert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
           resources
         rescue
           raise PDS::DataAdapter::Conflict
@@ -27,17 +28,16 @@ module PDS
         model = entity_klass(entity_type)
 
         if filters.empty?
-          models2api(model.all)
+          model.all.map { |record| record.to_resource }
         else
-          models2api(model.where(filters2where(filters)))
+          model.where(where(filters)).map { |record| record.to_resource }
         end
       end
 
       def upsert(entity_type, resources:)
         model = entity_klass(entity_type)
-        # TODO: implement uniqueness check(s)
         # TODO: validate input
-        model.upsert_all(resources.map { |rsrc| api2table_keys(rsrc) })
+        model.upsert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
         resources
       end
 
@@ -48,7 +48,7 @@ module PDS
         deleted = if filters.empty?
                     model.destroy_all
                   else
-                    model.destroy_by(filters2where(filters))
+                    model.destroy_by(where(filters))
                   end
 
         deleted.size
@@ -68,20 +68,7 @@ module PDS
                    .constantize
       end
 
-      # @param array [Array]
-      def models2api(array)
-        array.map { |model| table2api_keys(model.attributes) }
-      end
-
-      def api2table_keys(hash)
-        hash.transform_keys { |k| k.gsub('-', '_').to_sym }
-      end
-
-      def table2api_keys(hash)
-        hash.transform_keys { |k| k.to_s.gsub('_', '-') }
-      end
-
-      def filters2where(filters)
+      def where(filters)
         # Reduce to [clauses, parameters]
         clauses = filters.reduce([[], []]) do |memo,filter|
           case filter[0]
@@ -101,19 +88,33 @@ module PDS
 
       # Models
 
-      class Changelog < ActiveRecord::Base; end
+      # Abstract base model to define resource-to-record transformation methods
+      class PDSRecord < ActiveRecord::Base
+        self.abstract_class = true
 
-      class HieraData < ActiveRecord::Base
+        def self.to_attributes(resource)
+          resource.transform_keys { |k| k.gsub('-', '_').to_sym }
+        end
+
+        def to_resource
+          attributes.transform_keys { |k| k.to_s.gsub('_', '-') }
+        end
+      end
+
+      class Changelog < PDSRecord; end
+
+      class HieraDatum < PDSRecord
+        self.primary_key = ['level', 'key']
         validates_presence_of :level
         validates_presence_of :key
       end
 
-      class Node < ActiveRecord::Base
+      class Node < PDSRecord
         self.primary_key = "name"
         validates_presence_of :name
       end
 
-      class User < ActiveRecord::Base
+      class User < PDSRecord
         self.primary_key = "username"
         validates_presence_of :username
       end
