@@ -51,12 +51,11 @@ var listNodesCmd = &cobra.Command{
 }
 
 var getNodeCmd = &cobra.Command{
-	Use:   "get NODENAME",
-	Args:  cobra.ExactArgs(1),
+	Use:   "get -n NODENAME",
+	Args:  cobra.ExactArgs(0),
 	Short: "Retrieve node with nodename NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// username, _ := cmd.Flags().GetString("username")
-		nodename := args[0]
 		response, err := pdsClient.GetNodeByNameWithResponse(context.Background(), client.NodeName(nodename))
 		if err != nil {
 			log.Fatalf("Couldn't get node %s: %s", nodename, err)
@@ -73,12 +72,11 @@ var getNodeCmd = &cobra.Command{
 }
 
 var deleteNodeCmd = &cobra.Command{
-	Use:   "delete NODENAME",
-	Args:  cobra.ExactArgs(1),
+	Use:   "delete -n NODENAME",
+	Args:  cobra.ExactArgs(0),
 	Short: "Delete node with nodename NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// username, _ := cmd.Flags().GetString("username")
-		nodename := args[0]
 		response, err := pdsClient.DeleteNodeWithResponse(context.Background(), client.NodeName(nodename))
 		if err != nil {
 			log.Fatalf("Couldn't delete node %s: %s", nodename, err)
@@ -139,13 +137,18 @@ var upsertNodeCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(nodeCmd)
+
 	nodeCmd.AddCommand(listNodesCmd)
 
 	nodeCmd.AddCommand(getNodeCmd)
 	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted-external-command", false, 
 		"for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.")
+	getNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
+	getNodeCmd.MarkFlagRequired("name")
 
 	nodeCmd.AddCommand(deleteNodeCmd)
+	deleteNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
+	deleteNodeCmd.MarkFlagRequired("name")
 
 	nodeCmd.AddCommand(upsertNodeCmd)
 	upsertNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
