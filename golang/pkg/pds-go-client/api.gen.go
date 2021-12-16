@@ -58,7 +58,7 @@ type EditableNodeProperties struct {
 	Classes *[]string `json:"classes,omitempty"`
 
 	// Code environment
-	CodeEnvironment *EditableNodePropertiesCodeEnvironment `json:"code-environment,omitempty"`
+	CodeEnvironment *EditableNodePropertiesCodeEnvironment `json:"code-environment"`
 	TrustedData     *map[string]interface{}                `json:"trusted-data,omitempty"`
 }
 
