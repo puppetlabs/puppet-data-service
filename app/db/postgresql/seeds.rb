@@ -1,7 +1,7 @@
 if App.environment == :development
   PDS::DataAdapter::PostgreSQL::User.destroy_all
   PDS::DataAdapter::PostgreSQL::Node.destroy_all
-  PDS::DataAdapter::PostgreSQL::HieraData.destroy_all
+  PDS::DataAdapter::PostgreSQL::HieraDatum.destroy_all
   PDS::DataAdapter::PostgreSQL::Changelog.destroy_all
 
   business_domain_name = 'acme.com'
@@ -28,10 +28,13 @@ if App.environment == :development
   ]
 
   hiera_data = [
+    { level: 'common', key: 'pds::nothing', value: nil },
     { level: 'common', key: 'pds::color', value: 'red' },
     { level: 'priority', key: 'pds::color', value: 'blue' },
     { level: 'common', key: 'pds::distance', value: '10k' },
     { level: 'priority', key: 'pds::distance', value: '42k' },
+    { level: 'amer', key: 'pds::weight', value: {'lbs' => 8, 'oz' => 13.1 }},
+    { level: 'emea', key: 'pds::weight', value: {'kg' => 4}},
   ]
 
   users.each do |user|
@@ -50,9 +53,9 @@ if App.environment == :development
 
   hiera_data.each do |data|
     puts "Creating hiera data #{data[:level]}/#{data[:key]} ... \n"
-    PDS::DataAdapter::PostgreSQL::HieraData.create!(data)
+    PDS::DataAdapter::PostgreSQL::HieraDatum.create!(data)
   end
 else
-  puts 'Error: db:seeds can only run in development' 
+  puts 'Error: db:seeds can only run in development'
 end
 
