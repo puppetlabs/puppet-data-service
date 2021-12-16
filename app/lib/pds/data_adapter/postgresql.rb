@@ -116,7 +116,9 @@ module PDS
 
       class User < PDSRecord
         self.primary_key = "username"
-        validates_presence_of :username
+        validates_presence_of :username, :email
+        validates :username, :email, uniqueness: true
+        validates :role, inclusion: { in: ['operator', 'administrator'], message: "%{value} is not a valid role" }
       end
     end
   end

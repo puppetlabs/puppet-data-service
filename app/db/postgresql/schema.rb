@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_08_173927) do
+ActiveRecord::Schema.define(version: 2021_12_15_180218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "changelog", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "changelogs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "username"
     t.string "object_type"
     t.string "object_id"
     t.jsonb "change_details"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["username"], name: "index_changelog_on_username"
+    t.index ["username"], name: "index_changelogs_on_username"
   end
 
   create_table "hiera_data", primary_key: ["level", "key"], force: :cascade do |t|
