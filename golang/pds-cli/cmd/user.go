@@ -81,6 +81,22 @@ var getUserTokenCmd = &cobra.Command{
 	},
 }
 
+var deleteUserCmd = &cobra.Command{
+	Use:   "delete -n USERNAME",
+	Args:  cobra.ExactArgs(0),
+	Short: "Delete user with username USERNAME",
+	Run: func(cmd *cobra.Command, args []string) {
+		response, err := pdsClient.DeleteUserWithResponse(context.Background(), client.Username(username))
+		if err != nil {
+			log.Fatalf("Couldn't delete user %s: %s", username, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+		dump(response.Status())
+	},
+}
+
 var upsertUserCmd = &cobra.Command{
 	Use:   "upsert -n USERNAME",
 	Args:  cobra.ExactArgs(0),
@@ -129,6 +145,10 @@ func init() {
 	userCmd.AddCommand(getUserTokenCmd)
 	getUserTokenCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
 	getUserTokenCmd.MarkFlagRequired("username")
+
+	userCmd.AddCommand(deleteUserCmd)
+	deleteUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
+	deleteUserCmd.MarkFlagRequired("username")
 
 	userCmd.AddCommand(upsertUserCmd)
 	upsertUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
