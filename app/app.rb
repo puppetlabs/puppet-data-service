@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/custom_logger'
+require "sinatra/reloader"
 require 'openapiing'
 require 'pds/data_adapter'
 require 'logger'
@@ -31,6 +32,11 @@ class App < OpenAPIing
   # When debugging, return detailed response information
   after do
     logger.debug { "Response: #{response.body}" }
+  end
+
+  # Automatically reload modified files in development
+  if App.environment == :development
+    register Sinatra::Reloader
   end
 end
 
