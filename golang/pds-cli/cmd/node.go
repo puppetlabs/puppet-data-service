@@ -29,7 +29,7 @@ var (
 	nodename string
 	codeEnvironment string
 	classes []string
-	trustedDataStr string
+	dataStr string
 )
 
 // nodeCmd represents the node command
@@ -94,11 +94,11 @@ var upsertNodeCmd = &cobra.Command{
 	Short: "Upsert node with name NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
-		var trustedData map[string]interface{}
-		trustedDataErr := json.Unmarshal([]byte(trustedDataStr), &trustedData)
+		var data map[string]interface{}
+		dataErr := json.Unmarshal([]byte(dataStr), &data)
 
-		if trustedDataErr != nil {
-			log.Fatalf("Couldn't parse trusted-data JSON: %s", trustedDataErr)
+		if dataErr != nil {
+			log.Fatalf("Couldn't parse trusted-data JSON: %s", dataErr)
 		}
 
 		body := client.PutNodeByNameJSONRequestBody{
@@ -107,7 +107,7 @@ var upsertNodeCmd = &cobra.Command{
 			},
 			EditableNodeProperties : client.EditableNodeProperties{
 				Classes : &classes,
-				TrustedData : &trustedData,
+				Data : &data,
 			},
 		}
 
@@ -154,6 +154,6 @@ func init() {
 	upsertNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
 	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
 	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
-	upsertNodeCmd.Flags().StringVarP(&trustedDataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
+	upsertNodeCmd.Flags().StringVarP(&dataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
 	upsertNodeCmd.MarkFlagRequired("name")
 }

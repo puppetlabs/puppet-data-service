@@ -1,711 +1,610 @@
 openapi: 3.0.1
 info:
+  title: "WIP: Puppet Data Service API"
+  description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization filters."
+  termsOfService: http://swagger.io/terms/
   contact:
     email: solarch-team@puppet.com
-  description: This is the API documentation for the Puppet Data Service API. You
-    can find out more about the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service).
-    For this sample, you can use the api key `special-key` to test the authorization
-    filters.
   license:
     name: TBD
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: 'WIP: Puppet Data Service API'
   version: 1.0.0
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-- url: localhost:3000/v1
-security:
-- bearerAuth: []
+  - url: http://localhost:8080/v1
 tags:
-- description: Every config change should be started with an authorized Admin User
-  externalDocs:
-    description: TBD Find out more
-    url: https://puppet.com/
-  name: users
-- description: Node details and configuration data, Nodedata stores configuration
-    details for a specific node
-  name: nodes
-- description: Hierdata manages your Hiera Key:Value as a service
-  name: hiera-data
+  - name: users
+    description: Every config change should be started with an authorized Admin User
+    externalDocs:
+      description: TBD Find out more
+      url: https://puppet.com/
+  - name: nodes
+    description: Node details and configuration data, Nodedata stores configuration details for a specific node
+  - name: hiera-data
+    description: Hierdata manages your Hiera Key:Value as a service
+
 paths:
   /users:
     get:
-      description: This can only be done by the logged in user with an administrator
-        role.
+      tags:
+        - users
+      summary: Get all available users
+      description: This can only be done by the logged in user with an administrator role.
       operationId: getAllUsers
       responses:
         "200":
+          description: successful operation
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/User'
                 type: array
-          description: successful operation
+                items:
+                  $ref: "#/components/schemas/User"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Get all available users
-      tags:
-      - users
+          $ref: '#/components/responses/UnauthorizedError'
     post:
-      description: The body params are required to be a JSON object with an array
-        of users. This endpoint supports bulk operations, you can create one or 1000
-        users in a single POST request.
+      tags:
+        - users
+      summary: Create user
+      description: The body params are required to be a JSON object with an array of users. This endpoint supports bulk operations, you can create one or 1000 users in a single POST request.
       operationId: createUser
       requestBody:
-        $ref: '#/components/requestBodies/NewUsers'
+        $ref: "#/components/requestBodies/NewUsers"
       responses:
         "201":
+          description: Created
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/User'
                 type: array
-          description: Created
+                items:
+                  $ref: "#/components/schemas/User"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Create user
-      tags:
-      - users
+          $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
+
   /users/{username}:
-    delete:
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-      - description: The username
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          $ref: '#/components/schemas/Username'
-        style: simple
-      responses:
-        "200":
-          content: {}
-          description: Ok
-        "400":
-          content: {}
-          description: Invalid username supplied
-        "401":
-          description: Access (Bearer) token is missing or invalid
-        "404":
-          content: {}
-          description: Username not found
-      summary: Deletes a user
-      tags:
-      - users
     get:
+      tags:
+        - users
+      summary: Get user by username
       description: Retrieve a specific user.
       operationId: getUserByUsername
       parameters:
-      - description: The username
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          $ref: '#/components/schemas/Username'
-        style: simple
+        - $ref: "#/components/parameters/Username"
       responses:
         "200":
+          description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-          description: Ok
+                $ref: "#/components/schemas/User"
         "400":
-          description: Invalid user supplied
+          description: "Invalid user supplied"
         "401":
-          description: Access (Bearer) token is missing or invalid
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
-          description: User not found
-      summary: Get user by username
-      tags:
-      - users
+          description: "User not found"
     put:
-      description: If the username does not exist, it will create it for you. This
-        endpoint does not support bulk operations
+      tags:
+        - users
+      summary: Create a new user or replace an existing user
+      description: If the username does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putUser
       parameters:
-      - description: The username
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          $ref: '#/components/schemas/Username'
-        style: simple
+        - $ref: "#/components/parameters/Username"
       requestBody:
-        $ref: '#/components/requestBodies/NewUser'
+        $ref: "#/components/requestBodies/NewUser"
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
           description: Updated
-        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
+        "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
         "400":
           description: Invalid username supplied
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Create a new user or replace an existing user
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
       tags:
-      - users
+        - users
+      summary: Deletes a user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - $ref: "#/components/parameters/Username"
+      responses:
+        "200":
+          description: Ok
+          content: {}
+        "400":
+          description: Invalid username supplied
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Username not found
+          content: {}
+
   /users/{username}/token:
     get:
+      tags:
+        - users
+      summary: Get API token by username
       description: Retrieve an API token for the user
       operationId: getTokenByUsername
       parameters:
-      - description: The username
-        explode: false
-        in: path
-        name: username
-        required: true
-        schema:
-          $ref: '#/components/schemas/Username'
-        style: simple
+        - $ref: "#/components/parameters/Username"
       responses:
         "200":
+          description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Token'
-          description: Ok
+                $ref: "#/components/schemas/Token"
         "400":
-          description: Invalid user supplied
+          description: "Invalid user supplied"
         "401":
-          description: Access (Bearer) token is missing or invalid
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
-          description: User not found
-      summary: Get API token by username
-      tags:
-      - users
+          description: "User not found"
+
   /nodes:
     get:
+      tags:
+        - nodes
+      summary: Get all available nodes
       description: This can only be done by the logged in user.
       operationId: getAllNodes
       responses:
         "200":
+          description: successful operation
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Node'
                 type: array
-          description: successful operation
+                items:
+                  $ref: "#/components/schemas/Node"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Get all available nodes
-      tags:
-      - nodes
+          $ref: '#/components/responses/UnauthorizedError'
     post:
-      description: The body params are required to be a JSON object with an array
-        of node's data. This endpoint supports bulk operations, you can create one
-        or 1000 nodedata in a single POST request.
+      tags:
+        - nodes
+      summary: Create new node(s)
+      description: The body params are required to be a JSON object with an array of node's data. This endpoint supports bulk operations, you can create one or 1000 nodedata in a single POST request.
       operationId: createNode
       requestBody:
-        $ref: '#/components/requestBodies/NewNodes'
+        $ref: "#/components/requestBodies/NewNodes"
       responses:
         "201":
+          description: Created
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Node'
                 type: array
-          description: Created
+                items:
+                  $ref: "#/components/schemas/Node"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Create new node(s)
-      tags:
-      - nodes
+          $ref: '#/components/responses/UnauthorizedError'
+
   /nodes/{name}:
-    delete:
-      description: This can only be done by the logged in user.
-      operationId: deleteNode
-      parameters:
-      - description: The node name to be fetched or modified. Use node1 for testing.
-        explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content: {}
-          description: Ok
-        "400":
-          content: {}
-          description: Invalid Node name supplied
-        "401":
-          description: Access (Bearer) token is missing or invalid
-        "404":
-          content: {}
-          description: Nodedata not found
-      summary: Deletes a node
-      tags:
-      - nodes
     get:
+      tags:
+        - nodes
+      summary: Get node by node name
       description: Retrieve a specific node.
       operationId: getNodeByName
       parameters:
-      - description: The node name to be fetched or modified. Use node1 for testing.
-        explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - $ref: "#/components/parameters/NodeName"
       responses:
         "200":
+          description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
-          description: Ok
+                $ref: "#/components/schemas/Node"
         "400":
           description: Invalid node-name supplied
         "401":
-          description: Access (Bearer) token is missing or invalid
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Node not found
-      summary: Get node by node name
-      tags:
-      - nodes
+
     put:
-      description: If the node name does not exist, it will create it for you. This
-        endpoint does not support bulk operations
+      tags:
+        - nodes
+      summary: Create a new node or replace an existing node
+      description: If the node name does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: putNodeByName
       parameters:
-      - description: The node name to be fetched or modified. Use node1 for testing.
-        explode: false
-        in: path
-        name: name
-        required: true
-        schema:
-          type: string
-        style: simple
+        - $ref: "#/components/parameters/NodeName"
       requestBody:
-        $ref: '#/components/requestBodies/NewNode'
+        $ref: "#/components/requestBodies/NewNode"
       responses:
         "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Node'
           description: Updated
-        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Node'
+                $ref: "#/components/schemas/Node"
+        "201":
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
         "400":
           description: Invalid node-name supplied
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Create a new node or replace an existing node
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
       tags:
-      - nodes
+        - nodes
+      summary: Deletes a node
+      description: This can only be done by the logged in user.
+      operationId: deleteNode
+      parameters:
+        - $ref: "#/components/parameters/NodeName"
+      responses:
+        "200":
+          description: Ok
+          content: {}
+        "400":
+          description: Invalid Node name supplied
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Nodedata not found
+          content: {}
+
   /hiera-data:
     get:
+      tags:
+        - hiera-data
+      summary: Get all hiera data available in the system
       description: Get all Hiera data
       operationId: getHieraData
       parameters:
-      - description: (Optional) This will filter by Hiera level (URL encoded), e.g.
-          'level%2Fone%2Fglobal'
-        explode: true
-        in: query
-        name: level
-        required: false
-        schema:
-          type: string
-        style: form
+        - $ref: "#/components/parameters/OptionalHieraLevel"
       responses:
         "200":
+          description: successful operation
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/HieraValue'
                 type: array
-          description: successful operation
+                items:
+                  $ref: "#/components/schemas/HieraValue"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Get all hiera data available in the system
-      tags:
-      - hiera-data
+          $ref: '#/components/responses/UnauthorizedError'
     post:
-      description: The body params are required to be a JSON object with an array
-        of Hieradata. This endpoint supports bulk operations, you can create one or
-        1000 hieradata in a single POST request.
+      tags:
+        - hiera-data
+      summary: Create new Hiera data value(s)
+      description: The body params are required to be a JSON object with an array of Hieradata. This endpoint supports bulk operations, you can create one or 1000 hieradata in a single POST request.
       operationId: createHieraData
       requestBody:
-        $ref: '#/components/requestBodies/NewHieraData'
+        $ref: "#/components/requestBodies/NewHieraData"
       responses:
         "201":
+          description: Created
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/HieraValue'
                 type: array
-          description: Created
+                items:
+                  $ref: "#/components/schemas/HieraValue"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Create new Hiera data value(s)
-      tags:
-      - hiera-data
+          $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
+
   /hiera-data/{level}/{key}:
-    delete:
-      description: Permanently removes the Hiera object that matches the level/key
-        ID
-      operationId: deleteHieraDataObject
-      parameters:
-      - description: The Hiera level
-        explode: false
-        in: path
-        name: level
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: The Hiera key
-        explode: false
-        in: path
-        name: key
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content: {}
-          description: Ok
-        "400":
-          content: {}
-          description: Invalid level or key supplied
-        "401":
-          description: Access (Bearer) token is missing or invalid
-        "404":
-          content: {}
-          description: Hieradata not found
-      summary: Deletes a Hieradata object
-      tags:
-      - hiera-data
     get:
+      tags:
+        - hiera-data
+      summary: Get a specific hiera value
       description: Get Hiera data that matches the given {level} and {key}
       operationId: getHieraDataWithLevelAndKey
       parameters:
-      - description: The Hiera level
-        explode: false
-        in: path
-        name: level
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: The Hiera key
-        explode: false
-        in: path
-        name: key
-        required: true
-        schema:
-          type: string
-        style: simple
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
       responses:
         "200":
+          description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HieraValue'
-          description: successful operation
+                $ref: "#/components/schemas/HieraValue"
         "401":
-          description: Access (Bearer) token is missing or invalid
+          $ref: '#/components/responses/UnauthorizedError'
         "404":
           description: Hiera data not found for the given level and key
-      summary: Get a specific hiera value
-      tags:
-      - hiera-data
     put:
-      description: If the hieradata with the compound ID {level} and {key} does not
-        exist, it will create it for you. This endpoint does not support bulk operations
+      tags:
+        - hiera-data
+      summary: Upserts a specific hiera object
+      description: If the hieradata with the compound ID {level} and {key} does not exist, it will create it for you. This endpoint does not support bulk operations
       operationId: upsertHieraDataWithLevelAndKey
       parameters:
-      - description: The Hiera level
-        explode: false
-        in: path
-        name: level
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: The Hiera key
-        explode: false
-        in: path
-        name: key
-        required: true
-        schema:
-          type: string
-        style: simple
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
       requestBody:
-        $ref: '#/components/requestBodies/EditHieraValue'
+        $ref: "#/components/requestBodies/EditHieraValue"
       responses:
         "200":
+          description: Updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HieraValue'
-          description: successful operation
+                $ref: "#/components/schemas/HieraValue"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HieraValue"
         "401":
-          description: Access (Bearer) token is missing or invalid
-      summary: Upserts a specific hiera object
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
       tags:
-      - hiera-data
+        - hiera-data
+      summary: Deletes a Hieradata object
+      description: Permanently removes the Hiera object that matches the level/key ID
+      operationId: deleteHieraDataObject
+      parameters:
+        - $ref: "#/components/parameters/HieraLevel"
+        - $ref: "#/components/parameters/HieraKey"
+      responses:
+        "200":
+          description: Ok
+          content: {}
+        "400":
+          description: Invalid level or key supplied
+          content: {}
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Hieradata not found
+          content: {}
+
 components:
-  parameters:
-    Username:
-      description: The username
-      explode: false
-      in: path
-      name: username
-      required: true
-      schema:
-        $ref: '#/components/schemas/Username'
-      style: simple
-    NodeName:
-      description: The node name to be fetched or modified. Use node1 for testing.
-      explode: false
-      in: path
-      name: name
-      required: true
-      schema:
-        type: string
-      style: simple
-    HieraLevel:
-      description: The Hiera level
-      explode: false
-      in: path
-      name: level
-      required: true
-      schema:
-        type: string
-      style: simple
-    HieraKey:
-      description: The Hiera key
-      explode: false
-      in: path
-      name: key
-      required: true
-      schema:
-        type: string
-      style: simple
-    OptionalHieraLevel:
-      description: (Optional) This will filter by Hiera level (URL encoded), e.g.
-        'level%2Fone%2Fglobal'
-      explode: true
-      in: query
-      name: level
-      required: false
-      schema:
-        type: string
-      style: form
-  requestBodies:
-    NewUser:
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/ImmutableUserProperties'
-            - $ref: '#/components/schemas/EditableUserProperties'
-            - required:
-              - username
-      description: Create or edit user object
-    NewUsers:
-      content:
-        application/json:
-          schema:
-            items:
-              allOf:
-              - $ref: '#/components/schemas/ImmutableUserProperties'
-              - $ref: '#/components/schemas/EditableUserProperties'
-              - required:
-                - username
-            type: array
-      description: Create user object(s)
-    NewNode:
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/ImmutableNodeProperties'
-            - $ref: '#/components/schemas/EditableNodeProperties'
-            - required:
-              - name
-      description: Create or edit node object
-    NewNodes:
-      content:
-        application/json:
-          schema:
-            items:
-              allOf:
-              - $ref: '#/components/schemas/ImmutableNodeProperties'
-              - $ref: '#/components/schemas/EditableNodeProperties'
-              - required:
-                - name
-            type: array
-      description: Create node object(s)
-    NewHieraData:
-      content:
-        application/json:
-          schema:
-            items:
-              allOf:
-              - $ref: '#/components/schemas/ImmutableHieraValueProperties'
-              - $ref: '#/components/schemas/EditableHieraValueProperties'
-              - required:
-                - key
-                - level
-                - value
-            type: array
-      description: Create new Hiera data value(s)
-    EditHieraValue:
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/EditableHieraValueProperties'
-            - required:
-              - value
-      description: Create or edit a Hiera value at a specified level and key
-  responses:
-    UnauthorizedError:
-      description: Access (Bearer) token is missing or invalid
   schemas:
     Username:
-      pattern: ^([-\d\w.]+){2}$
       type: string
+      pattern: '^([-\d\w.]+){2}$'
+
     TimestampProperties:
+      type: object
       properties:
         created-at:
-          format: date-time
           type: string
+          format: date-time
         updated-at:
-          format: date-time
           type: string
-      type: object
+          format: date-time
+
     ImmutableUserProperties:
-      example:
-        username: username
+      type: object
       properties:
         username:
-          pattern: ^([-\d\w.]+){2}$
-          type: string
-      type: object
+          $ref: "#/components/schemas/Username"
+
     EditableUserProperties:
+      type: object
       properties:
         email:
           type: string
         role:
-          default: operator
-          description: User role
-          enum:
-          - administrator
-          - operator
           type: string
-      type: object
+          description: User role
+          default: operator
+          enum:
+            - administrator
+            - operator
+
     ReadOnlyUserProperties:
+      type: object
       properties:
         status:
-          default: active
-          description: User status
-          enum:
-          - active
-          - inactive
-          - deleted
           type: string
-      type: object
+          description: User status
+          default: active
+          enum:
+            - active
+            - inactive
+            - deleted
+
     User:
       allOf:
-      - $ref: '#/components/schemas/ImmutableUserProperties'
-      - $ref: '#/components/schemas/EditableUserProperties'
-      - $ref: '#/components/schemas/ReadOnlyUserProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableUserProperties"
+        - $ref: "#/components/schemas/EditableUserProperties"
+        - $ref: "#/components/schemas/ReadOnlyUserProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
+
     Token:
-      example:
-        token: token
+      type: object
       properties:
         token:
-          description: API token
           type: string
-      type: object
+          description: API token
+
     ImmutableNodeProperties:
-      example:
-        name: name
+      type: object
       properties:
         name:
           type: string
-      type: object
+
     EditableNodeProperties:
+      type: object
       properties:
         code-environment:
+          type: string
+          nullable: true
           description: Code environment
           enum:
-          - staging
-          - production
-          - compliance
-          type: string
+            - staging
+            - production
+            - compliance
         classes:
+          type: array
           items:
             type: string
-          type: array
-        trusted-data:
+        data:
           type: object
-      type: object
+
     Node:
       allOf:
-      - $ref: '#/components/schemas/ImmutableNodeProperties'
-      - $ref: '#/components/schemas/EditableNodeProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableNodeProperties"
+        - $ref: "#/components/schemas/EditableNodeProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
+
     ImmutableHieraValueProperties:
-      example:
-        level: level
-        key: key
+      type: object
       properties:
         level:
           type: string
         key:
           type: string
-      type: object
+
     EditableHieraValueProperties:
+      type: object
       properties:
         value:
-          description: The value to set the Hiera key to
           nullable: true
-          type: string
-      type: object
+          description: The value to set the Hiera key to
+
     HieraValue:
       allOf:
-      - $ref: '#/components/schemas/ImmutableHieraValueProperties'
-      - $ref: '#/components/schemas/EditableHieraValueProperties'
-      - $ref: '#/components/schemas/TimestampProperties'
+        - $ref: "#/components/schemas/ImmutableHieraValueProperties"
+        - $ref: "#/components/schemas/EditableHieraValueProperties"
+        - $ref: "#/components/schemas/TimestampProperties"
+
+  parameters:
+    Username:
+      name: username
+      in: path
+      description: "The username"
+      required: true
+      schema:
+        $ref: "#/components/schemas/Username"
+
+    NodeName:
+      name: name
+      in: path
+      description: "The node name to be fetched or modified. Use node1 for testing."
+      required: true
+      schema:
+        type: string
+
+    HieraLevel:
+      name: level
+      in: path
+      description: "The Hiera level"
+      required: true
+      schema:
+        type: string
+
+    HieraKey:
+      name: key
+      in: path
+      description: "The Hiera key"
+      required: true
+      schema:
+        type: string
+
+    OptionalHieraLevel:
+      name: level
+      in: query
+      description: "(Optional) This will filter by Hiera level (URL encoded), e.g. 'level%2Fone%2Fglobal'"
+      required: false
+      schema:
+        type: string
+
+  requestBodies:
+    NewUser:
+      description: Create or edit user object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ImmutableUserProperties"
+              - $ref: "#/components/schemas/EditableUserProperties"
+              - required: ["username"]
+
+    NewUsers:
+      description: Create user object(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/components/schemas/ImmutableUserProperties"
+                - $ref: "#/components/schemas/EditableUserProperties"
+                - required: ["username"]
+
+    NewNode:
+      description: Create or edit node object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ImmutableNodeProperties"
+              - $ref: "#/components/schemas/EditableNodeProperties"
+              - required: ["name"]
+
+    NewNodes:
+      description: Create node object(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+                - $ref: "#/components/schemas/ImmutableNodeProperties"
+                - $ref: "#/components/schemas/EditableNodeProperties"
+                - required: ["name"]
+
+    NewHieraData:
+      description: Create new Hiera data value(s)
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              allOf:
+              - $ref: "#/components/schemas/ImmutableHieraValueProperties"
+              - $ref: "#/components/schemas/EditableHieraValueProperties"
+              - required: ["level", "key", "value"]
+
+    EditHieraValue:
+      description: Create or edit a Hiera value at a specified level and key
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/EditableHieraValueProperties"
+              - required: ["value"]
+  responses:
+    UnauthorizedError:
+      description: Access (Bearer) token is missing or invalid
+
   securitySchemes:
     bearerAuth:
-      scheme: bearer
       type: http
+      scheme: bearer
+
+security:
+  - bearerAuth: [] 

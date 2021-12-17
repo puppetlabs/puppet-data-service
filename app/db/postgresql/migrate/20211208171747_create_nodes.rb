@@ -4,7 +4,7 @@ class CreateNodes < ActiveRecord::Migration[6.1]
       t.string :name, null: false
       t.string :code_environment
       t.jsonb :classes
-      t.jsonb :trusted_data
+      t.jsonb :data
       t.timestamps
     end
   end

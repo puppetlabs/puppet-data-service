@@ -11,19 +11,19 @@ if App.environment == :development
       name: "ip-100.#{business_domain_name}",
       code_environment: 'development',
       classes: ['policy::base'],
-      trusted_data: {},
+      data: {},
     },
     {
       name: "ip-101.#{business_domain_name}",
       code_environment: 'development',
       classes: ['policy::base'],
-      trusted_data: {},
+      data: {},
     },
     {
       name: "ip-102.#{business_domain_name}",
       code_environment: 'production',
       classes: ['policy::base', 'policy::tier1'],
-      trusted_data: {},
+      data: {},
     },
   ]
 

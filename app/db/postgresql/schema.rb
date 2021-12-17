@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2021_12_15_180218) do
   create_table "nodes", primary_key: "name", id: :string, force: :cascade do |t|
     t.string "code_environment"
     t.jsonb "classes"
-    t.jsonb "trusted_data"
+    t.jsonb "data"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
