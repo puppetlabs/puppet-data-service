@@ -19,7 +19,10 @@ App.add_route('POST', '/v1/nodes', {
   cross_origin
 
   # TODO: validate input
-  nodes = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  nodes = JSON.parse(body_params)
 
   begin
     set_new_timestamps!(nodes)
