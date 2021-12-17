@@ -13,7 +13,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: localhost:3000/v1
+  - url: http://localhost:8080/v1
 tags:
   - name: users
     description: Every config change should be started with an authorized Admin User
@@ -61,6 +61,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "400":
+          description: "{ 'error': 'Bad Request. Unable to create requested users, check for duplicate users'}"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
@@ -193,6 +195,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+        "400":
+          description: '{ "error": "Bad Request. Unable to create requested nodes, check for duplicate nodes" }'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -539,7 +543,6 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableUserProperties"
               - $ref: "#/components/schemas/EditableUserProperties"
               - required: ["username"]
 

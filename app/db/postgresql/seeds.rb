@@ -1,4 +1,5 @@
 if App.environment == :development
+  puts "Removing existing data ... \n \n"
   PDS::DataAdapter::PostgreSQL::User.destroy_all
   PDS::DataAdapter::PostgreSQL::Node.destroy_all
   PDS::DataAdapter::PostgreSQL::HieraDatum.destroy_all
@@ -37,10 +38,12 @@ if App.environment == :development
     { level: 'emea', key: 'pds::weight', value: {'kg' => 4}},
   ]
 
+  puts "Inserting fresh seed data ... \n"
+
   users.each do |user|
     puts "Creating user #{user.capitalize} ... \n"
     PDS::DataAdapter::PostgreSQL::User.create!(
-      username: user.capitalize,
+      username: user,
       email: "#{user}@#{business_domain_name}",
       role: 'operator'
     )

@@ -16,9 +16,9 @@ module PDS
         # TODO
         model = entity_klass(entity_type)
         begin
-          model.insert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
+          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
           resources
-        rescue
+        rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
       end

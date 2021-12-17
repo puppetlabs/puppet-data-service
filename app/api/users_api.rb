@@ -1,6 +1,5 @@
 require 'json'
 
-
 App.add_route('POST', '/v1/users', {
   "resourcePath" => "/Users",
   "summary" => "Create user",
@@ -20,17 +19,21 @@ App.add_route('POST', '/v1/users', {
   authenticate!
 
   # TODO: validate input
-  new_users = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  new_users = JSON.parse(body_params)
 
   begin
     new_users.each { |user| user['status'] = 'active' }
     set_new_timestamps!(new_users)
-    data_adapter.create(:users, resources: new_users)
+    users_created = data_adapter.create(:users, resources: new_users)
+
     status 201
-    new_users.to_json
+    users_created.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
-    e.message
+    { 'error': 'Bad Request. Unable to create requested users, check for duplicate users', 'details': e.message }.to_json
   end
 end
 
@@ -161,8 +164,13 @@ App.add_route('PUT', '/v1/users/{username}', {
   authenticate!
 
   # TODO: validate input
-  user = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  user = JSON.parse(body_params)
+  user['username'] = params['username']
   user['status'] = 'active'
+
   update_or_set_new_timestamps!(:users, [user])
   data_adapter.upsert(:users, resources: [user])
 

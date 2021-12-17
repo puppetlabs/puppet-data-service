@@ -1,6 +1,5 @@
 require 'json'
 
-
 App.add_route('POST', '/v1/nodes', {
   "resourcePath" => "/Nodes",
   "summary" => "Create new node(s)",
@@ -19,16 +18,20 @@ App.add_route('POST', '/v1/nodes', {
   cross_origin
 
   # TODO: validate input
-  nodes = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  nodes = JSON.parse(body_params)
 
   begin
     set_new_timestamps!(nodes)
-    data_adapter.create(:nodes, resources: nodes)
+    nodes_created = data_adapter.create(:nodes, resources: nodes)
+
     status 201
-    nodes.to_json
+    nodes_created.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
-    e.message
+    { 'error': 'Bad Request. Unable to create requested nodes, check for duplicate nodes', 'details': e.message }.to_json
   end
 end
 
@@ -141,4 +144,3 @@ App.add_route('PUT', '/v1/nodes/{name}', {
 
   node.to_json
 end
-
