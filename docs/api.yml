@@ -61,6 +61,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "400":
+          description: "{ 'error': 'Bad Request. Unable to create requested users, check for duplicate users'}"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
@@ -194,7 +196,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Node"
         "400":
-          description: '{"error": "Bad Request. Unable to create requested nodes, check for duplicate nodes"}'
+          description: '{ "error": "Bad Request. Unable to create requested nodes, check for duplicate nodes" }'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 

@@ -31,7 +31,7 @@ App.add_route('POST', '/v1/nodes', {
       nodes_created.to_json
     else
       status 400
-      { 'error': 'Bad Request. Unable to create requested nodes, check for duplicate nodes'}.to_json
+      { 'error': 'Bad Request. Unable to create requested nodes, check for duplicate nodes' }.to_json
     end
   rescue PDS::DataAdapter::Conflict => e
     status 400
