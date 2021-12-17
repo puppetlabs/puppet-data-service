@@ -10,3 +10,6 @@
 # Client ignores
 /golang/pds-cli/pds-cli
 /golang/pds-cli/pds-cli.yaml
+
+# Packaging ignores
+/package/*.rpm

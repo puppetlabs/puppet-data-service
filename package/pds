@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# This script is designed to run as a Puppet trusted-external-command,
+# installed to /etc/puppetlabs/puppet/trusted-external-commands/pds.
+
+/opt/puppetlabs/bin/pds-cli node get --trusted-external-command "$@"
