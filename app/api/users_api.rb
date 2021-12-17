@@ -29,16 +29,11 @@ App.add_route('POST', '/v1/users', {
     set_new_timestamps!(new_users)
     users_created = data_adapter.create(:users, resources: new_users)
 
-    if users_created.present?
-      status 201
-      users_created.to_json
-    else
-      status 400
-      { 'error': 'Bad Request. Unable to create requested users, check for duplicate users' }.to_json
-    end
+    status 201
+    users_created.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
-    e.message
+    { 'error': 'Bad Request. Unable to create requested users, check for duplicate users', 'details': e.message }.to_json
   end
 end
 

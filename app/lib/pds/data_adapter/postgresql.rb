@@ -16,11 +16,9 @@ module PDS
         # TODO
         model = entity_klass(entity_type)
         begin
-          inserted_items = model.insert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
-
-          return inserted_items if inserted_items.empty?
-          model.find(inserted_items.rows.flatten)
-        rescue
+          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
+          resources
+        rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
       end
