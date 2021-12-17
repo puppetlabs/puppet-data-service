@@ -539,7 +539,6 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableUserProperties"
               - $ref: "#/components/schemas/EditableUserProperties"
               - required: ["username"]
 
