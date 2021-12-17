@@ -193,6 +193,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested nodes, check for duplicate nodes"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 
