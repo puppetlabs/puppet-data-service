@@ -16,8 +16,10 @@ module PDS
         # TODO
         model = entity_klass(entity_type)
         begin
-          model.insert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
-          resources
+          inserted_items = model.insert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
+
+          return inserted_items if inserted_items.empty?
+          model.find(inserted_items.rows.flatten)
         rescue
           raise PDS::DataAdapter::Conflict
         end
