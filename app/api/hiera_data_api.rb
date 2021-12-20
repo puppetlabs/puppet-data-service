@@ -162,7 +162,10 @@ App.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
   # the guts live here
 
   # TODO: validate input
-  hiera_data = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  hiera_data = JSON.parse(body_params)
   hiera_data['level'] = params['level']
   hiera_data['key'] = params['key']
   update_or_set_new_timestamps!(:hiera_data, [hiera_data])
