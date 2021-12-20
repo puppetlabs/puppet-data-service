@@ -104,9 +104,6 @@ var upsertUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
 		body := client.PutUserJSONRequestBody{
-			ImmutableUserProperties : client.ImmutableUserProperties{
-				Username : (*client.Username)(&username),
-			},
 			EditableUserProperties : client.EditableUserProperties{
 				Email : &userEmail,
 				Role : (*client.EditableUserPropertiesRole)(&userRole),
