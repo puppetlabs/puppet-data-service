@@ -309,6 +309,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
