@@ -559,12 +559,11 @@ components:
                 - required: ["username"]
 
     NewNode:
-      description: Create or edit node object
+      description: Create or Edit node object
       content:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableNodeProperties"
               - $ref: "#/components/schemas/EditableNodeProperties"
               - required: ["name"]
 
