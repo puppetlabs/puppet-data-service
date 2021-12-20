@@ -132,7 +132,12 @@ App.add_route('PUT', '/v1/nodes/{name}', {
   cross_origin
 
   # TODO: validate input
-  node = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  node = JSON.parse(body_params)
+  node['name'] = params['name']
+
   update_or_set_new_timestamps!(:nodes, [node])
   data_adapter.upsert(:nodes, resources: [node])
 

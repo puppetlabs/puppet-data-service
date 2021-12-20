@@ -178,8 +178,6 @@ type NewHieraData []struct {
 
 // NewNode defines model for NewNode.
 type NewNode struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableNodeProperties)
-	ImmutableNodeProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
 	EditableNodeProperties `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
@@ -196,8 +194,6 @@ type NewNodes []struct {
 
 // NewUser defines model for NewUser.
 type NewUser struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableUserProperties)
-	ImmutableUserProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
 	EditableUserProperties `yaml:",inline"`
 	// Embedded fields due to inline allOf schema

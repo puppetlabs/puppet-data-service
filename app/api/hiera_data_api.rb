@@ -19,7 +19,10 @@ App.add_route('POST', '/v1/hiera-data', {
   cross_origin
 
   # TODO: validate input
-  hiera_data = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  hiera_data = JSON.parse(body_params)
 
   begin
     set_new_timestamps!(hiera_data)
@@ -28,7 +31,7 @@ App.add_route('POST', '/v1/hiera-data', {
     hiera_data.to_json
   rescue PDS::DataAdapter::Conflict => e
     status 400
-    e.message
+    { 'error': 'Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data', 'details': e.message }.to_json
   end
 end
 
@@ -159,7 +162,10 @@ App.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
   # the guts live here
 
   # TODO: validate input
-  hiera_data = JSON.parse(request.body.read)
+  body_params = request.body.read
+  return status 400 if body_params.empty?
+
+  hiera_data = JSON.parse(body_params)
   hiera_data['level'] = params['level']
   hiera_data['key'] = params['key']
   update_or_set_new_timestamps!(:hiera_data, [hiera_data])

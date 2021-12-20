@@ -309,6 +309,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/HieraValue"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
@@ -358,6 +360,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HieraValue"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -559,12 +563,11 @@ components:
                 - required: ["username"]
 
     NewNode:
-      description: Create or edit node object
+      description: Create or Edit node object
       content:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableNodeProperties"
               - $ref: "#/components/schemas/EditableNodeProperties"
               - required: ["name"]
 
