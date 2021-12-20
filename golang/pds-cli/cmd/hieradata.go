@@ -106,9 +106,7 @@ var upsertHieraDataCmd = &cobra.Command{
 		}
 
 		body := client.UpsertHieraDataWithLevelAndKeyJSONRequestBody{
-			EditableHieraValueProperties : client.EditableHieraValueProperties{
-				Value : &value,
-			},
+			Value : &value,
 		}
 
 		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), client.HieraLevel(levelStr), client.HieraKey(keyStr), body)
