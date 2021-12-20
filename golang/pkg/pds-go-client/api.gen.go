@@ -47,8 +47,8 @@ const (
 	ReadOnlyUserPropertiesStatusInactive ReadOnlyUserPropertiesStatus = "inactive"
 )
 
-// EditableHieraValueProperties defines model for EditableHieraValueProperties.
-type EditableHieraValueProperties struct {
+// EditableHieraDatumProperties defines model for EditableHieraDatumProperties.
+type EditableHieraDatumProperties struct {
 	// The value to set the Hiera key to
 	Value *interface{} `json:"value"`
 }
@@ -76,18 +76,18 @@ type EditableUserProperties struct {
 // User role
 type EditableUserPropertiesRole string
 
-// HieraValue defines model for HieraValue.
-type HieraValue struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
-	ImmutableHieraValueProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
-	EditableHieraValueProperties `yaml:",inline"`
+// HieraDatum defines model for HieraDatum.
+type HieraDatum struct {
+	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraDatumProperties)
+	ImmutableHieraDatumProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/EditableHieraDatumProperties)
+	EditableHieraDatumProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/TimestampProperties)
 	TimestampProperties `yaml:",inline"`
 }
 
-// ImmutableHieraValueProperties defines model for ImmutableHieraValueProperties.
-type ImmutableHieraValueProperties struct {
+// ImmutableHieraDatumProperties defines model for ImmutableHieraDatumProperties.
+type ImmutableHieraDatumProperties struct {
 	Key   *string `json:"key,omitempty"`
 	Level *string `json:"level,omitempty"`
 }
@@ -160,26 +160,12 @@ type NodeName string
 // OptionalHieraLevel defines model for OptionalHieraLevel.
 type OptionalHieraLevel string
 
-// EditHieraValue defines model for EditHieraValue.
-type EditHieraValue struct {
-	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
-	EditableHieraValueProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-}
-
 // NewHieraData defines model for NewHieraData.
 type NewHieraData []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraValueProperties)
-	ImmutableHieraValueProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableHieraValueProperties)
-	EditableHieraValueProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-}
-
-// NewNode defines model for NewNode.
-type NewNode struct {
-	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
-	EditableNodeProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraDatumProperties)
+	ImmutableHieraDatumProperties `yaml:",inline"`
+	// Embedded struct due to allOf(#/components/schemas/EditableHieraDatumProperties)
+	EditableHieraDatumProperties `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
 }
 
@@ -189,13 +175,6 @@ type NewNodes []struct {
 	ImmutableNodeProperties `yaml:",inline"`
 	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
 	EditableNodeProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
-}
-
-// NewUser defines model for NewUser.
-type NewUser struct {
-	// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
-	EditableUserProperties `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
 }
 
@@ -218,19 +197,19 @@ type GetHieraDataParams struct {
 type CreateHieraDataJSONRequestBody NewHieraData
 
 // UpsertHieraDataWithLevelAndKeyJSONRequestBody defines body for UpsertHieraDataWithLevelAndKey for application/json ContentType.
-type UpsertHieraDataWithLevelAndKeyJSONRequestBody EditHieraValue
+type UpsertHieraDataWithLevelAndKeyJSONRequestBody EditableHieraDatumProperties
 
 // CreateNodeJSONRequestBody defines body for CreateNode for application/json ContentType.
 type CreateNodeJSONRequestBody NewNodes
 
 // PutNodeByNameJSONRequestBody defines body for PutNodeByName for application/json ContentType.
-type PutNodeByNameJSONRequestBody NewNode
+type PutNodeByNameJSONRequestBody EditableNodeProperties
 
 // CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
 type CreateUserJSONRequestBody NewUsers
 
 // PutUserJSONRequestBody defines body for PutUser for application/json ContentType.
-type PutUserJSONRequestBody NewUser
+type PutUserJSONRequestBody EditableUserProperties
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -1358,7 +1337,7 @@ type ClientWithResponsesInterface interface {
 type GetHieraDataResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]HieraValue
+	JSON200      *[]HieraDatum
 }
 
 // Status returns HTTPResponse.Status
@@ -1380,7 +1359,7 @@ func (r GetHieraDataResponse) StatusCode() int {
 type CreateHieraDataResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]HieraValue
+	JSON201      *[]HieraDatum
 }
 
 // Status returns HTTPResponse.Status
@@ -1423,7 +1402,7 @@ func (r DeleteHieraDataObjectResponse) StatusCode() int {
 type GetHieraDataWithLevelAndKeyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *HieraValue
+	JSON200      *HieraDatum
 }
 
 // Status returns HTTPResponse.Status
@@ -1445,8 +1424,8 @@ func (r GetHieraDataWithLevelAndKeyResponse) StatusCode() int {
 type UpsertHieraDataWithLevelAndKeyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *HieraValue
-	JSON201      *HieraValue
+	JSON200      *HieraDatum
+	JSON201      *HieraDatum
 }
 
 // Status returns HTTPResponse.Status
@@ -1914,7 +1893,7 @@ func ParseGetHieraDataResponse(rsp *http.Response) (*GetHieraDataResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []HieraValue
+		var dest []HieraDatum
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1940,7 +1919,7 @@ func ParseCreateHieraDataResponse(rsp *http.Response) (*CreateHieraDataResponse,
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest []HieraValue
+		var dest []HieraDatum
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1982,7 +1961,7 @@ func ParseGetHieraDataWithLevelAndKeyResponse(rsp *http.Response) (*GetHieraData
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HieraValue
+		var dest HieraDatum
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -2008,14 +1987,14 @@ func ParseUpsertHieraDataWithLevelAndKeyResponse(rsp *http.Response) (*UpsertHie
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HieraValue
+		var dest HieraDatum
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest HieraValue
+		var dest HieraDatum
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

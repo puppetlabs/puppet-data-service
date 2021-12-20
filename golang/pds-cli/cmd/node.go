@@ -102,10 +102,8 @@ var upsertNodeCmd = &cobra.Command{
 		}
 
 		body := client.PutNodeByNameJSONRequestBody{
-			EditableNodeProperties : client.EditableNodeProperties{
-				Classes : &classes,
-				Data : &data,
-			},
+			Classes : &classes,
+			Data : &data,
 		}
 
 		if codeEnvironment != "" {
