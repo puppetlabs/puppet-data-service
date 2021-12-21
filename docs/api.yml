@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: "WIP: Puppet Data Service API"
+  title: "Puppet Data Service API"
   description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization filters."
   termsOfService: http://swagger.io/terms/
   contact:
