@@ -17,10 +17,10 @@ package: $(bundle) $(pds-cli)
 
 clean:
 	rm -rf app/vendor/bundle
-	rm app/config/pds.yaml
-	rm golang/pds-cli/pds-cli
-	rm golang/pds-cli/pds-cli.yaml
-	rm pds-service*.rpm
+	rm -f app/config/pds.yaml
+	rm -f golang/pds-cli/pds-cli
+	rm -f golang/pds-cli/pds-cli.yaml
+	rm -f pds-service*.rpm
 
 $(pds-cli): $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
