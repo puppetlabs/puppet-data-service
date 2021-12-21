@@ -18,6 +18,19 @@ database:
 #  username: <%= ENV['DATABASE_USER'] %>
 #  password: <%= ENV['DATABASE_PASSWORD'] %>
 
+# Example with ssl cert auth
+
+#database:
+#  adapter: postgresql
+#  encoding: unicode
+#  pool: 5
+#  host: <%= ENV['DATABASE_HOST'] %>
+#  database: <%= ENV['DATABASE_NAME'] %>
+#  sslmode: verify-full
+#  sslcert: client.crt
+#  sslkey: client.key
+#  sslrootcert: ca.crt
+
 # For development purposes, authentication may be disabled.
 
 #authenticate: false
