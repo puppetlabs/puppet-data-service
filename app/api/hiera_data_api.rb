@@ -20,7 +20,7 @@ App.add_route('POST', '/v1/hiera-data', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   hiera_data = JSON.parse(body_params)
 
@@ -30,8 +30,7 @@ App.add_route('POST', '/v1/hiera-data', {
     status 201
     hiera_data.to_json
   rescue PDS::DataAdapter::Conflict => e
-    status 400
-    { 'error': 'Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data', 'details': e.message }.to_json
+    render_error(400, 'Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data', e.message)
   end
 end
 
@@ -63,7 +62,7 @@ App.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
   # TODO: validate input
   deleted = data_adapter.delete(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
   if deleted.zero?
-    status 404
+    render_error(404, 'Hiera data not found for the given level and key')
   else
     status 200
   end
@@ -124,7 +123,7 @@ App.add_route('GET', '/v1/hiera-data/{level}/{key}', {
   # TODO: validate input
   hiera_data = data_adapter.read(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
   if hiera_data.empty?
-    status 404
+    render_error(404, 'Hiera data not found for the given level and key')
   else
     hiera_data.first.to_json
   end
@@ -163,7 +162,7 @@ App.add_route('PUT', '/v1/hiera-data/{level}/{key}', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   hiera_data = JSON.parse(body_params)
   hiera_data['level'] = params['level']
