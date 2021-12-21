@@ -16,8 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
@@ -30,6 +31,7 @@ var (
 	codeEnvironment string
 	classes []string
 	dataStr string
+	nodeFile string
 )
 
 // nodeCmd represents the node command
@@ -130,6 +132,45 @@ var upsertNodeCmd = &cobra.Command{
 	},
 }
 
+var createNodeCmd = &cobra.Command{
+	Use:   "create -f FILENAME",
+	Args:  cobra.ExactArgs(0),
+	Short: "Create nodes in json file FILENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		// read the file
+		file, err := ioutil.ReadFile(nodeFile)
+		if err != nil {
+			log.Fatalf("Couldn't open file %s: %s", nodeFile, err)
+		}
+
+		// unmarshal file contents into the request body
+		var nodes client.CreateNodeJSONRequestBody
+		err = json.Unmarshal(file, &nodes)
+		if err != nil {
+			log.Fatalf("Couldn't decode file %s: %s", nodeFile, err)
+		}
+
+		// Submit the request
+		response, err := pdsClient.CreateNodeWithResponse(context.Background(), nodes)
+
+		// Handle errors
+		if err != nil {
+			nodesString, _ := json.MarshalIndent(nodes, "", "\t")
+			log.Fatalf("Couldn't create users %s: %s", nodesString, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d\nbody: %s\nheaders: %v\n", 
+				response.HTTPResponse.StatusCode, response.Body, response.HTTPResponse.Header)
+		}
+
+		// Print results
+		if response.JSON201 != nil {
+			dump(response.JSON201)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(nodeCmd)
 
@@ -151,4 +192,8 @@ func init() {
 	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
 	upsertNodeCmd.Flags().StringVarP(&dataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
 	upsertNodeCmd.MarkFlagRequired("name")
+
+	nodeCmd.AddCommand(createNodeCmd)
+	createNodeCmd.Flags().StringVarP(&nodeFile, "nodefile", "f", "", "JSON file containing an array of nodes")
+	createNodeCmd.MarkFlagRequired("nodefile")
 }
