@@ -17,6 +17,8 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
@@ -24,9 +26,10 @@ import (
 )
 
 var (
-	username string
+	username  string
 	userEmail string
-	userRole string
+	userRole  string
+	userFile  string
 )
 
 var userCmd = &cobra.Command{
@@ -104,8 +107,8 @@ var upsertUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Build the JSON body
 		body := client.PutUserJSONRequestBody{
-			Email : &userEmail,
-			Role : (*client.EditableUserPropertiesRole)(&userRole),
+			Email: &userEmail,
+			Role:  (*client.EditableUserPropertiesRole)(&userRole),
 		}
 
 		// Submit the request
@@ -123,6 +126,44 @@ var upsertUserCmd = &cobra.Command{
 		if response.JSON201 == nil {
 			dump(response.JSON200)
 		} else {
+			dump(response.JSON201)
+		}
+	},
+}
+
+var createUserCmd = &cobra.Command{
+	Use:   "create -f FILENAME",
+	Args:  cobra.ExactArgs(0),
+	Short: "Create users in json file FILENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		// read the file
+		file, err := ioutil.ReadFile(userFile)
+		if err != nil {
+			log.Fatalf("Couldn't open file %s: %s", userFile, err)
+		}
+
+		// unmarshal file contents into the request body
+		var users client.CreateUserJSONRequestBody
+		err = json.Unmarshal(file, &users)
+		if err != nil {
+			log.Fatalf("Couldn't decode file %s: %s", userFile, err)
+		}
+
+		// Submit the request
+		response, err := pdsClient.CreateUserWithResponse(context.Background(), users)
+
+		// Handle errors
+		if err != nil {
+			usersString, _ := json.MarshalIndent(users, "", "\t")
+			log.Fatalf("Couldn't create users %s: %s", usersString, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
+
+		// Print results
+		if response.JSON201 != nil {
 			dump(response.JSON201)
 		}
 	},
@@ -152,4 +193,8 @@ func init() {
 	upsertUserCmd.MarkFlagRequired("username")
 	upsertUserCmd.MarkFlagRequired("email")
 	upsertUserCmd.MarkFlagRequired("role")
+
+	userCmd.AddCommand(createUserCmd)
+	createUserCmd.Flags().StringVarP(&userFile, "userfile", "f", "", "JSON file containing an array of users")
+	createUserCmd.MarkFlagRequired("userfile")
 }
