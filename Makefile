@@ -1,8 +1,11 @@
 NAME=pds-service
 VERSION=0.1.0-dev
 
+OS := $(strip $(shell uname))
+RUBY_VERSION := $(strip $(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'puts RUBY_VERSION.sub(/\d+$$/, "0")'))
+
 pds-cli = golang/pds-cli/pds-cli
-bundle = app/vendor/bundle/ruby/$(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'puts RUBY_VERSION.sub(/\d+$$/, "0")')
+bundle = app/vendor/bundle/ruby/$(RUBY_VERSION)
 pe-postgresql-devel = /opt/puppetlabs/server/apps/postgresql/11/include
 
 .PHONY: rpm clean
@@ -26,9 +29,15 @@ clean:
 $(pds-cli): $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
 
-$(bundle): app/Gemfile.lock $(pe-postgresql-devel)
+$(bundle): app/Gemfile.lock
 	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin /opt/puppetlabs/puppet/bin/bundle install \
 		|| touch app/Gemfile.lock
+
+# Require that the pe-postgresql11-devel package be installed to build the
+# bundle IF the build is running on Linux
+ifeq ($(OS), Linux)
+$(bundle): $(pe-postgresql-devel)
+endif
 
 $(pe-postgresql-devel):
 	sudo yum install pe-postgresql-devel
