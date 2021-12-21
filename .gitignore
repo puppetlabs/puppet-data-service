@@ -12,4 +12,4 @@
 /golang/pds-cli/pds-cli.yaml
 
 # Packaging ignores
-/package/*.rpm
+/*.rpm
