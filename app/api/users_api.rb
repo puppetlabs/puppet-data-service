@@ -20,7 +20,7 @@ App.add_route('POST', '/v1/users', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   new_users = JSON.parse(body_params)
 
@@ -32,8 +32,7 @@ App.add_route('POST', '/v1/users', {
     status 201
     users_created.to_json
   rescue PDS::DataAdapter::Conflict => e
-    status 400
-    { 'error': 'Bad Request. Unable to create requested users, check for duplicate users', 'details': e.message }.to_json
+    render_error(400, 'Bad Request. Unable to create requested users, check for duplicate users', e.message)
   end
 end
 
@@ -59,7 +58,7 @@ App.add_route('DELETE', '/v1/users/{username}', {
   # TODO: validate input
   deleted = data_adapter.delete(:users, filters: [['=', 'username', params['username']]])
   if deleted.zero?
-    status 404
+    render_error(404, 'User not found')
   else
     status 200
   end
@@ -104,7 +103,7 @@ App.add_route('GET', '/v1/users/{username}/token', {
   # TODO: validate input
   user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if user.empty?
-    status 404
+    render_error(404, 'User not found')
   else
     { 'token' => user.first['temp-token']}.to_json
   end
@@ -132,7 +131,7 @@ App.add_route('GET', '/v1/users/{username}', {
   # TODO: validate input
   users = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if users.empty?
-    status 404
+    render_error(404, 'User not found')
   else
     users.first.select { |key,_| key != 'temp-token' }.to_json
   end
@@ -165,7 +164,7 @@ App.add_route('PUT', '/v1/users/{username}', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   user = JSON.parse(body_params)
   user['username'] = params['username']

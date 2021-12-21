@@ -27,4 +27,18 @@ App.helpers do
 
     users.first
   end
+
+  def render_error(code, message, details = nil)
+    status code
+    full_error_message = {
+      error: message
+    }
+
+    details_hash = {
+      details: details
+    }
+
+    full_error_message = full_error_message.merge(details_hash) unless details.nil?
+    full_error_message.to_json
+  end
 end

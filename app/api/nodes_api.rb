@@ -19,7 +19,7 @@ App.add_route('POST', '/v1/nodes', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   nodes = JSON.parse(body_params)
 
@@ -30,8 +30,7 @@ App.add_route('POST', '/v1/nodes', {
     status 201
     nodes_created.to_json
   rescue PDS::DataAdapter::Conflict => e
-    status 400
-    { 'error': 'Bad Request. Unable to create requested nodes, check for duplicate nodes', 'details': e.message }.to_json
+    render_error(400, 'Bad Request. Unable to create requested nodes, check for duplicate nodes', e.message)
   end
 end
 
@@ -57,7 +56,7 @@ App.add_route('DELETE', '/v1/nodes/{name}', {
   # TODO: validate input
   deleted = data_adapter.delete(:nodes, filters: [['=', 'name', params['name']]])
   if deleted.zero?
-    status 404
+    render_error(404, 'Node not found')
   else
     status 200
   end
@@ -101,7 +100,7 @@ App.add_route('GET', '/v1/nodes/{name}', {
   # TODO: validate input
   nodes = data_adapter.read(:nodes, filters: [['=', 'name', params['name']]])
   if nodes.empty?
-    status 404
+    render_error(404, 'Node not found')
   else
     nodes.first.to_json
   end
@@ -133,7 +132,7 @@ App.add_route('PUT', '/v1/nodes/{name}', {
 
   # TODO: validate input
   body_params = request.body.read
-  return status 400 if body_params.empty?
+  return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   node = JSON.parse(body_params)
   node['name'] = params['name']
