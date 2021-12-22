@@ -1,4 +1,4 @@
-NAME=pds-service
+NAME=pds-server
 VERSION=0.1.0-dev
 
 OS := $(strip $(shell uname))
@@ -15,20 +15,20 @@ rpm: $(bundle) $(pds-cli)
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
 		--after-remove package/rpm/postuninstall \
-		app/=/opt/puppetlabs/server/apps/pds-service \
-		app/config/pds.yaml.example=/etc/puppetlabs/pds-service/pds.yaml.example \
+		app/=/opt/puppetlabs/server/apps/pds-server \
+		app/config/pds.yaml.example=/etc/puppetlabs/pds-server/pds.yaml.example \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
-		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-service/pds-cli.yaml.example \
+		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-server/pds-cli.yaml.example \
 		package/pds=/etc/puppetlabs/puppet/trusted-external-commands/pds \
 		package/pds-ctl=/opt/puppetlabs/sbin/pds-ctl \
-		package/pds-service.service=/usr/lib/systemd/system/pds-service.service
+		package/pds-server.service=/usr/lib/systemd/system/pds-server.service
 
 clean:
 	rm -rf app/vendor/bundle
 	rm -f app/config/pds.yaml
 	rm -f golang/pds-cli/pds-cli
 	rm -f golang/pds-cli/pds-cli.yaml
-	rm -f pds-service*.rpm
+	rm -f pds-server*.rpm
 
 $(pds-cli): $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build

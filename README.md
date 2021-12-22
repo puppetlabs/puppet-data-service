@@ -14,7 +14,7 @@ CLI / HieraBackend / TrustedExternal commands / Web Client?       golang/ | 
       [PostgreSQL][Cassandra][MongoDB].                           app/lib/pds/data_adapter/ | DB Level
 ```
 
-## Building the pds-service package
+## Building the pds-server package
 
 ### Dependencies
 
@@ -23,7 +23,7 @@ CLI / HieraBackend / TrustedExternal commands / Web Client?       golang/ | 
 
 ### Procedure
 
-To build the pds-service RPM package
+To build the pds-server RPM package
 
 1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
 3. Run `make clean`
@@ -33,10 +33,10 @@ To build the pds-service RPM package
 
 ```
 Paths:
-  /opt/puppetlabs/server/apps/pds-service
+  /opt/puppetlabs/server/apps/pds-server
     - Application files
 
-  /etc/puppetlabs/pds-service
+  /etc/puppetlabs/pds-server
     - Config files
 
   /opt/puppetlabs/bin

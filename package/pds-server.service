@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=pds-service
-WorkingDirectory=/opt/puppetlabs/server/apps/pds-service
+User=pds-server
+WorkingDirectory=/opt/puppetlabs/server/apps/pds-server
 ExecStart=/opt/puppetlabs/puppet/bin/bundle exec puma -p 8160
 Restart=always
 
