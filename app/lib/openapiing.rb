@@ -16,6 +16,10 @@ end
 class OpenAPIing < Sinatra::Base
   register Sinatra::CrossOrigin
 
+  before do
+    authenticate!
+  end
+
   @@routes = {}
   @@configuration = Configuration.new
 

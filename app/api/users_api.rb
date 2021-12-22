@@ -16,7 +16,6 @@ App.add_route('POST', '/v1/users', {
     }
     ]}) do
   cross_origin
-  authenticate!
 
   # TODO: validate input
   body_params = request.body.read
@@ -53,7 +52,6 @@ App.add_route('DELETE', '/v1/users/{username}', {
     },
     ]}) do
   cross_origin
-  authenticate!
 
   # TODO: validate input
   deleted = data_adapter.delete(:users, filters: [['=', 'username', params['username']]])
@@ -75,7 +73,6 @@ App.add_route('GET', '/v1/users', {
   "parameters" => [
     ]}) do
   cross_origin
-  authenticate!
 
   users = data_adapter.read(:users)
   users.map { |hash| hash.select { |key,_| key != 'temp-token' }}.to_json
@@ -98,7 +95,6 @@ App.add_route('GET', '/v1/users/{username}/token', {
     },
     ]}) do
   cross_origin
-  authenticate!
 
   # TODO: validate input
   user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
@@ -126,7 +122,6 @@ App.add_route('GET', '/v1/users/{username}', {
     },
     ]}) do
   cross_origin
-  authenticate!
 
   # TODO: validate input
   users = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
@@ -160,7 +155,6 @@ App.add_route('PUT', '/v1/users/{username}', {
     }
     ]}) do
   cross_origin
-  authenticate!
 
   # TODO: validate input
   body_params = request.body.read
