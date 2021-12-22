@@ -16,8 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
@@ -25,9 +26,10 @@ import (
 )
 
 var (
-	levelStr string
-	keyStr string
-	valueStr string
+	levelStr      string
+	keyStr        string
+	valueStr      string
+	hieraDataFile string
 )
 
 // hieraDataCmd represents the hieraData command
@@ -69,7 +71,8 @@ var getHieraDataCmd = &cobra.Command{
 			log.Fatalf("Couldn't get hieraData %s/%s: %s", level, key, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
-			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+			log.Fatalf("Request failed with status code: %d\nbody: %s, headers: %v\n",
+				response.HTTPResponse.StatusCode, response.Body, response.HTTPResponse.Header)
 		}
 		dump(response.JSON200)
 	},
@@ -87,7 +90,8 @@ var deleteHieraDataCmd = &cobra.Command{
 			log.Fatalf("Couldn't delete hieraData %s/%s: %s", level, key, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
-			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+			log.Fatalf("Request failed with status code: %d\nbody: %s, headers: %v\n",
+				response.HTTPResponse.StatusCode, response.Body, response.HTTPResponse.Header)
 		}
 		dump(response.Status())
 	},
@@ -106,7 +110,7 @@ var upsertHieraDataCmd = &cobra.Command{
 		}
 
 		body := client.UpsertHieraDataWithLevelAndKeyJSONRequestBody{
-			Value : &value,
+			Value: &value,
 		}
 
 		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), client.HieraLevel(levelStr), client.HieraKey(keyStr), body)
@@ -127,6 +131,45 @@ var upsertHieraDataCmd = &cobra.Command{
 	},
 }
 
+var createHieraDataCmd = &cobra.Command{
+	Use:   "create -f FILENAME",
+	Args:  cobra.ExactArgs(0),
+	Short: "Create hieradata in json file FILENAME",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		// read the file
+		file, err := ioutil.ReadFile(hieraDataFile)
+		if err != nil {
+			log.Fatalf("Couldn't open file %s: %s", hieraDataFile, err)
+		}
+
+		// unmarshal file contents into the request body
+		var hieraData client.CreateHieraDataJSONRequestBody
+		err = json.Unmarshal(file, &hieraData)
+		if err != nil {
+			log.Fatalf("Couldn't decode file %s: %s", hieraDataFile, err)
+		}
+
+		// Submit the request
+		response, err := pdsClient.CreateHieraDataWithResponse(context.Background(), hieraData)
+
+		// Handle errors
+		if err != nil {
+			hieraDataString, _ := json.MarshalIndent(hieraData, "", "\t")
+			log.Fatalf("Couldn't create users %s: %s", hieraDataString, err)
+		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d\nbody: %s\nheaders: %v\n",
+				response.HTTPResponse.StatusCode, response.Body, response.HTTPResponse.Header)
+		}
+
+		// Print results
+		if response.JSON201 != nil {
+			dump(response.JSON201)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(hieraDataCmd)
 
@@ -135,13 +178,13 @@ func init() {
 
 	hieraDataCmd.AddCommand(getHieraDataCmd)
 	getHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
-	getHieraDataCmd.Flags().StringVarP(&levelStr, "key", "k", "", "Hiera key")
+	getHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Hiera key")
 	getHieraDataCmd.MarkFlagRequired("level")
 	getHieraDataCmd.MarkFlagRequired("key")
 
 	hieraDataCmd.AddCommand(deleteHieraDataCmd)
 	deleteHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
-	deleteHieraDataCmd.Flags().StringVarP(&levelStr, "key", "k", "", "Hiera key")
+	deleteHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Hiera key")
 	deleteHieraDataCmd.MarkFlagRequired("level")
 	deleteHieraDataCmd.MarkFlagRequired("key")
 
@@ -152,4 +195,9 @@ func init() {
 	upsertHieraDataCmd.MarkFlagRequired("level")
 	upsertHieraDataCmd.MarkFlagRequired("key")
 	upsertHieraDataCmd.MarkFlagRequired("value")
+
+	hieraDataCmd.AddCommand(createHieraDataCmd)
+	createHieraDataCmd.Flags().StringVarP(&hieraDataFile, "hieradatafile", "f", "", "JSON file containing an array of hiera data")
+	createHieraDataCmd.MarkFlagRequired("hieradatafile")
+
 }
