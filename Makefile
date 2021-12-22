@@ -14,6 +14,7 @@ rpm: $(bundle) $(pds-cli)
 	fpm -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
+		--before-remove package/rpm/preuninstall \
 		--after-remove package/rpm/postuninstall \
 		--config-files /etc/puppetlabs/pds-server/pds.yaml \
 		--config-files /etc/puppetlabs/pds-server/pds-cli.yaml \

@@ -1,4 +1,4 @@
-f [ $1 -ge 1 ] ; then
+if [ $1 -ge 1 ] ; then
   # Package upgrade, not uninstall
   systemctl try-restart pds-server.service &>/dev/null || :
 fi
