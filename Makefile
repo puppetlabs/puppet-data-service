@@ -12,12 +12,16 @@ pe-postgresql-devel = /opt/puppetlabs/server/apps/postgresql/11/include
 
 rpm: $(bundle) $(pds-cli)
 	fpm -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
+		--before-install package/rpm/preinstall \
+		--after-install package/rpm/postinstall \
+		--after-remove package/rpm/postuninstall \
 		app/=/opt/puppetlabs/server/apps/pds-service \
 		app/config/pds.yaml.example=/etc/puppetlabs/pds-service/pds.yaml.example \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
 		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-service/pds-cli.yaml.example \
 		package/pds=/etc/puppetlabs/puppet/trusted-external-commands/pds \
-		package/pdsctl=/opt/puppetlabs/sbin/pdsctl
+		package/pds-ctl=/opt/puppetlabs/sbin/pds-ctl \
+		package/pds-service.service=/usr/lib/systemd/system/pds-service.service
 
 clean:
 	rm -rf app/vendor/bundle

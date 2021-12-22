@@ -1,0 +1,13 @@
+[Unit]
+Description=Puppet Data Service server
+After=network.target
+
+[Service]
+Type=simple
+User=pds-service
+WorkingDirectory=/opt/puppetlabs/server/apps/pds-service
+ExecStart=/opt/puppetlabs/puppet/bin/bundle exec puma -p 8160
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
