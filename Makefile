@@ -15,10 +15,14 @@ rpm: $(bundle) $(pds-cli)
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
 		--after-remove package/rpm/postuninstall \
+		--config-files /etc/puppetlabs/pds-server/pds.yaml \
+		--config-files /etc/puppetlabs/pds-server/pds-cli.yaml \
+		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds-server/pds.yaml' \
+		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds-server/pds-cli.yaml' \
 		app/=/opt/puppetlabs/server/apps/pds-server \
-		app/config/pds.yaml.example=/etc/puppetlabs/pds-server/pds.yaml.example \
+		app/config/pds.yaml.example=/etc/puppetlabs/pds-server/pds.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
-		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-server/pds-cli.yaml.example \
+		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-server/pds-cli.yaml \
 		package/pds=/etc/puppetlabs/puppet/trusted-external-commands/pds \
 		package/pds-ctl=/opt/puppetlabs/sbin/pds-ctl \
 		package/pds-server.service=/usr/lib/systemd/system/pds-server.service
