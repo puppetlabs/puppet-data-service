@@ -19,11 +19,11 @@ App.helpers do
     end
 
     token = request.env['HTTP_AUTHORIZATION']
-    halt 403 if token.nil?
+    halt render_error(401, 'Access (Bearer) token is missing or invalid') if token.nil?
     # Munge out auth-method prefix "Bearer " (case-insensitive) if present
     munged_token = token.sub(/^bearer /i, '')
     users = data_adapter.read(:users, filters: [['=', 'temp_token', munged_token]])
-    halt 403 if users.size != 1
+    halt render_error(401, 'Access (Bearer) token is missing or invalid') if users.size != 1
 
     users.first
   end
