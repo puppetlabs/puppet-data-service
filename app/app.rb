@@ -22,7 +22,7 @@ class App < OpenAPIing
   # Users should configure their app settings using a pds.yaml file in one of
   # these locations
   searchpath = [
-    '/etc/puppetlabs/pds/pds.yaml',
+    '/etc/puppetlabs/pds-server/pds.yaml',
     File.expand_path(File.join(__dir__, 'config', 'pds.yaml')),
   ]
 

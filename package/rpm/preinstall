@@ -1,0 +1,4 @@
+getent group pds-server >/dev/null || groupadd -r pds-server
+getent passwd pds-server >/dev/null || \
+    useradd -r -g pds-server -d /opt/puppetlabs/server/apps/pds-server -s /sbin/nologin \
+    -c "PDS Server service account" pds-server

@@ -1,6 +1,5 @@
 # General or repo-level ignores
 /rerun.txt
-.bundle
 .rvmrc
 .byebug_history
 
@@ -11,3 +10,6 @@
 # Client ignores
 /golang/pds-cli/pds-cli
 /golang/pds-cli/pds-cli.yaml
+
+# Packaging ignores
+/*.rpm

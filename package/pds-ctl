@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# This script provides an interface to rake commands that facilitate the
+# administration of pds-server.
+
+set -e
+
+function main()
+{
+	case "$1" in
+		rake)
+			be "$@"
+			;;
+		rackup)
+			be "$@"
+			;;
+		*)
+			cat <<-EOF
+				Usage: $(basename $0) [rake|rackup] [args...]
+				EOF
+			;;
+		esac
+}
+
+function be()
+{
+	cd /opt/puppetlabs/server/apps/pds-server
+	/opt/puppetlabs/puppet/bin/bundle exec "$@"
+}
+
+main "$@"

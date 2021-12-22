@@ -13,3 +13,38 @@ CLI / HieraBackend / TrustedExternal commands / Web Client?       golang/ | 
 
       [PostgreSQL][Cassandra][MongoDB].                           app/lib/pds/data_adapter/ | DB Level
 ```
+
+## Building the pds-server package
+
+### Dependencies
+
+* `fpm` must be installed
+* `rpm` build tools must be installed
+
+### Procedure
+
+To build the pds-server RPM package
+
+1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
+3. Run `make clean`
+4. Run `make package`
+
+### Paths
+
+```
+Paths:
+  /opt/puppetlabs/server/apps/pds-server
+    - Application files
+
+  /etc/puppetlabs/pds-server
+    - Config files
+
+  /opt/puppetlabs/bin
+    - pds-cli executable
+
+  /opt/puppetlabs/sbin
+    - pds-rake wrapper script
+
+  /etc/puppetlabs/puppet/trusted-external-commands/pds
+    - Wrapper to `pds-cli node get --trusted-external-command $1`
+```
