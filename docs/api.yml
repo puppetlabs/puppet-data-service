@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: "Puppet Data Service API"
-  description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization filters."
+  description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/puppetlabs/puppet-data-service). The PDS API uses Bearer Authentication, to generate a token for your admin user please run the ['set_admin_token' rake task](https://github.com/puppetlabs/puppet-data-service/tree/main/app#create-the-admin-token)"
   termsOfService: http://swagger.io/terms/
   contact:
     email: solarch-team@puppet.com
