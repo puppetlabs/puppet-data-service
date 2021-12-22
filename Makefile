@@ -38,7 +38,7 @@ clean:
 $(pds-cli): $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
 
-$(bundle): app/Gemfile.lock
+$(bundle): app/Gemfile app/Gemfile.lock
 	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin /opt/puppetlabs/puppet/bin/bundle install \
 		|| touch app/Gemfile.lock
 
