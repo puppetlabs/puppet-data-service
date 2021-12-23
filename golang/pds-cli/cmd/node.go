@@ -69,7 +69,7 @@ var getNodeCmd = &cobra.Command{
 		if (response.HTTPResponse.StatusCode == 404 && trustedExternalCommand) {
 			// On 404, trusted external command returns empty node entity
       data := make(map[string]interface{})
-			dump(client.EditableNodeProperties{&classes, nil, &data})
+			dump(client.EditableNodeProperties{Classes: &classes, CodeEnvironment: nil, Data: &data})
 		} else if response.HTTPResponse.StatusCode > 299 {
 			// Fail on errors otherwise
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
