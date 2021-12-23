@@ -23,7 +23,7 @@ class puppet_data_service::database (
 
   pe_postgresql_psql { 'ROLE pds':
     unless  => "SELECT FROM pg_roles WHERE rolname = 'pds'",
-    command => "CREATE ROLE pds CONNECTION LIMIT -1",
+    command => "CREATE ROLE pds WITH LOGIN CONNECTION LIMIT -1",
     before  => Pe_postgresql_psql['DATABASE pds'],
   }
 
@@ -67,13 +67,13 @@ class puppet_data_service::database (
       notify             => Anchor['pds-pe_postgresql-notify'],
     }
     pe_postgresql::server::pg_hba_rule { "pds access for ${cn} (ipv4)":
-      auth_option => "map=pds-map clientcert=${cn}",
+      auth_option => "map=pds-map clientcert=1",
       address     => '0.0.0.0/0',
       order       => '4',
       notify      => Anchor['pds-pe_postgresql-notify'],
     }
     pe_postgresql::server::pg_hba_rule { "pds access for ${cn} (ipv6)":
-      auth_option => "map=pds-map clientcert=${cn}",
+      auth_option => "map=pds-map clientcert=1",
       address     => '::/0',
       order       => '5',
       notify      => Anchor['pds-pe_postgresql-notify'],
