@@ -65,12 +65,19 @@ var getNodeCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get node %s: %s", nodename, err)
 		}
-		if response.HTTPResponse.StatusCode > 299 {
+
+		if (response.HTTPResponse.StatusCode == 404 && trustedExternalCommand) {
+			// On 404, trusted external command returns empty node entity
+      data := make(map[string]interface{})
+			dump(client.EditableNodeProperties{&classes, nil, &data})
+		} else if response.HTTPResponse.StatusCode > 299 {
+			// Fail on errors otherwise
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
-		}
-		if (trustedExternalCommand) {
+		} else if (trustedExternalCommand) {
+			// Return just editable properties if trusted-external-command
 			dump(response.JSON200.EditableNodeProperties)
 		} else {
+			// Else return all properties
 			dump(response.JSON200)
 		}
 	},
