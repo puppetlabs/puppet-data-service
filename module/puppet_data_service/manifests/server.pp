@@ -3,11 +3,16 @@ class puppet_data_service::server (
   String $username,
   String $token,
 ) {
+  # Used to ensure dependency ordering between this class and the database
+  # class, if both are present in the catalog
+  include puppet_data_service::anchor
 
   File {
-    owner => 'pds-server',
-    group => 'pds-server',
-    mode  => '0600',
+    owner   => 'pds-server',
+    group   => 'pds-server',
+    mode    => '0600',
+    require => Package['pds-server'],
+    before  => Exec['pds-migrations'],
   }
 
   package { 'pds-server':
@@ -61,9 +66,19 @@ class puppet_data_service::server (
     }),
   }
 
+  exec { 'pds-migrations':
+    unless  => '/opt/puppetlabs/sbin/pds-ctl rake db:migrate:status',
+    command => @("CMD"/L),
+      /opt/puppetlabs/sbin/pds-ctl rake db:migrate && \
+      /opt/puppetlabs/sbin/pds-ctl rake 'app:set_admin_token[${token}]'
+      | CMD
+    require => Class['puppet_data_service::anchor'],
+  }
+
   service { 'pds-server':
-    ensure => running,
-    enable => true,
+    ensure  => running,
+    enable  => true,
+    require => Exec['pds-migrations'],
   }
 
 }

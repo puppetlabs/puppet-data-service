@@ -1,6 +1,9 @@
 class puppet_data_service::database (
   Array[String] $allowlist = [$clientcert],
 ) {
+  # Used to ensure dependency ordering between this class and the database
+  # class, if both are present in the catalog
+  include puppet_data_service::anchor
 
   Pe_postgresql_psql {
     psql_user  => 'pe-postgres',
@@ -46,10 +49,11 @@ class puppet_data_service::database (
   }
 
   pe_postgresql_psql { 'DATABASE pds EXTENSION pgcrypto':
-    require    => Pe_postgresql_psql['DATABASE pds'],
-    db         => 'pds',
-    unless     => "SELECT FROM pg_extension WHERE extname = 'pgcrypto'",
-    command    => "CREATE EXTENSION pgcrypto",
+    db      => 'pds',
+    unless  => "SELECT FROM pg_extension WHERE extname = 'pgcrypto'",
+    command => "CREATE EXTENSION pgcrypto",
+    require => Pe_postgresql_psql['DATABASE pds'],
+    before  => Class['puppet_data_service::anchor'],
   }
 
   # Configure pg_hba.conf
@@ -84,5 +88,6 @@ class puppet_data_service::database (
   # exists in the catalog
   Service <| name == 'pe-postgresql' |> {
     subscribe => Anchor['pds-pe_postgresql-notify'],
+    before    => Class['puppet_data_service::anchor'],
   }
 }
