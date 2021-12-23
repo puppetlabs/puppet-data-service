@@ -91,4 +91,4 @@ make test # this should all pass without errors
 make killproxy # this will kill all node processes!
 ```
 
-The `make app-proxy` target spins up a prism proxy on port `4010` forwarding th `http://localhost:8080/v1`.
+The `make app-proxy` target spins up a prism proxy on port `4010` forwarding to `http://localhost:8080/v1`.
