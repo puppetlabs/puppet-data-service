@@ -49,4 +49,4 @@ $(bundle): $(pe-postgresql-devel)
 endif
 
 $(pe-postgresql-devel):
-	sudo yum install pe-postgresql-devel
+	sudo yum install pe-postgresql11-devel
