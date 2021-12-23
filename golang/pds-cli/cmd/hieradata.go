@@ -53,7 +53,7 @@ var listHieraDataCmd = &cobra.Command{
 			log.Fatalf("Couldn't list hieraData: %s", err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
-			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+			log.Fatalf("Request failed with status code: %d\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
 		}
 		dump(response.JSON200)
 	},

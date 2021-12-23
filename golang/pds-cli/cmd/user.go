@@ -47,6 +47,9 @@ var listUsersCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Couldn't get users %s", err)
 		}
+		if response.HTTPResponse.StatusCode > 299 {
+			log.Fatalf("Request failed with status code: %d\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
+		}
 		dump(response.JSON200)
 	},
 }
