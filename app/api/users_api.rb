@@ -58,7 +58,7 @@ App.add_route('DELETE', '/v1/users/{username}', {
   if deleted.zero?
     render_error(404, 'User not found')
   else
-    status 200
+    status 204
   end
 end
 

@@ -28,9 +28,13 @@ test-hiera:
 	$(CLI) hiera get -l common -k pds::color
 	$(CLI) hiera upsert -l somelevel -k somekey -v '"somevalue"'
 	$(CLI) hiera delete -l somelevel -k somekey
+	$(CLI) hiera delete -l level -k key   || true  # it's ok if not exist
+	$(CLI) hiera delete -l level1 -k key1 || true  # it's ok if not exist
+	$(CLI) hiera delete -l level1 -k key2 || true  # it's ok if not exist
+	$(CLI) hiera delete -l level2 -k key1 || true  # it's ok if not exist
 	$(CLI) hiera create -f fixtures/hieradata.json
-	$(CLI) hiera delete -l level -k key
 	$(CLI) hiera delete -l level1 -k key1
+	$(CLI) hiera delete -l level1 -k key2
 	$(CLI) hiera delete -l level2 -k key1
 
 test-user:
