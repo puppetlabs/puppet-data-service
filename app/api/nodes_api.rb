@@ -58,7 +58,7 @@ App.add_route('DELETE', '/v1/nodes/{name}', {
   if deleted.zero?
     render_error(404, 'Node not found')
   else
-    status 200
+    status 204
   end
 end
 

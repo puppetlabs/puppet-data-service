@@ -64,7 +64,7 @@ App.add_route('DELETE', '/v1/hiera-data/{level}/{key}', {
   if deleted.zero?
     render_error(404, 'Hiera data not found for the given level and key')
   else
-    status 200
+    status 204
   end
 end
 
