@@ -27,7 +27,6 @@ import (
 
 var (
 	trustedExternalCommand bool
-	nodename string
 	codeEnvironment string
 	classes []string
 	dataStr string
@@ -56,11 +55,11 @@ var listNodesCmd = &cobra.Command{
 }
 
 var getNodeCmd = &cobra.Command{
-	Use:   "get -n NODENAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "get NODENAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Retrieve node with nodename NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
-		// username, _ := cmd.Flags().GetString("username")
+		nodename := args[0]
 		response, err := pdsClient.GetNodeByNameWithResponse(context.Background(), client.NodeName(nodename))
 		if err != nil {
 			log.Fatalf("Couldn't get node %s: %s", nodename, err)
@@ -84,11 +83,11 @@ var getNodeCmd = &cobra.Command{
 }
 
 var deleteNodeCmd = &cobra.Command{
-	Use:   "delete -n NODENAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "delete NODENAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Delete node with nodename NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
-		// username, _ := cmd.Flags().GetString("username")
+		nodename := args[0]
 		response, err := pdsClient.DeleteNodeWithResponse(context.Background(), client.NodeName(nodename))
 		if err != nil {
 			log.Fatalf("Couldn't delete node %s: %s", nodename, err)
@@ -101,10 +100,12 @@ var deleteNodeCmd = &cobra.Command{
 }
 
 var upsertNodeCmd = &cobra.Command{
-	Use:   "upsert -n NODENAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "upsert NODENAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Upsert node with name NODENAME",
 	Run: func(cmd *cobra.Command, args []string) {
+		nodename := args[0]
+
 		// Build the JSON body
 		var data map[string]interface{}
 		dataErr := json.Unmarshal([]byte(dataStr), &data)
@@ -189,19 +190,13 @@ func init() {
 	nodeCmd.AddCommand(getNodeCmd)
 	getNodeCmd.Flags().BoolVar(&trustedExternalCommand, "trusted-external-command", false, 
 		"for running as trusted_external_command: return only 'classes', 'code-environment' and 'trusted-data' properties.")
-	getNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
-	getNodeCmd.MarkFlagRequired("name")
 
 	nodeCmd.AddCommand(deleteNodeCmd)
-	deleteNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
-	deleteNodeCmd.MarkFlagRequired("name")
 
 	nodeCmd.AddCommand(upsertNodeCmd)
-	upsertNodeCmd.Flags().StringVarP(&nodename, "name", "n", "", "Node name")
 	upsertNodeCmd.Flags().StringVarP(&codeEnvironment, "code-environment", "e", "", "Node code-environment")
 	upsertNodeCmd.Flags().StringSliceVarP(&classes, "classes", "c", []string{}, "Node classes (as comma-separated list)")
 	upsertNodeCmd.Flags().StringVarP(&dataStr, "trusted-data", "d", "{}", "Node trusted data (as valid JSON object)")
-	upsertNodeCmd.MarkFlagRequired("name")
 
 	nodeCmd.AddCommand(createNodeCmd)
 	createNodeCmd.Flags().StringVarP(&nodeFile, "nodefile", "f", "", "JSON file containing an array of nodes")
