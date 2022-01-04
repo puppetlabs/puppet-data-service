@@ -3,6 +3,9 @@ require 'composite_primary_keys'
 require 'active_support/inflector'
 require 'pds/data_adapter'
 require 'pds/data_adapter/base'
+require 'pds/model/node'
+require 'pds/model/user'
+require 'pds/model/hiera_datum'
 
 module PDS
   module DataAdapter
@@ -16,8 +19,13 @@ module PDS
         # TODO
         model = entity_klass(entity_type)
         begin
-          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
-          resources
+          # The insert_all! method requires that all inserted elements have the
+          # same keys. Ensure all resources have the same keys by mapping each
+          # to its merge with a defaults hash, which will set any missing
+          # keys to default values.
+          with_defaults = resources.map { |rsrc| model.property_defaults.merge(rsrc) }
+          model.insert_all!(with_defaults.map { |rsrc| model.to_attributes(rsrc) })
+          with_defaults
         rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
@@ -37,8 +45,9 @@ module PDS
       def upsert(entity_type, resources:)
         model = entity_klass(entity_type)
         # TODO: validate input
-        model.upsert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
-        resources
+        with_defaults = resources.map { |rsrc| model.property_defaults.merge(rsrc) }
+        model.upsert_all(with_defaults.map { |rsrc| model.to_attributes(rsrc) })
+        with_defaults
       end
 
       def delete(entity_type, filters: [])
@@ -104,17 +113,27 @@ module PDS
       class Changelog < PDSRecord; end
 
       class HieraDatum < PDSRecord
+        extend PDS::Model::HieraDatum
+
         self.primary_key = ['level', 'key']
         validates_presence_of :level
         validates_presence_of :key
       end
 
       class Node < PDSRecord
+        extend PDS::Model::Node
+
         self.primary_key = "name"
         validates_presence_of :name
+
+        def self.resource_defaults
+          {'classes' => [], 'code-environment' => nil, 'data' => {}}
+        end
       end
 
       class User < PDSRecord
+        extend PDS::Model::User
+
         self.primary_key = "username"
         validates_presence_of :username, :email
         validates :username, :email, uniqueness: true
