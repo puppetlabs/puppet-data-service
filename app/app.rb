@@ -5,10 +5,13 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 require 'sinatra/base'
 require 'sinatra/custom_logger'
 require "sinatra/reloader"
+require 'committee'
 require 'openapiing'
 require 'pds/data_adapter'
 require 'logger'
 require 'yaml'
+
+Logger.class_eval { alias :write :'<<' }
 
 # only need to extend if you want special configuration!
 class App < OpenAPIing
@@ -31,11 +34,23 @@ class App < OpenAPIing
 
   self.configure do |config|
     config.api_version = '1.0.0'
+
+    committee_opts = {
+      prefix: '/v1',
+      schema_path: 'openapi.yaml',
+      query_hash_key: 'committee.query_hash',
+      parse_response_by_content_type: true,
+      error_handler: -> (ex, env) { logger.error ex.as_json },
+    }
+
+    use Rack::CommonLogger, logger
+    use Committee::Middleware::RequestValidation, committee_opts
+    use Committee::Middleware::ResponseValidation, committee_opts
   end
 
   # When debugging, return detailed response information
   after do
-    logger.debug { "Response: #{response.body}" }
+    logger.debug { "Response: #{response.body.first}" }
   end
 
   # Automatically reload modified files in development

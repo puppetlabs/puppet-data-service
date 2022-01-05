@@ -45,7 +45,8 @@ if App.environment == :development
     PDS::DataAdapter::PostgreSQL::User.create!(
       username: user,
       email: "#{user}@#{business_domain_name}",
-      role: 'operator'
+      role: 'operator',
+      status: 'active'
     )
   end
 

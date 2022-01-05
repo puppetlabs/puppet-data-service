@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  title: "WIP: Puppet Data Service API"
-  description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/reidmv/reidmv-puppet_data_service). For this sample, you can use the api key `special-key` to test the authorization filters."
+  title: "Puppet Data Service API"
+  description: "This is the API documentation for the Puppet Data Service API. You can find out more about the [PDS API at here](https://github.com/puppetlabs/puppet-data-service). The PDS API uses Bearer Authentication, to generate a token for your admin user please run the ['set_admin_token' rake task](https://github.com/puppetlabs/puppet-data-service/tree/main/app#create-the-admin-token)"
   termsOfService: http://swagger.io/terms/
   contact:
     email: solarch-team@puppet.com
@@ -61,6 +61,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+        "400":
+          description: "{ 'error': 'Bad Request. Unable to create requested users, check for duplicate users'}"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
@@ -96,7 +98,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Username"
       requestBody:
-        $ref: "#/components/requestBodies/NewUser"
+        $ref: "#/components/requestBodies/EditableUserProperties"
       responses:
         "200":
           description: Updated
@@ -123,9 +125,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Username"
       responses:
-        "200":
-          description: Ok
-          content: {}
+        "204":
+          description: No Content
         "400":
           description: Invalid username supplied
           content: {}
@@ -193,6 +194,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Node"
+        "400":
+          description: '{ "error": "Bad Request. Unable to create requested nodes, check for duplicate nodes" }'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -228,7 +231,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/NodeName"
       requestBody:
-        $ref: "#/components/requestBodies/NewNode"
+        $ref: "#/components/requestBodies/EditableNodeProperties"
       responses:
         "200":
           description: Updated
@@ -256,9 +259,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/NodeName"
       responses:
-        "200":
-          description: Ok
-          content: {}
+        "204":
+          description: No Content
         "400":
           description: Invalid Node name supplied
           content: {}
@@ -285,7 +287,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/HieraValue"
+                  $ref: "#/components/schemas/HieraDatum"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
     post:
@@ -304,7 +306,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/HieraValue"
+                  $ref: "#/components/schemas/HieraDatum"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
       x-codegen-request-body-name: body
@@ -325,7 +329,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HieraValue"
+                $ref: "#/components/schemas/HieraDatum"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
@@ -340,20 +344,22 @@ paths:
         - $ref: "#/components/parameters/HieraLevel"
         - $ref: "#/components/parameters/HieraKey"
       requestBody:
-        $ref: "#/components/requestBodies/EditHieraValue"
+        $ref: "#/components/requestBodies/EditableHieraDatumProperties"
       responses:
         "200":
           description: Updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HieraValue"
+                $ref: "#/components/schemas/HieraDatum"
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HieraValue"
+                $ref: "#/components/schemas/HieraDatum"
+        "400":
+          description: '{"error": "Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data"}'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -367,9 +373,8 @@ paths:
         - $ref: "#/components/parameters/HieraLevel"
         - $ref: "#/components/parameters/HieraKey"
       responses:
-        "200":
-          description: Ok
-          content: {}
+        "204":
+          description: No Content
         "400":
           description: Invalid level or key supplied
           content: {}
@@ -470,7 +475,7 @@ components:
         - $ref: "#/components/schemas/EditableNodeProperties"
         - $ref: "#/components/schemas/TimestampProperties"
 
-    ImmutableHieraValueProperties:
+    ImmutableHieraDatumProperties:
       type: object
       properties:
         level:
@@ -478,17 +483,17 @@ components:
         key:
           type: string
 
-    EditableHieraValueProperties:
+    EditableHieraDatumProperties:
       type: object
       properties:
         value:
           nullable: true
           description: The value to set the Hiera key to
 
-    HieraValue:
+    HieraDatum:
       allOf:
-        - $ref: "#/components/schemas/ImmutableHieraValueProperties"
-        - $ref: "#/components/schemas/EditableHieraValueProperties"
+        - $ref: "#/components/schemas/ImmutableHieraDatumProperties"
+        - $ref: "#/components/schemas/EditableHieraDatumProperties"
         - $ref: "#/components/schemas/TimestampProperties"
 
   parameters:
@@ -533,18 +538,16 @@ components:
         type: string
 
   requestBodies:
-    NewUser:
-      description: Create or edit user object
+    EditableUserProperties:
+      description: Editable properties of a user resource
       content:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableUserProperties"
               - $ref: "#/components/schemas/EditableUserProperties"
-              - required: ["username"]
 
     NewUsers:
-      description: Create user object(s)
+      description: Create user resources
       content:
         application/json:
           schema:
@@ -555,18 +558,16 @@ components:
                 - $ref: "#/components/schemas/EditableUserProperties"
                 - required: ["username"]
 
-    NewNode:
-      description: Create or edit node object
+    EditableNodeProperties:
+      description: Editable properties of a node resource
       content:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ImmutableNodeProperties"
               - $ref: "#/components/schemas/EditableNodeProperties"
-              - required: ["name"]
 
     NewNodes:
-      description: Create node object(s)
+      description: Create new node resources
       content:
         application/json:
           schema:
@@ -577,26 +578,27 @@ components:
                 - $ref: "#/components/schemas/EditableNodeProperties"
                 - required: ["name"]
 
+    EditableHieraDatumProperties:
+      description: Create or edit a Hiera value at a specified level and key
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/EditableHieraDatumProperties"
+              - required: ["value"]
+
     NewHieraData:
-      description: Create new Hiera data value(s)
+      description: Create new Hiera data resources
       content:
         application/json:
           schema:
             type: array
             items:
               allOf:
-              - $ref: "#/components/schemas/ImmutableHieraValueProperties"
-              - $ref: "#/components/schemas/EditableHieraValueProperties"
+              - $ref: "#/components/schemas/ImmutableHieraDatumProperties"
+              - $ref: "#/components/schemas/EditableHieraDatumProperties"
               - required: ["level", "key", "value"]
 
-    EditHieraValue:
-      description: Create or edit a Hiera value at a specified level and key
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/EditableHieraValueProperties"
-              - required: ["value"]
   responses:
     UnauthorizedError:
       description: Access (Bearer) token is missing or invalid
