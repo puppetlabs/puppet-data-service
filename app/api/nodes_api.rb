@@ -7,7 +7,8 @@ App.post('/v1/nodes') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  nodes = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+  nodes = body['resources']
 
   begin
     set_new_timestamps!(nodes)

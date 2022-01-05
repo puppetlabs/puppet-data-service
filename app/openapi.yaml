@@ -551,12 +551,15 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              allOf:
-                - $ref: "#/components/schemas/ImmutableUserProperties"
-                - $ref: "#/components/schemas/EditableUserProperties"
-                - required: ["username"]
+            type: object
+            properties:
+              resources:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/ImmutableUserProperties"
+                    - $ref: "#/components/schemas/EditableUserProperties"
+                    - required: ["username"]
 
     EditableNodeProperties:
       description: Editable properties of a node resource
@@ -571,12 +574,15 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              allOf:
-                - $ref: "#/components/schemas/ImmutableNodeProperties"
-                - $ref: "#/components/schemas/EditableNodeProperties"
-                - required: ["name"]
+            type: object
+            properties:
+              resources:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/ImmutableNodeProperties"
+                    - $ref: "#/components/schemas/EditableNodeProperties"
+                    - required: ["name"]
 
     EditableHieraDatumProperties:
       description: Create or edit a Hiera value at a specified level and key
@@ -592,12 +598,15 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              allOf:
-              - $ref: "#/components/schemas/ImmutableHieraDatumProperties"
-              - $ref: "#/components/schemas/EditableHieraDatumProperties"
-              - required: ["level", "key", "value"]
+            type: object
+            properties:
+              resources:
+                type: array
+                items:
+                  allOf:
+                  - $ref: "#/components/schemas/ImmutableHieraDatumProperties"
+                  - $ref: "#/components/schemas/EditableHieraDatumProperties"
+                  - required: ["level", "key", "value"]
 
   responses:
     UnauthorizedError:

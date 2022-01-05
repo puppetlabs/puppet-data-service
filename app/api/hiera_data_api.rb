@@ -8,7 +8,8 @@ App.post('/v1/hiera-data') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  hiera_data = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+  hiera_data = body['resources']
 
   begin
     set_new_timestamps!(hiera_data)

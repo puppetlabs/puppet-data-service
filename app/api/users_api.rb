@@ -7,7 +7,8 @@ App.post('/v1/users') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  new_users = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+  new_users = body['resources']
 
   begin
     new_users.each { |user| user['status'] = 'active' }
