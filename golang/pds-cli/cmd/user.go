@@ -26,7 +26,6 @@ import (
 )
 
 var (
-	username  string
 	userEmail string
 	userRole  string
 	userFile  string
@@ -55,11 +54,11 @@ var listUsersCmd = &cobra.Command{
 }
 
 var getUserCmd = &cobra.Command{
-	Use:   "get -n USERNAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "get USERNAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Retrieve user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
-		// username, _ := cmd.Flags().GetString("username")
+		username := args[0]
 		response, err := pdsClient.GetUserByUsernameWithResponse(context.Background(), client.Username(username))
 		if err != nil {
 			log.Fatalf("Couldn't get user %s: %s", username, err)
@@ -72,10 +71,11 @@ var getUserCmd = &cobra.Command{
 }
 
 var getUserTokenCmd = &cobra.Command{
-	Use:   "get-token -n USERNAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "get-token USERNAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Retrieve token for user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
+		username := args[0]
 		response, err := pdsClient.GetTokenByUsernameWithResponse(context.Background(), client.Username(username))
 		if err != nil {
 			log.Fatalf("Couldn't get token for user %s: %s", username, err)
@@ -88,10 +88,11 @@ var getUserTokenCmd = &cobra.Command{
 }
 
 var deleteUserCmd = &cobra.Command{
-	Use:   "delete -n USERNAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "delete USERNAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Delete user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
+		username := args[0]
 		response, err := pdsClient.DeleteUserWithResponse(context.Background(), client.Username(username))
 		if err != nil {
 			log.Fatalf("Couldn't delete user %s: %s", username, err)
@@ -104,10 +105,11 @@ var deleteUserCmd = &cobra.Command{
 }
 
 var upsertUserCmd = &cobra.Command{
-	Use:   "upsert -n USERNAME",
-	Args:  cobra.ExactArgs(0),
+	Use:   "upsert USERNAME",
+	Args:  cobra.ExactArgs(1),
 	Short: "Upsert user with username USERNAME",
 	Run: func(cmd *cobra.Command, args []string) {
+		username := args[0]
 		// Build the JSON body
 		body := client.PutUserJSONRequestBody{
 			Email: &userEmail,
@@ -178,22 +180,14 @@ func init() {
 	userCmd.AddCommand(listUsersCmd)
 
 	userCmd.AddCommand(getUserCmd)
-	getUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
-	getUserCmd.MarkFlagRequired("username")
 
 	userCmd.AddCommand(getUserTokenCmd)
-	getUserTokenCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
-	getUserTokenCmd.MarkFlagRequired("username")
 
 	userCmd.AddCommand(deleteUserCmd)
-	deleteUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
-	deleteUserCmd.MarkFlagRequired("username")
 
 	userCmd.AddCommand(upsertUserCmd)
-	upsertUserCmd.Flags().StringVarP(&username, "username", "n", "", "Username")
 	upsertUserCmd.Flags().StringVarP(&userEmail, "email", "e", "", "User email address")
 	upsertUserCmd.Flags().StringVarP(&userRole, "role", "r", "", "User role")
-	upsertUserCmd.MarkFlagRequired("username")
 	upsertUserCmd.MarkFlagRequired("email")
 	upsertUserCmd.MarkFlagRequired("role")
 

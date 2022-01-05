@@ -27,7 +27,6 @@ import (
 
 var (
 	levelStr      string
-	keyStr        string
 	valueStr      string
 	hieraDataFile string
 )
@@ -60,12 +59,12 @@ var listHieraDataCmd = &cobra.Command{
 }
 
 var getHieraDataCmd = &cobra.Command{
-	Use:   "get -l LEVEL -k KEY",
-	Args:  cobra.ExactArgs(0),
+	Use:   "get LEVEL KEY",
+	Args:  cobra.ExactArgs(2),
 	Short: "Retrieve hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(levelStr)
-		key := client.HieraKey(keyStr)
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
 		response, err := pdsClient.GetHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key)
 		if err != nil {
 			log.Fatalf("Couldn't get hieraData %s/%s: %s", level, key, err)
@@ -79,12 +78,12 @@ var getHieraDataCmd = &cobra.Command{
 }
 
 var deleteHieraDataCmd = &cobra.Command{
-	Use:   "delete -l LEVEL -k KEY",
-	Args:  cobra.ExactArgs(0),
+	Use:   "delete LEVEL KEY",
+	Args:  cobra.ExactArgs(2),
 	Short: "Delete hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(levelStr)
-		key := client.HieraKey(keyStr)
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
 		response, err := pdsClient.DeleteHieraDataObjectWithResponse(context.Background(), level, key)
 		if err != nil {
 			log.Fatalf("Couldn't delete hieraData %s/%s: %s", level, key, err)
@@ -98,10 +97,12 @@ var deleteHieraDataCmd = &cobra.Command{
 }
 
 var upsertHieraDataCmd = &cobra.Command{
-	Use:   "upsert -l LEVEL -k KEY -v VALUE",
-	Args:  cobra.ExactArgs(0),
+	Use:   "upsert LEVEL KEY -v VALUE",
+	Args:  cobra.ExactArgs(2),
 	Short: "Upsert hiera data VALUE for KEY at LEVEL",
 	Run: func(cmd *cobra.Command, args []string) {
+		level := client.HieraLevel(args[0])
+		key := client.HieraKey(args[1])
 		var value interface{}
 		valueErr := json.Unmarshal([]byte(valueStr), &value)
 
@@ -113,10 +114,10 @@ var upsertHieraDataCmd = &cobra.Command{
 			Value: &value,
 		}
 
-		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), client.HieraLevel(levelStr), client.HieraKey(keyStr), body)
+		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key, body)
 
 		if err != nil {
-			log.Fatalf("Couldn't upsert hiera data %s/%s: %s", levelStr, keyStr, err)
+			log.Fatalf("Couldn't upsert hiera data %s/%s: %s", level, key, err)
 		}
 		if response.HTTPResponse.StatusCode > 299 {
 			log.Fatalf("Request failed with status code: %d and\nbody: %s\n", response.HTTPResponse.StatusCode, response.Body)
@@ -177,23 +178,11 @@ func init() {
 	listHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
 
 	hieraDataCmd.AddCommand(getHieraDataCmd)
-	getHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
-	getHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Hiera key")
-	getHieraDataCmd.MarkFlagRequired("level")
-	getHieraDataCmd.MarkFlagRequired("key")
 
 	hieraDataCmd.AddCommand(deleteHieraDataCmd)
-	deleteHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
-	deleteHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Hiera key")
-	deleteHieraDataCmd.MarkFlagRequired("level")
-	deleteHieraDataCmd.MarkFlagRequired("key")
 
 	hieraDataCmd.AddCommand(upsertHieraDataCmd)
-	upsertHieraDataCmd.Flags().StringVarP(&levelStr, "level", "l", "", "Hiera level")
-	upsertHieraDataCmd.Flags().StringVarP(&keyStr, "key", "k", "", "Hiera key")
 	upsertHieraDataCmd.Flags().StringVarP(&valueStr, "value", "v", "", "Value (valid JSON)")
-	upsertHieraDataCmd.MarkFlagRequired("level")
-	upsertHieraDataCmd.MarkFlagRequired("key")
 	upsertHieraDataCmd.MarkFlagRequired("value")
 
 	hieraDataCmd.AddCommand(createHieraDataCmd)
