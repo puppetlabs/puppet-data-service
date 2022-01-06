@@ -1,5 +1,5 @@
 require 'json'
-
+require 'pds/model/hiera_datum'
 
 App.post('/v1/hiera-data') do
   cross_origin
@@ -9,13 +9,13 @@ App.post('/v1/hiera-data') do
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   body = JSON.parse(body_params)
-  hiera_data = body['resources']
+  new_hiera_data = with_defaults(body['resources'], PDS::Model::HieraDatum)
 
   begin
-    set_new_timestamps!(hiera_data)
-    data_adapter.create(:hiera_data, resources: hiera_data)
+    set_new_timestamps!(new_hiera_data)
+    data_adapter.create(:hiera_data, resources: new_hiera_data)
     status 201
-    hiera_data.to_json
+    new_hiera_data.to_json
   rescue PDS::DataAdapter::Conflict => e
     render_error(400, 'Bad Request. Unable to create requested hiera-data, check for duplicate hiera-data', e.message)
   end
@@ -70,18 +70,21 @@ App.put('/v1/hiera-data/{level}/{key}') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  hiera_data = JSON.parse(body_params)
-  hiera_data['level'] = params['level']
-  hiera_data['key'] = params['key']
-  update_or_set_new_timestamps!(:hiera_data, [hiera_data])
-  data_adapter.upsert(:hiera_data, resources: [hiera_data])
+  body = JSON.parse(body_params)
 
-  if hiera_data['created-at'] == hiera_data['updated-at']
+  hiera_datum = with_defaults(body, PDS::Model::HieraDatum)
+  hiera_datum['level'] = params['level']
+  hiera_datum['key'] = params['key']
+
+  update_or_set_new_timestamps!(:hiera_data, [hiera_datum])
+  data_adapter.upsert(:hiera_data, resources: [hiera_datum])
+
+  if hiera_datum['created-at'] == hiera_datum['updated-at']
     status 201
   else
     status 200
   end
 
-  hiera_data.to_json
+  hiera_datum.to_json
 end
 

@@ -1,4 +1,5 @@
 require 'json'
+require 'pds/model/user'
 
 App.post('/v1/users') do
   cross_origin
@@ -8,10 +9,9 @@ App.post('/v1/users') do
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   body = JSON.parse(body_params)
-  new_users = body['resources']
+  new_users = with_defaults(body['resources'], PDS::Model::User)
 
   begin
-    new_users.each { |user| user['status'] = 'active' }
     set_new_timestamps!(new_users)
     users_created = data_adapter.create(:users, resources: new_users)
 
@@ -77,7 +77,9 @@ App.put('/v1/users/{username}') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  user = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+
+  user = with_defaults(body, PDS::Model::User)
   user['username'] = params['username']
   user['status'] = 'active'
 

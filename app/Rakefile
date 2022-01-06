@@ -26,7 +26,6 @@ namespace :app do |args|
 
     admin = {
       'username'   => 'admin',
-      'email'      => 'admin@example.com',
       'role'       => 'administrator',
       'status'     => 'active',
       'temp_token' => args[:token],

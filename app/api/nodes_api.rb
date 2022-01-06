@@ -1,4 +1,5 @@
 require 'json'
+require 'pds/model/node'
 
 App.post('/v1/nodes') do
   cross_origin
@@ -8,11 +9,11 @@ App.post('/v1/nodes') do
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   body = JSON.parse(body_params)
-  nodes = body['resources']
+  new_nodes = with_defaults(body['resources'], PDS::Model::Node)
 
   begin
-    set_new_timestamps!(nodes)
-    nodes_created = data_adapter.create(:nodes, resources: nodes)
+    set_new_timestamps!(new_nodes)
+    nodes_created = data_adapter.create(:nodes, resources: new_nodes)
 
     status 201
     nodes_created.to_json
@@ -65,7 +66,9 @@ App.put('/v1/nodes/{name}') do
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  node = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+
+  node = with_defaults(body, PDS::Model::Node)
   node['name'] = params['name']
 
   update_or_set_new_timestamps!(:nodes, [node])

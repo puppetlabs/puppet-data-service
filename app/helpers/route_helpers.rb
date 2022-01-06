@@ -41,4 +41,19 @@ App.helpers do
     full_error_message = full_error_message.merge(details_hash) unless details.nil?
     full_error_message.to_json
   end
+
+  # Take an array of resources, and the model constant indicating the type of
+  # resource, and return an array of those resources with any missing
+  # properties supplied by the model's property defaults.
+  def with_defaults(resources, model_const)
+    model = Object.new.extend(model_const)
+    case resources
+    when Array
+      resources.map { |rsrc| model.property_defaults.merge(rsrc) }
+    when Hash
+      model.property_defaults.merge(resources)
+    else
+      raise "Expected Array or Hash; got #{resources.class}"
+    end
+  end
 end

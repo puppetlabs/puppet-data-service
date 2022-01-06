@@ -16,16 +16,10 @@ module PDS
       def create(entity_type, resources:)
         # TODO: implement uniqueness check(s)
         # TODO: validate input
-        # TODO
         model = entity_klass(entity_type)
         begin
-          # The insert_all! method requires that all inserted elements have the
-          # same keys. Ensure all resources have the same keys by mapping each
-          # to its merge with a defaults hash, which will set any missing
-          # keys to default values.
-          with_defaults = resources.map { |rsrc| model.property_defaults.merge(rsrc) }
-          model.insert_all!(with_defaults.map { |rsrc| model.to_attributes(rsrc) })
-          with_defaults
+          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
+          resources
         rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
@@ -45,9 +39,8 @@ module PDS
       def upsert(entity_type, resources:)
         model = entity_klass(entity_type)
         # TODO: validate input
-        with_defaults = resources.map { |rsrc| model.property_defaults.merge(rsrc) }
-        model.upsert_all(with_defaults.map { |rsrc| model.to_attributes(rsrc) })
-        with_defaults
+        model.upsert_all(resources.map { |rsrc| model.to_attributes(rsrc) })
+        resources
       end
 
       def delete(entity_type, filters: [])
