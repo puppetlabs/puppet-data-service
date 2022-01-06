@@ -1,5 +1,5 @@
 NAME=pds-server
-VERSION=0.1.0-dev
+VERSION=0.1.0~prerelease1
 
 OS := $(strip $(shell uname))
 RUBY_VERSION := $(strip $(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'puts RUBY_VERSION.sub(/\d+$$/, "0")'))
@@ -13,6 +13,9 @@ fpm = /opt/puppetlabs/puppet/bin/fpm
 .PHONY: rpm clean
 
 rpm: $(bundle) $(pds-cli) $(fpm)
+	# We don't want a symlink in the RPM, we want a regular file
+	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
+	# Build the package
 	$(fpm) -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
@@ -29,6 +32,8 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		package/pds=/etc/puppetlabs/puppet/trusted-external-commands/pds \
 		package/pds-ctl=/opt/puppetlabs/sbin/pds-ctl \
 		package/pds-server.service=/usr/lib/systemd/system/pds-server.service
+	# Turn it back into a symlink when packaging is done
+	cd app && rm openapi.yaml && ln -s ../docs/api.yml openapi.yaml
 
 clean:
 	rm -rf app/vendor/bundle
