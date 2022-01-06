@@ -25,6 +25,7 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		--config-files /etc/puppetlabs/pds-server/pds-cli.yaml \
 		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds-server/pds.yaml' \
 		--rpm-attr '0640,pds-server,pe-puppet:/etc/puppetlabs/pds-server/pds-cli.yaml' \
+		--depends pe-postgresql11 \
 		app/=/opt/puppetlabs/server/apps/pds-server \
 		app/config/pds.yaml.example=/etc/puppetlabs/pds-server/pds.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
