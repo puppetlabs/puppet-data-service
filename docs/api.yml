@@ -411,6 +411,7 @@ components:
       properties:
         email:
           type: string
+          nullable: true
         role:
           type: string
           description: User role
@@ -456,12 +457,9 @@ components:
       properties:
         code-environment:
           type: string
+          pattern: "^[a-z0-9_]+$"
           nullable: true
           description: Code environment
-          enum:
-            - staging
-            - production
-            - compliance
         classes:
           type: array
           items:
@@ -559,7 +557,7 @@ components:
                   allOf:
                     - $ref: "#/components/schemas/ImmutableUserProperties"
                     - $ref: "#/components/schemas/EditableUserProperties"
-                    - required: ["username"]
+                    - required: ["username", "role"]
 
     EditableNodeProperties:
       description: Editable properties of a node resource
