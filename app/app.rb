@@ -3,15 +3,19 @@ libdir = File.expand_path(File.join(__dir__, 'lib'))
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
 require 'sinatra/base'
+require 'sinatra/cross_origin'
 require 'sinatra/custom_logger'
 require "sinatra/reloader"
-require 'openapiing'
+require 'committee'
 require 'pds/data_adapter'
 require 'logger'
 require 'yaml'
 
+Logger.class_eval { alias :write :'<<' }
+
 # only need to extend if you want special configuration!
-class App < OpenAPIing
+class App < Sinatra::Base
+  register Sinatra::CrossOrigin
   helpers Sinatra::CustomLogger
 
   # Set required defaults, then load full config from file.
@@ -26,16 +30,31 @@ class App < OpenAPIing
     File.expand_path(File.join(__dir__, 'config', 'pds.yaml')),
   ]
 
+  # Load config parameters from a file, if it exists
   configpath = searchpath.find { |f| File.exist?(f) }
   set :config, configpath.nil? ? {} : YAML.load_file(configpath)
 
-  self.configure do |config|
-    config.api_version = '1.0.0'
+  # Configure logging and OpenAPI spec enforcement
+  configure do |config|
+    committee_opts = {
+      prefix: '/v1',
+      schema_path: 'openapi.yaml',
+      query_hash_key: 'committee.query_hash',
+      parse_response_by_content_type: true,
+      error_handler: -> (ex, env) { logger.error ex.as_json },
+    }
+
+    use Rack::CommonLogger, logger
+    use Committee::Middleware::RequestValidation, committee_opts
+    use Committee::Middleware::ResponseValidation, committee_opts
   end
 
-  # When debugging, return detailed response information
+  before do
+    authenticate!
+  end
+
   after do
-    logger.debug { "Response: #{response.body}" }
+    logger.debug { "Response: #{response.body.first}" }
   end
 
   # Automatically reload modified files in development

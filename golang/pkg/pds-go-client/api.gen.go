@@ -161,30 +161,36 @@ type NodeName string
 type OptionalHieraLevel string
 
 // NewHieraData defines model for NewHieraData.
-type NewHieraData []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableHieraDatumProperties)
-	ImmutableHieraDatumProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableHieraDatumProperties)
-	EditableHieraDatumProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+type NewHieraData struct {
+	Resources *[]struct {
+		// Embedded struct due to allOf(#/components/schemas/ImmutableHieraDatumProperties)
+		ImmutableHieraDatumProperties `yaml:",inline"`
+		// Embedded struct due to allOf(#/components/schemas/EditableHieraDatumProperties)
+		EditableHieraDatumProperties `yaml:",inline"`
+		// Embedded fields due to inline allOf schema
+	} `json:"resources,omitempty"`
 }
 
 // NewNodes defines model for NewNodes.
-type NewNodes []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableNodeProperties)
-	ImmutableNodeProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
-	EditableNodeProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+type NewNodes struct {
+	Resources *[]struct {
+		// Embedded struct due to allOf(#/components/schemas/ImmutableNodeProperties)
+		ImmutableNodeProperties `yaml:",inline"`
+		// Embedded struct due to allOf(#/components/schemas/EditableNodeProperties)
+		EditableNodeProperties `yaml:",inline"`
+		// Embedded fields due to inline allOf schema
+	} `json:"resources,omitempty"`
 }
 
 // NewUsers defines model for NewUsers.
-type NewUsers []struct {
-	// Embedded struct due to allOf(#/components/schemas/ImmutableUserProperties)
-	ImmutableUserProperties `yaml:",inline"`
-	// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
-	EditableUserProperties `yaml:",inline"`
-	// Embedded fields due to inline allOf schema
+type NewUsers struct {
+	Resources *[]struct {
+		// Embedded struct due to allOf(#/components/schemas/ImmutableUserProperties)
+		ImmutableUserProperties `yaml:",inline"`
+		// Embedded struct due to allOf(#/components/schemas/EditableUserProperties)
+		EditableUserProperties `yaml:",inline"`
+		// Embedded fields due to inline allOf schema
+	} `json:"resources,omitempty"`
 }
 
 // GetHieraDataParams defines parameters for GetHieraData.

@@ -1,4 +1,6 @@
-[
-  { "username": "john", "email": "a@b.com", "role": "operator" },
-  { "username": "paul" }
-]
+{
+  "resources": [
+    { "username": "john", "email": "a@b.com", "role": "operator" },
+    { "username": "paul" }
+  ]
+}

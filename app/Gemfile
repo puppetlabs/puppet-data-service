@@ -5,6 +5,7 @@ gem 'puma'
 gem 'sinatra'
 gem 'sinatra-cross_origin'
 gem 'sinatra-contrib'
+gem 'committee'
 
 gem 'pg', '~> 1.2.3'
 gem 'rake', '~> 13.0.6'

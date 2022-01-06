@@ -1,30 +1,17 @@
 require 'json'
+require 'pds/model/user'
 
-App.add_route('POST', '/v1/users', {
-  "resourcePath" => "/Users",
-  "summary" => "Create user",
-  "nickname" => "create_user",
-  "responseClass" => "Array<User>",
-  "endpoint" => "/users",
-  "notes" => "The body params are required to be a JSON object with an array of users. This endpoint supports bulk operations, you can create one or 1000 users in a single POST request.",
-  "parameters" => [
-    {
-      "name" => "body",
-      "description" => "Create user object(s)",
-      "dataType" => "Array<ImmutableUserProperties>",
-      "paramType" => "body",
-    }
-    ]}) do
+App.post('/v1/users') do
   cross_origin
 
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  new_users = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+  new_users = with_defaults(body['resources'], PDS::Model::User)
 
   begin
-    new_users.each { |user| user['status'] = 'active' }
     set_new_timestamps!(new_users)
     users_created = data_adapter.create(:users, resources: new_users)
 
@@ -36,21 +23,7 @@ App.add_route('POST', '/v1/users', {
 end
 
 
-App.add_route('DELETE', '/v1/users/{username}', {
-  "resourcePath" => "/Users",
-  "summary" => "Deletes a user",
-  "nickname" => "delete_user",
-  "responseClass" => "void",
-  "endpoint" => "/users/{username}",
-  "notes" => "This can only be done by the logged in user.",
-  "parameters" => [
-    {
-      "name" => "username",
-      "description" => "The username",
-      "dataType" => "String",
-      "paramType" => "path",
-    },
-    ]}) do
+App.delete('/v1/users/{username}') do
   cross_origin
 
   # TODO: validate input
@@ -63,15 +36,7 @@ App.add_route('DELETE', '/v1/users/{username}', {
 end
 
 
-App.add_route('GET', '/v1/users', {
-  "resourcePath" => "/Users",
-  "summary" => "Get all available users",
-  "nickname" => "get_all_users",
-  "responseClass" => "Array<User>",
-  "endpoint" => "/users",
-  "notes" => "This can only be done by the logged in user with a superadmin role.",
-  "parameters" => [
-    ]}) do
+App.get('/v1/users') do
   cross_origin
 
   users = data_adapter.read(:users)
@@ -79,21 +44,7 @@ App.add_route('GET', '/v1/users', {
 end
 
 
-App.add_route('GET', '/v1/users/{username}/token', {
-  "resourcePath" => "/Users",
-  "summary" => "Get API token by username",
-  "nickname" => "get_token_by_username",
-  "responseClass" => "Token",
-  "endpoint" => "/users/{username}/token",
-  "notes" => "Retrieve an API token for the user",
-  "parameters" => [
-    {
-      "name" => "username",
-      "description" => "The username",
-      "dataType" => "String",
-      "paramType" => "path",
-    },
-    ]}) do
+App.get('/v1/users/{username}/token') do
   cross_origin
 
   # TODO: validate input
@@ -106,21 +57,7 @@ App.add_route('GET', '/v1/users/{username}/token', {
 end
 
 
-App.add_route('GET', '/v1/users/{username}', {
-  "resourcePath" => "/Users",
-  "summary" => "Get user by username",
-  "nickname" => "get_user_by_username",
-  "responseClass" => "User",
-  "endpoint" => "/users/{username}",
-  "notes" => "Retrieve a specific user.",
-  "parameters" => [
-    {
-      "name" => "username",
-      "description" => "The username",
-      "dataType" => "String",
-      "paramType" => "path",
-    },
-    ]}) do
+App.get('/v1/users/{username}') do
   cross_origin
 
   # TODO: validate input
@@ -133,34 +70,16 @@ App.add_route('GET', '/v1/users/{username}', {
 end
 
 
-App.add_route('PUT', '/v1/users/{username}', {
-  "resourcePath" => "/Users",
-  "summary" => "Create a new user or replace an existing user",
-  "nickname" => "put_user",
-  "responseClass" => "User",
-  "endpoint" => "/users/{username}",
-  "notes" => "If the username does not exist, it will create it for you. This endpoint does not support bulk operations",
-  "parameters" => [
-    {
-      "name" => "username",
-      "description" => "The username",
-      "dataType" => "String",
-      "paramType" => "path",
-    },
-    {
-      "name" => "body",
-      "description" => "Create or edit user object",
-      "dataType" => "UNKNOWN_BASE_TYPE",
-      "paramType" => "body",
-    }
-    ]}) do
+App.put('/v1/users/{username}') do
   cross_origin
 
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
-  user = JSON.parse(body_params)
+  body = JSON.parse(body_params)
+
+  user = with_defaults(body, PDS::Model::User)
   user['username'] = params['username']
   user['status'] = 'active'
 
