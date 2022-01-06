@@ -44,6 +44,8 @@ test-user:
 	$(CLI) user upsert someuser -e me@me.com -r operator
 	$(CLI) user create -f fixtures/users.json
 	$(CLI) user delete someuser
+	$(CLI) user delete john
+	$(CLI) user delete paul
 
 test-node:
 	@echo "*** node ***"
@@ -52,6 +54,10 @@ test-node:
 	$(CLI) node upsert somenode 
 	$(CLI) node create -f fixtures/nodes.json
 	$(CLI) node delete somenode
+	$(CLI) node delete node1
+	$(CLI) node delete node2
+	$(CLI) node delete node3
+	$(CLI) node delete node4
 
 test: pds-cli test-hiera test-user test-node
 
