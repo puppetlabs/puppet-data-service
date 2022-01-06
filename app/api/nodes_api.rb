@@ -2,8 +2,6 @@ require 'json'
 require 'pds/model/node'
 
 App.post('/v1/nodes') do
-  cross_origin
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
@@ -24,9 +22,6 @@ end
 
 
 App.delete('/v1/nodes/{name}') do
-  cross_origin
-  # the guts live here
-
   # TODO: validate input
   deleted = data_adapter.delete(:nodes, filters: [['=', 'name', params['name']]])
   if deleted.zero?
@@ -38,17 +33,12 @@ end
 
 
 App.get('/v1/nodes') do
-  cross_origin
-  # the guts live here
-
   nodes = data_adapter.read(:nodes)
   nodes.to_json
 end
 
 
 App.get('/v1/nodes/{name}') do
-  cross_origin
-
   # TODO: validate input
   nodes = data_adapter.read(:nodes, filters: [['=', 'name', params['name']]])
   if nodes.empty?
@@ -60,8 +50,6 @@ end
 
 
 App.put('/v1/nodes/{name}') do
-  cross_origin
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?

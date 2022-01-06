@@ -36,6 +36,9 @@ class App < Sinatra::Base
 
   # Configure logging and OpenAPI spec enforcement
   configure do |config|
+    enable :cross_origin
+    use Rack::CommonLogger, logger
+
     committee_opts = {
       prefix: '/v1',
       schema_path: 'openapi.yaml',
@@ -44,7 +47,6 @@ class App < Sinatra::Base
       error_handler: -> (ex, env) { logger.error ex.as_json },
     }
 
-    use Rack::CommonLogger, logger
     use Committee::Middleware::RequestValidation, committee_opts
     use Committee::Middleware::ResponseValidation, committee_opts
   end

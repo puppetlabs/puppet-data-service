@@ -2,8 +2,6 @@ require 'json'
 require 'pds/model/hiera_datum'
 
 App.post('/v1/hiera-data') do
-  cross_origin
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
@@ -23,9 +21,6 @@ end
 
 
 App.delete('/v1/hiera-data/{level}/{key}') do
-  cross_origin
-  # the guts live here
-
   # TODO: validate input
   deleted = data_adapter.delete(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
   if deleted.zero?
@@ -37,9 +32,6 @@ end
 
 
 App.get('/v1/hiera-data') do
-  cross_origin
-  # the guts live here
-
   # TODO: validate input
   filters = []
   filters << ['=', 'level', params['level']] unless params['level'].nil?
@@ -49,9 +41,6 @@ end
 
 
 App.get('/v1/hiera-data/{level}/{key}') do
-  cross_origin
-  # the guts live here
-
   # TODO: validate input
   hiera_data = data_adapter.read(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
   if hiera_data.empty?
@@ -63,9 +52,6 @@ end
 
 
 App.put('/v1/hiera-data/{level}/{key}') do
-  cross_origin
-  # the guts live here
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?

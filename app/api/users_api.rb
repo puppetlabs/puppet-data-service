@@ -2,8 +2,6 @@ require 'json'
 require 'pds/model/user'
 
 App.post('/v1/users') do
-  cross_origin
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
@@ -24,8 +22,6 @@ end
 
 
 App.delete('/v1/users/{username}') do
-  cross_origin
-
   # TODO: validate input
   deleted = data_adapter.delete(:users, filters: [['=', 'username', params['username']]])
   if deleted.zero?
@@ -37,16 +33,12 @@ end
 
 
 App.get('/v1/users') do
-  cross_origin
-
   users = data_adapter.read(:users)
   users.map { |hash| hash.select { |key,_| key != 'temp-token' }}.to_json
 end
 
 
 App.get('/v1/users/{username}/token') do
-  cross_origin
-
   # TODO: validate input
   user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if user.empty?
@@ -58,8 +50,6 @@ end
 
 
 App.get('/v1/users/{username}') do
-  cross_origin
-
   # TODO: validate input
   users = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
   if users.empty?
@@ -71,8 +61,6 @@ end
 
 
 App.put('/v1/users/{username}') do
-  cross_origin
-
   # TODO: validate input
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
