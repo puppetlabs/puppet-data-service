@@ -45,7 +45,7 @@ var listHieraDataCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &client.GetHieraDataParams{}
 		if levelStr != "" {
-			level := client.OptionalHieraLevel(levelStr)
+			level := client.OptionalHieraLevel(url.QueryEscape(levelStr))
 			params.Level = &level
 		}
 		response, err := pdsClient.GetHieraDataWithResponse(context.Background(), params)
@@ -64,9 +64,11 @@ var getHieraDataCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Short: "Retrieve hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(args[0])
-		key := client.HieraKey(args[1])
-		response, err := pdsClient.GetHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key)
+		level := args[0]
+		key := args[1]
+		response, err := pdsClient.GetHieraDataWithLevelAndKeyWithResponse(context.Background(),
+		                                                                   client.HieraLevel(url.QueryEscape(level)),
+		                                                                   client.HieraKey(url.QueryEscape(key)))
 		if err != nil {
 			log.Fatalf("Couldn't get hieraData %s/%s: %s", level, key, err)
 		}
@@ -83,9 +85,11 @@ var deleteHieraDataCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Short: "Delete hieraData with LEVEL and KEY",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(args[0])
-		key := client.HieraKey(args[1])
-		response, err := pdsClient.DeleteHieraDataObjectWithResponse(context.Background(), level, key)
+		level := args[0]
+		key := args[1]
+		response, err := pdsClient.DeleteHieraDataObjectWithResponse(context.Background(),
+		                                                             client.HieraLevel(url.QueryEscape(level)),
+		                                                             client.HieraKey(url.QueryEscape(key)))
 		if err != nil {
 			log.Fatalf("Couldn't delete hieraData %s/%s: %s", level, key, err)
 		}
