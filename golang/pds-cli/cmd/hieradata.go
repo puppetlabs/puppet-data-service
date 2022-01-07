@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net/url"
 
 	client "github.com/puppetlabs/puppet-data-service/golang/pkg/pds-go-client"
 	"github.com/spf13/cobra"
@@ -101,8 +102,8 @@ var upsertHieraDataCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(2),
 	Short: "Upsert hiera data VALUE for KEY at LEVEL",
 	Run: func(cmd *cobra.Command, args []string) {
-		level := client.HieraLevel(args[0])
-		key := client.HieraKey(args[1])
+		level := args[0]
+		key := args[1]
 		var value interface{}
 		valueErr := json.Unmarshal([]byte(valueStr), &value)
 
@@ -114,7 +115,10 @@ var upsertHieraDataCmd = &cobra.Command{
 			Value: &value,
 		}
 
-		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(), level, key, body)
+		response, err := pdsClient.UpsertHieraDataWithLevelAndKeyWithResponse(context.Background(),
+		                                                                      client.HieraLevel(url.QueryEscape(level)),
+		                                                                      client.HieraKey(url.QueryEscape(key)),
+		                                                                      body)
 
 		if err != nil {
 			log.Fatalf("Couldn't upsert hiera data %s/%s: %s", level, key, err)

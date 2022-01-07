@@ -1,4 +1,5 @@
 require 'json'
+require 'uri'
 require 'pds/model/hiera_datum'
 
 App.post('/v1/hiera-data') do
@@ -22,7 +23,10 @@ end
 
 App.delete('/v1/hiera-data/{level}/{key}') do
   # TODO: validate input
-  deleted = data_adapter.delete(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
+  level = URI.decode_www_form_component(params['level'])
+  key = URI.decode_www_form_component(params['key'])
+
+  deleted = data_adapter.delete(:hiera_data, filters: [['=', 'level', level], ['=', 'key', key]])
   if deleted.zero?
     render_error(404, 'Hiera data not found for the given level and key')
   else
@@ -33,8 +37,13 @@ end
 
 App.get('/v1/hiera-data') do
   # TODO: validate input
+
   filters = []
-  filters << ['=', 'level', params['level']] unless params['level'].nil?
+  if params['level']
+    level = URI.decode_www_form_component(params['level'])
+    filters << ['=', 'level', level]
+  end
+
   hiera_data = data_adapter.read(:hiera_data, filters: filters)
   hiera_data.to_json
 end
@@ -42,7 +51,10 @@ end
 
 App.get('/v1/hiera-data/{level}/{key}') do
   # TODO: validate input
-  hiera_data = data_adapter.read(:hiera_data, filters: [['=', 'level', params['level']], ['=', 'key', params['key']]])
+  level = URI.decode_www_form_component(params['level'])
+  key = URI.decode_www_form_component(params['key'])
+
+  hiera_data = data_adapter.read(:hiera_data, filters: [['=', 'level', level], ['=', 'key', key]])
   if hiera_data.empty?
     render_error(404, 'Hiera data not found for the given level and key')
   else
@@ -53,14 +65,16 @@ end
 
 App.put('/v1/hiera-data/{level}/{key}') do
   # TODO: validate input
+  level = URI.decode_www_form_component(params['level'])
+  key = URI.decode_www_form_component(params['key'])
   body_params = request.body.read
   return render_error(400, 'Bad Request. Body params are required') if body_params.empty?
 
   body = JSON.parse(body_params)
 
   hiera_datum = with_defaults(body, PDS::Model::HieraDatum)
-  hiera_datum['level'] = params['level']
-  hiera_datum['key'] = params['key']
+  hiera_datum['level'] = level
+  hiera_datum['key'] = key
 
   update_or_set_new_timestamps!(:hiera_data, [hiera_datum])
   data_adapter.upsert(:hiera_data, resources: [hiera_datum])
