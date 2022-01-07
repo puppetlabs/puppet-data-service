@@ -27,9 +27,9 @@ The following paths are included in the packaging of pds-server.
 ```
 Paths:
   /opt/puppetlabs/server/apps/pds-server
-    - Application files
+    - Server application files
 
-  /etc/puppetlabs/pds-server
+  /etc/puppetlabs/pds
     - Config files
 
   /opt/puppetlabs/bin

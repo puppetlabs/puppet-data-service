@@ -26,7 +26,7 @@ class App < Sinatra::Base
   # Users should configure their app settings using a pds-server.yaml file in one of
   # these locations
   searchpath = [
-    '/etc/puppetlabs/pds-server/pds-server.yaml',
+    '/etc/puppetlabs/pds/pds-server.yaml',
     File.expand_path(File.join(__dir__, 'config', 'pds-server.yaml')),
   ]
 

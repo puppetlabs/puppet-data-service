@@ -22,7 +22,7 @@ The API documentation was made following the OpenAPIv3 specifications and can be
 
 ### Connect your DataAdapter
 
-In the `config/pds.yaml` configuration file, set the `database` key.
+In the `/etc/puppetlabs/pds/pds-server.yaml` configuration file, set the `database` key.
 
 ```yaml
 # Use mock for a quick test
