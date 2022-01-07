@@ -56,6 +56,18 @@ rake db:create
 rake db:migrate
 ```
 
+### Configure SSL
+
+In the `/etc/puppetlabs/pds/pds-server.yaml` configuration file, set the following ssl keys.
+
+```yaml
+---
+use-ssl: true
+ssl-cert: "/etc/puppetlabs/pds/ssl/cert.pem"
+ssl-key: "/etc/puppetlabs/pds/ssl/key.pem"
+ssl-ca: "/etc/puppetlabs/pds/ssl/ca.pem"
+```
+
 ### Create the admin token
 
 A rake tasks exists to let you create an "admin" user and set its token to a supplied string, in order to gain initial access to the application.
