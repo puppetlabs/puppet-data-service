@@ -9,7 +9,7 @@
 
 # Client ignores
 /golang/pds-cli/pds-cli
-/golang/pds-cli/pds-cli.yaml
+/golang/pds-cli/pds-client.yaml
 
 # Packaging ignores
 /*.rpm

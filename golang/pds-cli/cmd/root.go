@@ -63,7 +63,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/pds-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/pds-client.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "b", "", "Base URI for the PDS API")
 
 	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "API token")
@@ -94,7 +94,7 @@ func initConfig() {
 		viper.AddConfigPath("/etc/puppetlabs/pds-server")
 		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("pds-cli")
+		viper.SetConfigName("pds-client")
 		viper.SetEnvPrefix(envPrefix)
 	}
 
