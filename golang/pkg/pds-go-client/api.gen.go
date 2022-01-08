@@ -22,15 +22,6 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
-// Defines values for EditableNodePropertiesCodeEnvironment.
-const (
-	EditableNodePropertiesCodeEnvironmentCompliance EditableNodePropertiesCodeEnvironment = "compliance"
-
-	EditableNodePropertiesCodeEnvironmentProduction EditableNodePropertiesCodeEnvironment = "production"
-
-	EditableNodePropertiesCodeEnvironmentStaging EditableNodePropertiesCodeEnvironment = "staging"
-)
-
 // Defines values for EditableUserPropertiesRole.
 const (
 	EditableUserPropertiesRoleAdministrator EditableUserPropertiesRole = "administrator"
@@ -58,16 +49,13 @@ type EditableNodeProperties struct {
 	Classes *[]string `json:"classes,omitempty"`
 
 	// Code environment
-	CodeEnvironment *EditableNodePropertiesCodeEnvironment `json:"code-environment"`
-	Data            *map[string]interface{}                `json:"data,omitempty"`
+	CodeEnvironment *string                 `json:"code-environment"`
+	Data            *map[string]interface{} `json:"data,omitempty"`
 }
-
-// Code environment
-type EditableNodePropertiesCodeEnvironment string
 
 // EditableUserProperties defines model for EditableUserProperties.
 type EditableUserProperties struct {
-	Email *string `json:"email,omitempty"`
+	Email *string `json:"email"`
 
 	// User role
 	Role *EditableUserPropertiesRole `json:"role,omitempty"`

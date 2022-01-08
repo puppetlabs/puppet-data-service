@@ -120,7 +120,7 @@ var upsertNodeCmd = &cobra.Command{
 		}
 
 		if codeEnvironment != "" {
-			body.CodeEnvironment = (*client.EditableNodePropertiesCodeEnvironment)(&codeEnvironment)
+			body.CodeEnvironment = &codeEnvironment
 		}
 
 		// Submit the request
