@@ -16,7 +16,7 @@ proxy: prism
 	prism proxy  ../../docs/api.yml http://127.0.0.1:4011 &
 
 app-proxy: prism
-	prism proxy ../../docs/api.yml http://127.0.0.1:8080/v1 --errors -p 4011 &
+	prism proxy ../../docs/api.yml http://127.0.0.1:8160/v1 --errors -p 4011 &
 
 killproxy:
 	killall node
