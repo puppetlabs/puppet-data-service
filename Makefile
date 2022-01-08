@@ -21,15 +21,15 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		--after-install package/rpm/postinstall \
 		--before-remove package/rpm/preuninstall \
 		--after-remove package/rpm/postuninstall \
-		--config-files /etc/puppetlabs/pds-server/pds.yaml \
-		--config-files /etc/puppetlabs/pds-server/pds-cli.yaml \
-		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds-server/pds.yaml' \
-		--rpm-attr '0640,pds-server,pe-puppet:/etc/puppetlabs/pds-server/pds-cli.yaml' \
+		--config-files /etc/puppetlabs/pds/pds-server.yaml \
+		--config-files /etc/puppetlabs/pds/pds-client.yaml \
+		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds/pds-server.yaml' \
+		--rpm-attr '0640,pds-server,pe-puppet:/etc/puppetlabs/pds/pds-client.yaml' \
 		--depends pe-postgresql11 \
 		app/=/opt/puppetlabs/server/apps/pds-server \
-		app/config/pds.yaml.example=/etc/puppetlabs/pds-server/pds.yaml \
+		app/config/pds-server.yaml.example=/etc/puppetlabs/pds/pds-server.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
-		golang/pds-cli/pds-cli.yaml.example=/etc/puppetlabs/pds-server/pds-cli.yaml \
+		golang/pds-cli/pds-client.yaml.example=/etc/puppetlabs/pds/pds-client.yaml \
 		package/pds=/etc/puppetlabs/puppet/trusted-external-commands/pds \
 		package/pds-ctl=/opt/puppetlabs/sbin/pds-ctl \
 		package/pds-server.service=/usr/lib/systemd/system/pds-server.service
@@ -38,9 +38,9 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 
 clean:
 	rm -rf app/vendor/bundle
-	rm -f app/config/pds.yaml
+	rm -f app/config/pds-server.yaml
 	rm -f golang/pds-cli/pds-cli
-	rm -f golang/pds-cli/pds-cli.yaml
+	rm -f golang/pds-cli/pds-client.yaml
 	rm -f pds-server*.rpm
 
 $(pds-cli): $(wildcard golang/**/*.go) /usr/bin/go

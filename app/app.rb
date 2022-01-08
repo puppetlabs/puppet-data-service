@@ -23,11 +23,11 @@ class App < Sinatra::Base
   set :logger, Logger.new(STDOUT)
   set :default_content_type, :json
 
-  # Users should configure their app settings using a pds.yaml file in one of
+  # Users should configure their app settings using a pds-server.yaml file in one of
   # these locations
   searchpath = [
-    '/etc/puppetlabs/pds-server/pds.yaml',
-    File.expand_path(File.join(__dir__, 'config', 'pds.yaml')),
+    '/etc/puppetlabs/pds/pds-server.yaml',
+    File.expand_path(File.join(__dir__, 'config', 'pds-server.yaml')),
   ]
 
   # Load config parameters from a file, if it exists

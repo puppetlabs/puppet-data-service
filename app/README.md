@@ -22,7 +22,7 @@ The API documentation was made following the OpenAPIv3 specifications and can be
 
 ### Connect your DataAdapter
 
-In the `config/pds.yaml` configuration file, set the `database` key.
+In the `/etc/puppetlabs/pds/pds-server.yaml` configuration file, set the `database` key.
 
 ```yaml
 # Use mock for a quick test
@@ -54,6 +54,18 @@ rake db:create
 
 # Make sure you have the latest DB schema
 rake db:migrate
+```
+
+### Configure SSL
+
+In the `/etc/puppetlabs/pds/pds-server.yaml` configuration file, set the following ssl keys.
+
+```yaml
+---
+use-ssl: true
+ssl-cert: "/etc/puppetlabs/pds/ssl/cert.pem"
+ssl-key: "/etc/puppetlabs/pds/ssl/key.pem"
+ssl-ca: "/etc/puppetlabs/pds/ssl/ca.pem"
 ```
 
 ### Create the admin token

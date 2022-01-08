@@ -38,6 +38,7 @@ var (
 	cfgFile string
 	baseuri string
 	token string
+	caFile string
 	pdsClient *client.ClientWithResponses
 	envPrefix string = "PDS"
 )
@@ -49,7 +50,7 @@ var rootCmd = &cobra.Command{
 	Short: "Interact with Puppet Data Service from the command line",
 	Version: "0.1",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		pdsClient = createPDSClient(baseuri, token)
+		pdsClient = createPDSClient(baseuri, token, caFile)
 	
 	},
 }
@@ -63,13 +64,15 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/pds-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/pds-client.yaml)")
+	rootCmd.PersistentFlags().StringVar(&caFile, "ssl-ca", "", "certificate authority file")
 	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "b", "", "Base URI for the PDS API")
 
 	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "API token")
 
 	viper.BindPFlag("baseuri", rootCmd.PersistentFlags().Lookup("baseuri"))
 	viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
+	viper.BindPFlag("ssl-ca", rootCmd.PersistentFlags().Lookup("ssl-ca"))
 
 	rootCmd.MarkPersistentFlagRequired("baseuri")
 	rootCmd.MarkPersistentFlagRequired("token")
@@ -91,10 +94,10 @@ func initConfig() {
 
 		// Search config in home directory with name ".pds-cli" (without extension).
 		viper.AddConfigPath(home)
-		viper.AddConfigPath("/etc/puppetlabs/pds-server")
+		viper.AddConfigPath("/etc/puppetlabs/pds")
 		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("pds-cli")
+		viper.SetConfigName("pds-client")
 		viper.SetEnvPrefix(envPrefix)
 	}
 

@@ -1,0 +1,4 @@
+---
+#baseuri: http://localhost:8160/v1
+#token: MY_TOKEN
+#ssl-ca: /etc/puppetlabs/puppet/ssl/certs/ca.pem
