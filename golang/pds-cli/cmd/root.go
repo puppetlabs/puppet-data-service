@@ -65,14 +65,14 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/pds-client.yaml)")
-	rootCmd.PersistentFlags().StringVar(&caFile, "ssl-ca", "", "certificate authority file")
+	rootCmd.PersistentFlags().StringVar(&caFile, "ca-file", "", "certificate authority file")
 	rootCmd.PersistentFlags().StringVarP(&baseuri, "baseuri", "b", "", "Base URI for the PDS API")
 
 	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "API token")
 
 	viper.BindPFlag("baseuri", rootCmd.PersistentFlags().Lookup("baseuri"))
 	viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
-	viper.BindPFlag("ssl-ca", rootCmd.PersistentFlags().Lookup("ssl-ca"))
+	viper.BindPFlag("ca-file", rootCmd.PersistentFlags().Lookup("ca-file"))
 
 	rootCmd.MarkPersistentFlagRequired("baseuri")
 	rootCmd.MarkPersistentFlagRequired("token")
