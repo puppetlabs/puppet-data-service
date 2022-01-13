@@ -14,3 +14,9 @@ npm install -g prism
 prism mock api.yml
 ```
 
+## Generating API documentation
+
+```bash
+npm install -g widdershins
+widdershins api.yml -o api.md
+```
