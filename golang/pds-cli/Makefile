@@ -61,4 +61,5 @@ test-node:
 
 test: pds-cli test-hiera test-user test-node
 
-
+doc: pds-cli
+	$(CLI) doc -d doc 
