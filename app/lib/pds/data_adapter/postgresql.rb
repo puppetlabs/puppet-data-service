@@ -115,6 +115,12 @@ module PDS
         self.primary_key = ['level', 'key']
         validates_presence_of :level
         validates_presence_of :key
+
+        def self.normalize(hiera_candidates)
+          # TODO: Set specific fields that you need before insert_all!
+          hiera_candidates
+        end
+
       end
 
       class Node < PDSRecord
@@ -125,6 +131,11 @@ module PDS
 
         def self.resource_defaults
           {'classes' => [], 'code-environment' => nil, 'data' => {}}
+        end
+
+        def self.normalize(node_candidates)
+          # TODO: Set specific fields that you need before insert_all!
+          node_candidates
         end
       end
 
@@ -146,7 +157,7 @@ module PDS
 
         def self.normalize(user_candidates)
           user_candidates.each do |candidate|
-            candidate['temp_token'] = token_generator['username'] if candidate['temp_token'].nil?
+            candidate['temp_token'] = token_generator(candidate['username']) if candidate['temp_token'].nil?
           end
         end
 
