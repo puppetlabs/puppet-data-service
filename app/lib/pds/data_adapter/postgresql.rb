@@ -6,6 +6,7 @@ require 'pds/data_adapter/base'
 require 'pds/model/node'
 require 'pds/model/user'
 require 'pds/model/hiera_datum'
+require 'jwt'
 
 module PDS
   module DataAdapter
@@ -137,20 +138,22 @@ module PDS
 
         before_create :set_token
 
-        def self.token_generator
-          "dev-bearer-token-temp-#{Time.now}"
+        def self.token_generator(username)
+          secret = App.settings.config.dig('token_signature')
+          payload = "#{username}-bearer-token-temp-#{Time.now}"
+          JWT.encode payload, secret, 'HS256'
         end
 
         def self.normalize(user_candidates)
           user_candidates.each do |candidate|
-            candidate['temp_token'] = token_generator if candidate['temp_token'].nil?
+            candidate['temp_token'] = token_generator['username'] if candidate['temp_token'].nil?
           end
         end
 
         private
 
         def set_token
-          self.temp_token = token_generator if self.temp_token.nil?
+          self.temp_token = User.token_generator(self.username) if self.temp_token.nil?
         end
       end
     end
