@@ -44,6 +44,8 @@ database:
   password: <%= ENV['DATABASE_PASSWORD'] %>
 ```
 
+Also make sure to set the secret `token_signature` field which is used to generate JWT tokens
+
 #### PostgreSQL
 
 Create the database
