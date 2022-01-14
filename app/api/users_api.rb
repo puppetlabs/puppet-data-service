@@ -12,7 +12,6 @@ App.post('/v1/users') do
   begin
     set_new_timestamps!(new_users)
     users_created = data_adapter.create(:users, resources: new_users)
-
     status 201
     users_created.to_json
   rescue PDS::DataAdapter::Conflict => e

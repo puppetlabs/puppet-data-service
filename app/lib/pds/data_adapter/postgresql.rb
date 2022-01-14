@@ -14,12 +14,15 @@ module PDS
       include ActiveSupport::Inflector
 
       def create(entity_type, resources:)
-        # TODO: implement uniqueness check(s)
         # TODO: validate input
         model = entity_klass(entity_type)
         begin
-          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
-          resources
+          original_data = resources.deep_dup
+          original_data.freeze
+          normalized_resources = model.normalize(resources)
+          model.insert_all!(normalized_resources.map { |rsrc| model.to_attributes(rsrc) })
+
+          original_data
         rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
@@ -131,6 +134,24 @@ module PDS
         validates_presence_of :username, :email
         validates :username, :email, uniqueness: true
         validates :role, inclusion: { in: ['operator', 'administrator'], message: "%{value} is not a valid role" }
+
+        before_create :set_token
+
+        def self.token_generator
+          "dev-bearer-token-temp-#{Time.now}"
+        end
+
+        def self.normalize(user_candidates)
+          user_candidates.each do |candidate|
+            candidate['temp_token'] = token_generator if candidate['temp_token'].nil?
+          end
+        end
+
+        private
+
+        def set_token
+          self.temp_token = token_generator if self.temp_token.nil?
+        end
       end
     end
   end
