@@ -18,7 +18,33 @@ The PDS consists of:
 
 Review the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module for detailed information on how to install, configure, and run the service.
 
+### Configuring the puppet_data_service module
+
+1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
+   - Make sure to add the PDS hiera level in your control-repo's `hiera.yaml`
+2. Configure the two required roles
+   - The Database server
+     - Add a new Node Group from the PE Console.
+       ```
+       Parent name: PE Infrastructure
+       Group name: PDS Database
+       Environment: production
+       ```
+     - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
+     - Add (pin) your PostgreSQL server certname in the Rules tab (it could be the primary server)
+     - Commit your changes
+   - Application server
+     - In the **PE Master** Node group:
+       - Add the new class `puppet_data_service::server`
+       - Include the following parameters:
+         - package_source: The location of the PDS RPM
+         - database_host: The DB server cert
+      - In the Configuration data tab:
+         -  Configure the _sensitive_ `pds_token` parameter, this token will be used to create the admin account for the PDS, you can pass a UUID or your own token from your Active Directory/LDAP
+
 ## Development
+
+The PDS [app](app/) folder contains detailed instructions to run the PDS API in a local development environment, as well as the CLI [golang](golang/) README file explains how to build and test the PDS CLI.
 
 ### Building the pds-server package
 
