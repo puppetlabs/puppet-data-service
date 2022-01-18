@@ -84,3 +84,69 @@ To build the pds-server RPM package
 1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
 3. Run `make clean`
 4. Run `make package`
+
+## User guide
+
+As a PDS user you currently have two options to interact with it.
+
+1. PDS CLI
+2. PDS API
+
+This user guide will focus on the PDS CLI, but if you want to create your own PDS client (e.g. web app) check the [PDS API documentation](docs/)
+
+The CLI offers you a convinient way to create and retrieve data from the PDS. You can interact with it by typing in your Puppet Server's terminal:
+
+```
+pds-cli
+```
+
+The `-h` (help) flag will bring everything you need to use the CLI, but here is an overview of the actions you can do:
+
+### Users
+
+List all PDS users in the system
+
+`pds-cli user`
+
+#### List users
+
+`pds-cli user list`
+
+#### Get a single user
+
+`pds-cli user get <username>`
+
+#### Create a user
+
+You can create users in bulk (from 1 up to 1,000 users at once)
+
+```
+# users.json
+
+{
+  "resources": [
+    { "username": "john", "email": "john@pds.com", "role": "operator" },
+    { "username": "will", "email": "w@pds.com", "role": "operator" },
+  ]
+}
+```
+
+`pds-cli user create -f users.json`
+
+#### Upsert a user
+
+Upsert does not support bulk operations, it will always affect a single user at the time
+
+`pds-cli user upsert <username> -e me@me.com -r operator`
+
+#### Delete a user
+
+`pds-cli user delete <username>`
+
+### Node data
+
+TODO
+
+### Hiera data
+
+TODO
