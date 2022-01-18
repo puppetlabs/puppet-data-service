@@ -106,17 +106,23 @@ The `-h` (help) flag will bring everything you need to use the CLI, but here is 
 
 List all PDS users in the system
 
-`pds-cli user`
+```
+pds-cli user
+```
 
 #### List users
 
-`pds-cli user list`
+```
+pds-cli user list
+```
 
 #### Get a single user
 
-`pds-cli user get <username>`
+```
+pds-cli user get <username>
+```
 
-#### Create a user
+#### Create users
 
 You can create users in bulk (from 1 up to 1,000 users at once)
 
@@ -131,22 +137,110 @@ You can create users in bulk (from 1 up to 1,000 users at once)
 }
 ```
 
-`pds-cli user create -f users.json`
+```
+pds-cli user create -f users.json
+```
 
 #### Upsert a user
 
 Upsert does not support bulk operations, it will always affect a single user at the time
 
-`pds-cli user upsert <username> -e me@me.com -r operator`
+```
+pds-cli user upsert <username> -e me@me.com -r operator
+```
 
 #### Delete a user
 
-`pds-cli user delete <username>`
+```
+pds-cli user delete <username>
+```
 
 ### Node data
 
-TODO
+
+#### List nodes
+
+```
+pds-cli node list
+```
+
+#### Get a single node
+
+```
+pds-cli node get <node-name>
+```
+
+#### Create nodes
+
+```
+# nodes.json
+
+{
+  "resources": [
+    { "name": "node1", "code-environment": "staging" },
+    { "name": "node2", "classes": ["foo","bar"] }
+  ]
+}
+
+```
+
+```
+pds-cli node create -f nodes.json
+```
+
+#### Upsert a node
+
+```
+pds-cli node upsert <node-name> -d '{"demo": "Hello world!"}'
+```
+
+#### Delete a node
+
+```
+pds-cli node delete <node-name>
+```
 
 ### Hiera data
 
-TODO
+#### List hiera data
+
+```
+pds-cli hiera list
+```
+
+#### Get a single hiera level
+
+```
+pds-cli hiera get <hiera-level> <hiera-key>
+```
+
+#### Create hiera data
+
+```
+# hieradata.json
+
+{
+  "resources": [
+    { "level": "level1", "key": "key1", "value": "value1" },
+    { "level": "level1", "key": "key2", "value": "value2" },
+    { "level": "nodes/ip-10-64-1-23.us-west-2.compute.internal", "key": "app-name", "value": "super-app" }
+  ]
+}
+
+```
+
+```
+pds-cli hiera create -f hieradata.json
+```
+
+#### Upsert a hiera level
+
+```
+pds-cli hiera upsert <hiera-level> <hiera-key> -v '"somevalue"'
+```
+
+#### Delete a hiera level:key
+
+```
+pds-cli hiera delete <hiera-level> <hiera-key>
+```
