@@ -72,7 +72,11 @@ App.put('/v1/users/{username}') do
   user['username'] = params['username']
   user['status'] = 'active'
 
+  existing_user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
+
+  set_user_tokens!([user]) if existing_user.empty?
   update_or_set_new_timestamps!(:users, [user])
+
   data_adapter.upsert(:users, resources: [user])
 
   if user['created-at'] == user['updated-at']

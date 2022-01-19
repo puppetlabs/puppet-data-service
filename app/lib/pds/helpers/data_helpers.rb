@@ -40,11 +40,7 @@ module PDS
 
       def set_user_tokens!(user_candidates)
         user_candidates.each do |candidate|
-          uuid = SecureRandom.uuid.upcase
-          candidate_initial = candidate['username'].chars.first(2).join.upcase
-          seconds_until_eod = Time.now.seconds_until_end_of_day
-          new_token = "#{seconds_until_eod}-#{uuid}-#{candidate_initial}"
-
+          new_token = SecureRandom.uuid.upcase
           candidate['temp_token'] = new_token if candidate['temp_token'].nil?
         end
       end
