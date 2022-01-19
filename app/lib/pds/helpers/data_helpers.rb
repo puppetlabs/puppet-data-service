@@ -41,7 +41,7 @@ module PDS
       def set_user_tokens!(user_candidates)
         user_candidates.each do |candidate|
           new_token = SecureRandom.uuid.upcase
-          candidate['temp_token'] = new_token if candidate['temp_token'].nil?
+          candidate['temp-token'] = new_token if candidate['temp-token'].nil?
         end
       end
     end
