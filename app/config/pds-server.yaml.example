@@ -34,4 +34,3 @@ database:
 # For development purposes, authentication may be disabled.
 
 #authenticate: false
-#token_signature: <secret-string>

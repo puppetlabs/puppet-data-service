@@ -6,7 +6,6 @@ require 'pds/data_adapter/base'
 require 'pds/model/node'
 require 'pds/model/user'
 require 'pds/model/hiera_datum'
-require 'jwt'
 
 module PDS
   module DataAdapter
