@@ -1,6 +1,6 @@
 module PDS
   module Helpers
-    module TimestampHelpers
+    module DataHelpers
       # @param entity_type [Symbol] the type of resources. Not used; passed for
       #   consistency with #update_or_set_new_timestamps!
       # @param resources [Array] an array of resources as submitted by a user
@@ -35,6 +35,13 @@ module PDS
           else
             rsrc['created-at'] = current.first['created-at']
           end
+        end
+      end
+
+      def set_user_tokens!(user_candidates)
+        user_candidates.each do |candidate|
+          new_token = SecureRandom.uuid.upcase
+          candidate['temp-token'] = new_token if candidate['temp-token'].nil?
         end
       end
     end

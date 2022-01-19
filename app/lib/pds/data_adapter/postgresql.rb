@@ -14,7 +14,6 @@ module PDS
       include ActiveSupport::Inflector
 
       def create(entity_type, resources:)
-        # TODO: implement uniqueness check(s)
         # TODO: validate input
         model = entity_klass(entity_type)
         begin

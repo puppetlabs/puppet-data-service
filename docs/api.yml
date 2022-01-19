@@ -18,8 +18,8 @@ tags:
   - name: users
     description: Every config change should be started with an authorized Admin User
     externalDocs:
-      description: TBD Find out more
-      url: https://puppet.com/
+      description: Find out more
+      url: https://github.com/puppetlabs/puppet-data-service/blob/main/app/db/postgresql/schema.rb
   - name: nodes
     description: Node details and configuration data, Nodedata stores configuration details for a specific node
   - name: hiera-data
