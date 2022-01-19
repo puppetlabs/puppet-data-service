@@ -18,12 +18,8 @@ module PDS
         # TODO: validate input
         model = entity_klass(entity_type)
         begin
-          original_data = resources.deep_dup
-          original_data.freeze
-          normalized_resources = model.normalize(resources)
-          model.insert_all!(normalized_resources.map { |rsrc| model.to_attributes(rsrc) })
-
-          original_data
+          model.insert_all!(resources.map { |rsrc| model.to_attributes(rsrc) })
+          resources
         rescue ActiveRecord::RecordNotUnique
           raise PDS::DataAdapter::Conflict
         end
@@ -115,12 +111,6 @@ module PDS
         self.primary_key = ['level', 'key']
         validates_presence_of :level
         validates_presence_of :key
-
-        def self.normalize(hiera_candidates)
-          # TODO: Set specific fields that you need before insert_all!
-          hiera_candidates
-        end
-
       end
 
       class Node < PDSRecord
@@ -131,11 +121,6 @@ module PDS
 
         def self.resource_defaults
           {'classes' => [], 'code-environment' => nil, 'data' => {}}
-        end
-
-        def self.normalize(node_candidates)
-          # TODO: Set specific fields that you need before insert_all!
-          node_candidates
         end
       end
 
@@ -148,18 +133,6 @@ module PDS
         validates :role, inclusion: { in: ['operator', 'administrator'], message: "%{value} is not a valid role" }
 
         before_create :set_token
-
-        def self.token_generator(username)
-          secret = App.settings.config.dig('token_signature')
-          payload = "#{username}-bearer-token-temp-#{Time.now}"
-          JWT.encode payload, secret, 'HS256'
-        end
-
-        def self.normalize(user_candidates)
-          user_candidates.each do |candidate|
-            candidate['temp_token'] = token_generator(candidate['username']) if candidate['temp_token'].nil?
-          end
-        end
 
         private
 

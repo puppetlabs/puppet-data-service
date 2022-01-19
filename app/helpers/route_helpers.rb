@@ -1,7 +1,7 @@
-require 'pds/helpers/timestamp_helpers'
+require 'pds/helpers/data_helpers'
 
 App.helpers do
-  include PDS::Helpers::TimestampHelpers
+  include PDS::Helpers::DataHelpers
 
   # Syntactic sugar. We're using the settings object to store this globally,
   # but it's not really a setting. So, make it cleaner elsewhere in code.

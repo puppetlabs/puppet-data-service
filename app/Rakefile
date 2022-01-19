@@ -15,8 +15,8 @@ end
 namespace :app do |args|
   desc "creates and sets an admin token"
   task :set_admin_token, [:token] => :'db:load_config' do |t, args|
-    require 'pds/helpers/timestamp_helpers'
-    include PDS::Helpers::TimestampHelpers
+    require 'pds/helpers/data_helpers'
+    include PDS::Helpers::DataHelpers
 
     # Define the helper-required data_adapter method in a way that works for
     # rake tasks
