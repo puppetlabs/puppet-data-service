@@ -130,14 +130,6 @@ module PDS
         validates_presence_of :username, :email
         validates :username, :email, uniqueness: true
         validates :role, inclusion: { in: ['operator', 'administrator'], message: "%{value} is not a valid role" }
-
-        before_create :set_token
-
-        private
-
-        def set_token
-          self.temp_token = User.token_generator(self.username) if self.temp_token.nil?
-        end
       end
     end
   end
