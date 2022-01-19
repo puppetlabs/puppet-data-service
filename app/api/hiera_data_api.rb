@@ -11,7 +11,7 @@ App.post('/v1/hiera-data') do
   new_hiera_data = with_defaults(body['resources'], PDS::Model::HieraDatum)
 
   begin
-    set_new_timestamps!(new_hiera_data)
+    timestamp!(new_hiera_data)
     data_adapter.create(:hiera_data, resources: new_hiera_data)
     status 201
     new_hiera_data.to_json
@@ -76,7 +76,7 @@ App.put('/v1/hiera-data/{level}/{key}') do
   hiera_datum['level'] = level
   hiera_datum['key'] = key
 
-  update_or_set_new_timestamps!(:hiera_data, [hiera_datum])
+  update_timestamps!(:hiera_data, [hiera_datum])
   data_adapter.upsert(:hiera_data, resources: [hiera_datum])
 
   if hiera_datum['created-at'] == hiera_datum['updated-at']

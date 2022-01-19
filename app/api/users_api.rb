@@ -10,7 +10,7 @@ App.post('/v1/users') do
   new_users = with_defaults(body['resources'], PDS::Model::User)
 
   begin
-    set_new_timestamps!(new_users)
+    timestamp!(new_users)
     set_user_tokens!(new_users)
 
     users_created = data_adapter.create(:users, resources: new_users)
@@ -72,17 +72,21 @@ App.put('/v1/users/{username}') do
   user['username'] = params['username']
   user['status'] = 'active'
 
-  existing_user = data_adapter.read(:users, filters: [['=', 'username', params['username']]])
+  existing_user = data_adapter.read(:users, filters: [['=', 'username', user['username']]]).first
 
-  set_user_tokens!([user]) if existing_user.empty?
-  update_or_set_new_timestamps!(:users, [user])
+  if existing_user
+    user['created-at'] = existing_user['created-at']
+  else
+    set_user_tokens!([user])
+  end
 
+  timestamp!([user])
   data_adapter.upsert(:users, resources: [user])
 
-  if user['created-at'] == user['updated-at']
-    status 201
-  else
+  if existing_user
     status 200
+  else
+    status 201
   end
 
   user.to_json
