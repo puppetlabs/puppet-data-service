@@ -1,17 +1,26 @@
 module PDS
   module Helpers
     module DataHelpers
-      # @param entity_type [Symbol] the type of resources. Not used; passed for
-      #   consistency with #update_or_set_new_timestamps!
+      # Set updated-at key of each submitted resource to Time.now. Add a
+      # created-at key if it isn't already present.
+      #
       # @param resources [Array] an array of resources as submitted by a user
-      def set_new_timestamps!(resources)
-        resources.each { |rsrc| rsrc['created-at'] = rsrc['updated-at'] = Time.now.iso8601 }
+      def timestamp!(resources)
+        now = Time.now.iso8601
+        resources.each do |rsrc|
+          rsrc['updated-at'] = now
+          rsrc['created-at'] ||= now
+        end
       end
 
+      # Ensure each submitted resource has created-at and updated-at keys. If
+      # the resource already exists in the backend, set the created-at key to
+      # the existing value for the resource. Set the updated-at key to the
+      # current time.
+      #
       # @param entity_type [Symbol] the type of resources.
       # @param resources [Array] an array of resources as submitted by a user
-      def update_or_set_new_timestamps!(entity_type, resources)
-        timestamp = Time.now.iso8601
+      def update_timestamps!(entity_type, resources)
         resources.each do |rsrc|
           filters = case entity_type
                     when :users
@@ -27,14 +36,10 @@ module PDS
 
           # The #data_adapter method must be defined elsewhere for this mixin
           # to work properly
-          current = data_adapter.read(entity_type, filters: filters)
+          current = data_adapter.read(entity_type, filters: filters).first
 
-          rsrc['updated-at'] = timestamp
-          if current.empty?
-            rsrc['created-at'] = timestamp
-          else
-            rsrc['created-at'] = current.first['created-at']
-          end
+          rsrc['created-at'] = current['created-at'] unless current.nil?
+          timestamp!([rsrc])
         end
       end
 

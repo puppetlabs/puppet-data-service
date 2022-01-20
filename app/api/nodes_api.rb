@@ -10,7 +10,7 @@ App.post('/v1/nodes') do
   new_nodes = with_defaults(body['resources'], PDS::Model::Node)
 
   begin
-    set_new_timestamps!(new_nodes)
+    timestamp!(new_nodes)
     nodes_created = data_adapter.create(:nodes, resources: new_nodes)
 
     status 201
@@ -59,7 +59,7 @@ App.put('/v1/nodes/{name}') do
   node = with_defaults(body, PDS::Model::Node)
   node['name'] = params['name']
 
-  update_or_set_new_timestamps!(:nodes, [node])
+  update_timestamps!(:nodes, [node])
   data_adapter.upsert(:nodes, resources: [node])
 
   if node['created-at'] == node['updated-at']
