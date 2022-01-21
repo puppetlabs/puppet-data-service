@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module PDS
   module Helpers
     module DataHelpers

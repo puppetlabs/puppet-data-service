@@ -1,3 +1,5 @@
+require 'securerandom'
+
 if App.environment == :development
   puts "Removing existing data ... \n \n"
   PDS::DataAdapter::PostgreSQL::User.destroy_all
@@ -46,7 +48,8 @@ if App.environment == :development
       username: user,
       email: "#{user}@#{business_domain_name}",
       role: 'operator',
-      status: 'active'
+      status: 'active',
+      temp_token: SecureRandom.uuid.upcase
     )
   end
 
