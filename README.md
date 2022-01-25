@@ -35,7 +35,7 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
      - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
      - Add (pin) your PostgreSQL server `certname` in the Rules tab (it could be the primary server)
      - Commit your changes
-   - Application server
+   - PDS API server
      - In the **PE Master** Node group:
        - Add the new class `puppet_data_service::server`
        - Include the following parameters:
