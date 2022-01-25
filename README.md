@@ -31,6 +31,8 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
 
 ### Configure using the PE Console
 
+This setup will help you to quickly configure the PDS in your existing PE server, for advanced Puppet users review the *Configure using roles and Hiera eyaml* section.
+
 1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
    - Make sure to add the PDS hiera level in your control-repo's `hiera.yaml`
 2. Configure the two required `roles`
@@ -42,7 +44,8 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
        Environment: production
        ```
      - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
-     - Add (pin) your PostgreSQL server `certname` in the Rules tab (it could be the primary server)
+     - Add (pin) your existing PostgreSQL server `certname` in the Rules tab (it could be the primary server)
+       - In case you want to test the PDS in a different server without PostgreSQL, you can apply the `puppet_enterprise::profile::database` class to your node before following these steps, 
      - Commit your changes
    - PDS API server
      - In the **PE Master** Node group:
@@ -57,12 +60,16 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
 
 ### Configure using roles and Hiera eyaml
 
+If you are an experienced Puppet practicioner, this other configuration option will give you the tools you need to make your own Puppet `roles`
+
 Include the `puppet_data_service` classes in the corresponding `role`
 
-```
-# control-repo/site-modules/role/manifests/pds_server.pp
+**The PDS Database server**
 
-class role::pds_server {
+```
+# control-repo/site-modules/role/manifests/pds_database_server.pp
+
+class role::pds_database_server {
   include puppet_data_service::database
 }
 ```
@@ -82,7 +89,7 @@ class role::pds_api_server {
 }
 ```
 
-Since the `pds_token` is a sensitive parameter, it will be a good idea to encrypt it using Hiera eyaml.
+Since the `pds_token` is a sensitive parameter, it will be a good idea to encrypt it using [Hiera eyaml](https://github.com/voxpupuli/hiera-eyaml).
 
 `eyaml encrypt -l 'puppet_data_service::pds_token' -s 'a-secure-admin-token'`
 
