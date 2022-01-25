@@ -20,11 +20,11 @@ Review the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/pupp
 
 ### Configuring the puppet_data_service module
 
-The `puppet_data_service` module will install [the PDS RPM](https://github.com/puppetlabs/puppet-data-service/releases) for you, so you don't have to worry about operationalizing the PDS service itself, dealing with DB setup, migrations, and so on, also it will install the PDS CLI as well.
+The `puppet_data_service` module will install the whole PDS [via its RPM](https://github.com/puppetlabs/puppet-data-service/releases) for you, so you don't have to worry about operationalizing the PDS service itself, dealing with DB setup, migrations, and so on, also it will install the PDS CLI as well.
 
 1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
    - Make sure to add the PDS hiera level in your control-repo's `hiera.yaml`
-2. Configure the two required roles
+2. Configure the two required `roles`
    - The Database server
      - Add a new Node Group from the PE Console.
        ```
@@ -33,14 +33,14 @@ The `puppet_data_service` module will install [the PDS RPM](https://github.com/p
        Environment: production
        ```
      - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
-     - Add (pin) your PostgreSQL server certname in the Rules tab (it could be the primary server)
+     - Add (pin) your PostgreSQL server `certname` in the Rules tab (it could be the primary server)
      - Commit your changes
    - Application server
      - In the **PE Master** Node group:
        - Add the new class `puppet_data_service::server`
        - Include the following parameters:
          - package_source: The location of the PDS RPM
-         - database_host: The DB server cert
+         - database_host: The DB server `certname`
       - In the Configuration data tab:
          -  Configure the _sensitive_ `pds_token` parameter, this token will be used to create the admin account for the PDS, you can pass a UUID or your own token from your Active Directory/LDAP
       - Commit your changes
