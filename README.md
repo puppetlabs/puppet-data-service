@@ -8,7 +8,7 @@ The Puppet Data Service (PDS) provides a centralized API-driven interface for Pu
 
 The PDS consists of:
 
-1. A database backend. At present PostgreSQL is supported. Backends are pluggable, and support for other backends is planned.
+1. A database backend. At present PostgreSQL is supported. Backends are plugable, and support for other backends is planned.
 2. An API service.
 3. A command-line interface (CLI) for human operators.
 3. Several Puppet integration components which let Puppet consume data from the API.
@@ -75,7 +75,7 @@ How feasible restoring incremental lost data depends on rate of change. If you o
 
 ### Backup and Restore Procedure
 
-The basic procedure for backing up the PDS is issuing a GET to each API endpoint, once for users, hiera-data, and nodes to output all values as a single JSON blob then transomfing that data to be an appropriate data structure for doing a mass add through a POST at a later day. For the data dumped from a GET to be valid for restoration it needs to be contained in a JSON hash key of `resources`.
+The basic procedure for backing up the PDS is issuing a GET to each API endpoint, once for users, hiera-data, and nodes to output all values as a single JSON blob then transforming that data to be an appropriate data structure for doing a mass add through a POST at a later day. For the data dumped from a GET to be valid for restoration it needs to be contained in a JSON hash key of `resources`.
 
 **Example API output:**
 ```
