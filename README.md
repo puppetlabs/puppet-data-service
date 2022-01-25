@@ -16,11 +16,20 @@ The PDS consists of:
 
 ## Setup
 
-Review the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module for detailed information on how to install, configure, and run the service.
-
-### Configuring the puppet_data_service module
+Here is detailed information to install, configure, and run the service using the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module
 
 The `puppet_data_service` module will install the whole PDS [via its RPM](https://github.com/puppetlabs/puppet-data-service/releases) for you, so you don't have to worry about operationalizing the PDS service itself, dealing with DB setup, migrations, and so on, also it will install the PDS CLI as well.
+
+**Required configuration parameters**
+
+* `puppet_data_service::database_host`
+* `puppet_data_service::pds_token`
+
+**Optional configuration parameters**
+
+* `puppet_data_service::package_source`
+
+### Configure using the PE Console
 
 1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
    - Make sure to add the PDS hiera level in your control-repo's `hiera.yaml`
@@ -45,6 +54,37 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
          -  Configure the _sensitive_ `pds_token` parameter, this token will be used to create the admin account for the PDS, you can pass a UUID or your own token from your Active Directory/LDAP
       - Commit your changes
 3. Run the Puppet Agent
+
+### Configure using roles and Hiera eyaml
+
+Include the `puppet_data_service` classes in the corresponding `role`
+
+```
+# control-repo/site-modules/role/manifests/pds_server.pp
+
+class role::pds_server {
+  include puppet_data_service::database
+}
+```
+
+**The PDS API server**
+
+```
+# control-repo/site-modules/role/manifests/pds_api_server.pp
+
+class role::pds_api_server {
+  include puppet_data_service::server
+
+  class { 'puppet_data_service::server':
+    database_host => 'database.example.com',
+    pds_token     => Sensitive('a-secure-admin-token'),
+  }
+}
+```
+
+Since the `pds_token` is a sensitive parameter, it will be a good idea to encrypt it using Hiera eyaml.
+
+`eyaml encrypt -l 'puppet_data_service::pds_token' -s 'a-secure-admin-token'`
 
 ## Development
 
