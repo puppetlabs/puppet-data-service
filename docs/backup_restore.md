@@ -17,11 +17,13 @@ For the same issue with duplicates the sample backup script strips the admin use
 You only do this if you are explicitly testing functionality. If you're actually restoring after failure then this is unnessasary because the database should already be empty.
 
 ```
+systemctl stop pds-server
 puppet resource pe_postgresql_psql drop psql_user='pe-postgres' psql_group='pe-postgres' psql_path='/opt/puppetlabs/server/bin/psql' port='5432' db='postgres' command='DROP DATABASE pds'
 puppet resource pe_postgresql_psql drop psql_user='pe-postgres' psql_group='pe-postgres' psql_path='/opt/puppetlabs/server/bin/psql' port='5432' db='postgres' command='CREATE DATABASE pds TABLESPACE pds'
 puppet resource pe_postgresql_psql drop psql_user='pe-postgres' psql_group='pe-postgres' psql_path='/opt/puppetlabs/server/bin/psql' port='5432' db='postgres' command='CREATE EXTENSION pgcrypto' db=pds
 /opt/puppetlabs/sbin/pds-ctl rake db:migrate
 /opt/puppetlabs/sbin/pds-ctl rake app:set_admin_token[admin-token]
+systemctl start pds-server
 ```
 ### Restore backup from archive
 
