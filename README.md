@@ -75,9 +75,9 @@ How feasible restoring incremental lost data depends on rate of change. If you o
 
 ### Backup and Restore Procedure
 
-The basic procedure for backing up the PDS is issuing a GET to each API endpoint, once for users, hiera-data, and nodes to output all values as a single JSON blob then transforming that data to be an appropriate data structure for doing a mass add through a POST at a later day. For the data dumped from a GET to be valid for restoration it needs to be contained in a JSON hash key of `resources`.
+The basic procedure for backing up the PDS is running the `pds-cli` list sub-command against each endpoint, once for user, hiera, and node to output all values as a single JSON blob then transforming that data to be an appropriate data structure for doing a mass add through the `pds-cli` create endpoint at a later date. For the data dumped from a list to be valid for restoration it needs to be contained in a JSON hash key of `resources`.
 
-**Example API output:**
+**Example CLI output:**
 ```
 [
     {
@@ -104,7 +104,7 @@ The basic procedure for backing up the PDS is issuing a GET to each API endpoint
 ]
 ```
 
-**Valid structure for API restore:**
+**Valid structure for CLI restore:**
 
 ```
 {
