@@ -69,12 +69,12 @@ module PDS
         end
 
         # If there are filters, delete resources that match them
-        filters.reduce(0) do |deleted, filter|
-          @data[entity_type].delete_if do |resource|
-            matches_filter?(resource, filter) && deleted += 1
-          end
-          deleted
+        deleted = @data[entity_type].delete_if do |resource|
+          filters.all? { |filter| matches_filter?(resource, filter) }
         end
+
+        # Return the number of elements deleted
+        deleted.size
       end
 
       # @return [Symbol] an identifier indicating the type of DataAdapter
@@ -110,7 +110,7 @@ module PDS
       def sample_data
         {
           :users => [
-            { 'username'   => 'user1',
+            { 'username'   => 'alice',
               'email'      => 'user1@example.com',
               'role'       => 'administrator',
               'status'     => 'active',
@@ -118,7 +118,7 @@ module PDS
               'created-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
               'updated-at' => DateTime.parse('2021-12-06T11:52:01-08:00'),
             },
-            { 'username'   => 'user2',
+            { 'username'   => 'fredrick',
               'email'      => 'user2@example.com',
               'role'       => 'operator',
               'status'     => 'active',
@@ -128,19 +128,23 @@ module PDS
             },
           ],
           :nodes => [
-            { 'name'             => 'node1.example.com',
-              'code-environment' => 'development',
-              'classes'          => ['policy::base'],
-              'data'     => {},
-              'created-at'       => DateTime.parse('2021-12-06T11:52:01-08:00'),
-              'updated-at'       => DateTime.parse('2021-12-06T11:52:01-08:00'),
+            {
+              'name' => "ip-100.acme.com",
+              'code_environment' => 'development',
+              'classes' => ['policy::base'],
+              'data' => {},
             },
-            { 'name'             => 'node2.example.com',
-              'code-environment' => 'production',
-              'classes'          => ['policy::base'],
-              'data'     => {},
-              'created-at'       => DateTime.parse('2021-12-06T11:52:01-08:00'),
-              'updated-at'       => DateTime.parse('2021-12-06T11:52:01-08:00'),
+            {
+              'name' => "ip-101.acme.com",
+              'code_environment' => 'development',
+              'classes' => ['policy::base'],
+              'data' => {},
+            },
+            {
+              'name' => "ip-102.acme.com",
+              'code_environment' => 'production',
+              'classes' => ['policy::base', 'policy::tier1'],
+              'data' => {},
             },
           ],
           :hiera_data => [
