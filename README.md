@@ -16,9 +16,90 @@ The PDS consists of:
 
 ## Setup
 
-Review the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module for detailed information on how to install, configure, and run the service.
+Here is detailed information to install, configure, and run the service using the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module
+
+The `puppet_data_service` module will install the whole PDS [via its RPM](https://github.com/puppetlabs/puppet-data-service/releases) for you, so you don't have to worry about operationalizing the PDS service itself, dealing with DB setup, migrations, and so on, also it will install the PDS CLI as well.
+
+**Required configuration parameters**
+
+* `puppet_data_service::database_host`
+* `puppet_data_service::pds_token`
+
+**Optional configuration parameters**
+
+* `puppet_data_service::package_source`
+
+### Quickstart: configure using the PE Console
+
+This setup will help you to quickly configure the PDS in your existing PE server, for advanced Puppet users review the *Configure using roles and Hiera eyaml* section.
+
+1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
+2. Configure the two required application roles
+    - The Database server
+        - Add a new Node Group from the PE Console.
+
+                Parent name: PE Infrastructure
+                Group name: PDS Database
+                Environment: production
+
+        - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
+        - Add your existing PE PostgreSQL server to the group using the Rules tab (it could be the primary server)
+            - In case you want to test the PDS in a different server without PostgreSQL, you can apply the `puppet_enterprise::profile::database` class to your node before following these steps
+        - Commit your changes
+    - PDS API servers
+        - In the **PE Master** node group
+            - In the classes tab
+                - Add the new class `puppet_data_service::server`
+                - Include at least the following parameters:
+                    - database_host: The resolvable address (fqdn) of the PDS database host.
+            - In the Configuration data tab:
+                -  Configure the _sensitive_ `pds_token` parameter. You may generate and pass a UUID to initialize the "admin" account token in a new PDS system. If the PDS is already deployed, you must supply a valid PDS user token.
+            - Commit your changes
+3. Run the Puppet Agent
+
+### Robust: configure using roles and Hiera eyaml
+
+If you are an experienced Puppet practicioner, this other configuration option will give you the tools you need to make your own Puppet profiles.
+
+Include the profile classes in the appropriate role class, if roles are being used.
+
+We suggest that each compiler run an instance of the PDS API server.
+
+**The PDS Database server**
+
+Example profile
+```puppet
+# control-repo/site-modules/profile/manifests/pds_database_server.pp
+
+class profile::pds_database_server {
+  include puppet_data_service::database
+}
+```
+
+**The PDS API server**
+
+Example profile
+```puppet
+# control-repo/site-modules/profile/manifests/pds_api_server.pp
+
+class profile::pds_api_server {
+  include puppet_data_service::server
+  # Set at least these parameter values in Hiera:
+  #   ---
+  #   puppet_data_service::server::database_host: 'database.example.com'
+  #   puppet_data_service::server::pds_token: 'C979C2A2-C031-4B7B-B271-08DFBD6C795D'
+}
+```
+
+Since the `pds_token` is a sensitive parameter, it should ideally be encrypted using [Hiera eyaml](https://github.com/voxpupuli/hiera-eyaml).
+
+## Configure Hiera backend
+
+To use the Hiera data elements of PDS, your hiera.yaml must include a level for the Puppet Data Service. Instructions for configuring the hiera backend in your hiera.yaml are available [here](https://github.com/puppetlabs/puppetlabs-puppet_data_service#hiera-backend).
 
 ## Development
+
+The PDS [app](app/) folder contains detailed instructions to run the PDS API in a local development environment, as well as the CLI [golang](golang/) README file explains how to build and test the PDS CLI.
 
 ### Building the pds-server package
 
@@ -54,6 +135,23 @@ To build the pds-server RPM package
 1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
 3. Run `make clean`
 4. Run `make package`
+
+## User guide
+
+As a PDS user you currently have two options to interact with it.
+
+1. PDS CLI
+2. PDS API
+
+This user guide will focus on the PDS CLI, but if you want to create your own PDS client (e.g. web app) check the [PDS API documentation](docs/)
+
+The CLI offers you a convinient way to create and retrieve data from the PDS. You can interact with it by typing in your Puppet Server's terminal:
+
+```
+pds-cli
+```
+
+[The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 
 ## Disaster Recovery
 
