@@ -29,69 +29,73 @@ The `puppet_data_service` module will install the whole PDS [via its RPM](https:
 
 * `puppet_data_service::package_source`
 
-### Configure using the PE Console
+### Quickstart: configure using the PE Console
 
 This setup will help you to quickly configure the PDS in your existing PE server, for advanced Puppet users review the *Configure using roles and Hiera eyaml* section.
 
 1. Add the [puppetlabs-puppet\_data\_service](https://github.com/puppetlabs/puppetlabs-puppet_data_service) module to your control repo
-   - Make sure to add the PDS hiera level in your control-repo's `hiera.yaml`
-2. Configure the two required `roles`
-   - The Database server
-     - Add a new Node Group from the PE Console.
-       ```
-       Parent name: PE Infrastructure
-       Group name: PDS Database
-       Environment: production
-       ```
-     - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
-     - Add (pin) your existing PostgreSQL server `certname` in the Rules tab (it could be the primary server)
-       - In case you want to test the PDS in a different server without PostgreSQL, you can apply the `puppet_enterprise::profile::database` class to your node before following these steps, 
-     - Commit your changes
-   - PDS API server
-     - In the **PE Master** Node group:
-       - Add the new class `puppet_data_service::server`
-       - Include the following parameters:
-         - package_source: The location of the PDS RPM
-         - database_host: The DB server `certname`
-      - In the Configuration data tab:
-         -  Configure the _sensitive_ `pds_token` parameter, this token will be used to create the admin account for the PDS, you can pass a UUID or your own token from your Active Directory/LDAP
-      - Commit your changes
+2. Configure the two required application roles
+    - The Database server
+        - Add a new Node Group from the PE Console.
+
+                Parent name: PE Infrastructure
+                Group name: PDS Database
+                Environment: production
+
+        - Add the class `puppet_data_service::database` to the PDS Database group created in the step above
+        - Add your existing PE PostgreSQL server to the group using the Rules tab (it could be the primary server)
+            - In case you want to test the PDS in a different server without PostgreSQL, you can apply the `puppet_enterprise::profile::database` class to your node before following these steps
+        - Commit your changes
+    - PDS API servers
+        - In the **PE Master** node group
+            - In the classes tab
+                - Add the new class `puppet_data_service::server`
+                - Include at least the following parameters:
+                    - database_host: The resolvable address (fqdn) of the PDS database host.
+            - In the Configuration data tab:
+                -  Configure the _sensitive_ `pds_token` parameter. You may generate and pass a UUID to initialize the "admin" account token in a new PDS system. If the PDS is already deployed, you must supply a valid PDS user token.
+            - Commit your changes
 3. Run the Puppet Agent
 
-### Configure using roles and Hiera eyaml
+### Robust: configure using roles and Hiera eyaml
 
-If you are an experienced Puppet practicioner, this other configuration option will give you the tools you need to make your own Puppet `roles`
+If you are an experienced Puppet practicioner, this other configuration option will give you the tools you need to make your own Puppet profiles.
 
-Include the `puppet_data_service` classes in the corresponding `role`
+Include the profile classes in the appropriate role class, if roles are being used.
+
+We suggest that each compiler run an instance of the PDS API server.
 
 **The PDS Database server**
 
-```
-# control-repo/site-modules/role/manifests/pds_database_server.pp
+Example profile
+```puppet
+# control-repo/site-modules/profile/manifests/pds_database_server.pp
 
-class role::pds_database_server {
+class profile::pds_database_server {
   include puppet_data_service::database
 }
 ```
 
 **The PDS API server**
 
-```
-# control-repo/site-modules/role/manifests/pds_api_server.pp
+Example profile
+```puppet
+# control-repo/site-modules/profile/manifests/pds_api_server.pp
 
-class role::pds_api_server {
+class profile::pds_api_server {
   include puppet_data_service::server
-
-  class { 'puppet_data_service::server':
-    database_host => 'database.example.com',
-    pds_token     => Sensitive('a-secure-admin-token'),
-  }
+  # Set at least these parameter values in Hiera:
+  #   ---
+  #   puppet_data_service::server::database_host: 'database.example.com'
+  #   puppet_data_service::server::pds_token: 'C979C2A2-C031-4B7B-B271-08DFBD6C795D'
 }
 ```
 
-Since the `pds_token` is a sensitive parameter, it will be a good idea to encrypt it using [Hiera eyaml](https://github.com/voxpupuli/hiera-eyaml).
+Since the `pds_token` is a sensitive parameter, it should ideally be encrypted using [Hiera eyaml](https://github.com/voxpupuli/hiera-eyaml).
 
-`eyaml encrypt -l 'puppet_data_service::pds_token' -s 'a-secure-admin-token'`
+## Configure Hiera backend
+
+To use the Hiera data elements of PDS, your hiera.yaml must include a level for the Puppet Data Service. Instructions for configuring the hiera backend in your hiera.yaml are available [here](https://github.com/puppetlabs/puppetlabs-puppet_data_service#hiera-backend).
 
 ## Development
 
