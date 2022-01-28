@@ -23,9 +23,11 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		--after-remove package/rpm/postuninstall \
 		--config-files /etc/puppetlabs/pds/pds-server.yaml \
 		--config-files /etc/puppetlabs/pds/pds-client.yaml \
+		--exclude '*/pds-server.yaml.example' \
+		--exclude '*/pds-client.yaml.example' \
 		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds/pds-server.yaml' \
 		--rpm-attr '0640,pds-server,pe-puppet:/etc/puppetlabs/pds/pds-client.yaml' \
-		--depends pe-postgresql11 \
+		--depends "pe-postgresql11 >= $$(rpm -q --qf '%{VERSION}' pe-postgresql11)" \
 		app/=/opt/puppetlabs/server/apps/pds-server \
 		app/config/pds-server.yaml.example=/etc/puppetlabs/pds/pds-server.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
@@ -43,7 +45,7 @@ clean:
 	rm -f golang/pds-cli/pds-client.yaml
 	rm -f pds-server*.rpm
 
-$(pds-cli): $(wildcard golang/**/*.go) /usr/bin/go
+$(pds-cli): $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
 
 $(bundle): app/Gemfile app/Gemfile.lock
