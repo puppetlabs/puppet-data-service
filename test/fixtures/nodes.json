@@ -1,0 +1,8 @@
+{
+  "resources": [
+    { "name": "node1", "code-environment": "staging" },
+    { "name": "node2", "classes": ["foo","bar"] },
+    { "name": "node3", "data": {"key":"value"} },
+    { "name": "node4" }
+  ]
+}
