@@ -5,4 +5,4 @@ FROM centos:8
 COPY make-pds-rpm.sh /make-pds-rpm.sh
 
 # Executes `make-pds-rpm.sh` when the Docker container starts up
-ENTRYPOINT ["/make-pds-rpm.sh"]
+CMD ["/make-pds-rpm.sh"]
