@@ -1,0 +1,17 @@
+name: 'Runs the Dockerfile'
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  make_pds_rpm_job:
+    runs-on: ubuntu-latest
+    name: Build the RPM
+    steps:
+      - name: Use the Dockerfile to build on centos8
+        id: dockerfile
+        uses: actions/puppet-data-service
+      # Use the output from the `dockerfile` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.dockerfile.outputs.time }}"
