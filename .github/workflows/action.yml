@@ -1,0 +1,12 @@
+# action.yml
+name: 'Make PDS RPM'
+description: 'This Github action will build the PDS RPM'
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
