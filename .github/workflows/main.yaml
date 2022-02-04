@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Build the RPM
     steps:
+       - uses: actions/checkout@v1
       - name: Use the Dockerfile to build on centos8
         id: dockerfile
-        uses: actions/puppet-data-service/.github/actions
+        uses: ./.github/actions
       # Use the output from the `dockerfile` step
       - name: Get the output time
         run: echo "The time was ${{ steps.dockerfile.outputs.time }}"
