@@ -1,8 +1,6 @@
 name: 'Runs the Dockerfile'
 
-on:
-  workflow_dispatch:
-    inputs:
+on: push
 
 jobs:
   make_pds_rpm_job:
