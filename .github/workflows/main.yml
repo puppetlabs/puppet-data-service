@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Use the Dockerfile to build on centos8
         id: dockerfile
-        uses: ./.github/actions
+        uses: ../actions
       # Use the output from the `dockerfile` step
       - name: Get the output time
         run: echo "The time was ${{ steps.dockerfile.outputs.time }}"
