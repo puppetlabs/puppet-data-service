@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Use the Dockerfile to build on centos8
         id: dockerfile
-        uses: actions/puppet-data-service
+        uses: actions/Dockerfile
       # Use the output from the `dockerfile` step
       - name: Get the output time
         run: echo "The time was ${{ steps.dockerfile.outputs.time }}"
