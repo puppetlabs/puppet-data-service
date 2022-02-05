@@ -3,9 +3,9 @@ set -e
 
 # Inputs
 
-PE_VERSION=${1:-"2021.4.0"}
-PLATFORM=${PLATFORM:-"el-8"}
-WORKDIR=${GITHUB_WORKSPACE:-"/workspace"}
+PE_VERSION=${1:-2021.4.0}
+PLATFORM=${PLATFORM:-el-8}
+WORKDIR=${GITHUB_WORKSPACE:-/workspace}
 
 # Pre-requisites
 
@@ -38,4 +38,4 @@ pushd puppet-data-service
   mv "${RPMFILE}" "${WORKDIR}"
 popd
 
-echo "::set-output name=rpm::${RPMFILE}"
+echo "::set-output name=rpm-filename::${RPMFILE}"
