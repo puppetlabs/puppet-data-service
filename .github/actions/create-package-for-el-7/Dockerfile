@@ -2,8 +2,8 @@
 FROM quay.io/centos/centos:7
 RUN \
   yum -y update ca-certificates && \
-  yum -y install sudo epel-release && \
-  yum -y install golang && \
+  yum -y install epel-release && \
+  yum -y install sudo golang && \
   yum -y groupinstall 'Development Tools' && \
   yum -y clean all && \
   rm -rf /var/cache
