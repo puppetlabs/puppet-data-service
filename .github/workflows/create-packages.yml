@@ -1,34 +1,45 @@
-name: 'Create package'
+name: 'Create packages'
 
 on:
   workflow_dispatch:
     inputs:
       pe-version:
-        description: 'Puppet Enterprise version to create package for'
+        description: 'Puppet Enterprise version to create RPM for'
         required: true
         type: string
-      platform:
-        type: choice
-        description: Which platform to build for
-        options: 
-          - el-7
-          - el-8
 
 jobs:
-  create-package:
+  create-el-8-rpm:
     runs-on: ubuntu-latest
-    name: "Build ${{ github.event.inputs.platform }} package"
+    name: 'Build package for EL 8'
     steps:
-      - name: "Check out repository"
+      - name: 'Check out repository'
         uses: actions/checkout@v2
-      - name: "Build package for ${{ github.events.inputs.pe-version }}"
-        uses: "./.github/actions/create-package-for-${{ github.events.inputs.platform }}"
-        id: build-package
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-8
+        id: 'el-8-rpm'
         with:
-          pe-version: "${{ github.events.inputs.pe-version }}"
-      - name: "Upload ${{ github.events.inputs.pe-version }} package"
+          pe-version: ${{ inputs.pe-version }}
+      - name: 'Upload package'
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ steps.build-package.outputs.filename }}"
-          path: "${{ steps.build-package.outputs.filename }}"
+          name: ${{ steps.el-8-rpm.outputs.filename }}
+          path: ${{ steps.el-8-rpm.outputs.filename }}
+          retention-days: 1
+  create-el-7-rpm:
+    runs-on: ubuntu-latest
+    name: 'Build package for EL 7'
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-7
+        id: 'el-7-rpm'
+        with:
+          pe-version: ${{ inputs.pe-version }}
+      - name: 'Upload package'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.el-7-rpm.outputs.filename }}
+          path: ${{ steps.el-7-rpm.outputs.filename }}
           retention-days: 1
