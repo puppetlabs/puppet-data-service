@@ -1,0 +1,28 @@
+name: 'Create packages'
+
+on:
+  workflow_dispatch:
+    inputs:
+      pe-version:
+        description: 'Puppet Enterprise version to create RPM for'
+        required: true
+        type: string
+
+jobs:
+  create-el-8-rpm:
+    runs-on: ubuntu-latest
+    name: 'Build EL 8 RPM'
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build RPM for EL 8'
+        uses: ./.github/actions/create-pds-rpm-for-el-8
+        id: 'el-8-rpm'
+        with:
+          pe-version: ${{ inputs.pe-version }}
+      - name: 'Upload EL 8 RPM'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.el-8-rpm.outputs.rpm-filename }}
+          path: ${{ steps.el-8-rpm.outputs.rpm-filename }}
+          retention-days: 1
