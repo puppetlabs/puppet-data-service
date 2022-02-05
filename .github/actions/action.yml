@@ -1,7 +1,0 @@
-# action.yml
-name: 'Make PDS RPM'
-description: 'This Github action will build the PDS RPM'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
