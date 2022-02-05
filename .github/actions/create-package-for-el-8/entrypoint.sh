@@ -3,10 +3,15 @@ set -e
 
 # Inputs
 
-PE_VERSION=${1:-2021.4.0}
+PE_VERSION=${1}
 PLATFORM=${PLATFORM:-el-8}
 GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-/workspace}
 SCRATCHDIR=${SCRATCHDIR:-/scratch}
+
+if [ -z "${PE_VERSION}" ]; then
+  echo 'ERROR: Did not recieve a valid PE version argument ($1)'
+  exit 1
+fi
 
 # Download PE and install required dependent packages
 
