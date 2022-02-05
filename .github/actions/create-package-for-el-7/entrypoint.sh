@@ -23,7 +23,6 @@ enabled=True
 gpgcheck=1
 gpgkey=file://${WORKDIR}/pe/packages/GPG-KEY-puppet
         file://${WORKDIR}/pe/packages/GPG-KEY-puppet-2025-04-06
-proxy=
 EOF
 
 # Continue the process
