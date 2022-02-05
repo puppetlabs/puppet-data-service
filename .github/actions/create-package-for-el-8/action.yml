@@ -1,0 +1,15 @@
+# action.yml
+name: 'Create PDS RPM for EL 8'
+description: 'This Github action will build the PDS RPM for EL 8'
+inputs:
+  pe-version:
+    description: 'The version of PE to build the RPM for'
+    required: true
+outputs:
+  filename:
+    description: 'The filename (in the workdir) of the RPM created'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.pe-version }}

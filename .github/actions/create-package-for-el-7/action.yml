@@ -6,7 +6,7 @@ inputs:
     description: 'The version of PE to build the RPM for'
     required: true
 outputs:
-  rpm-filename:
+  filename:
     description: 'The filename (in the workdir) of the RPM created'
 runs:
   using: 'docker'

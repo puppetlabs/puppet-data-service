@@ -38,4 +38,4 @@ pushd puppet-data-service
   mv "${RPMFILE}" "${WORKDIR}"
 popd
 
-echo "::set-output name=rpm-filename::${RPMFILE}"
+echo "::set-output name=filename::${RPMFILE}"
