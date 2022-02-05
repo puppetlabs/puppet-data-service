@@ -17,18 +17,18 @@ on:
 jobs:
   create-package:
     runs-on: ubuntu-latest
-    name: Build ${{ inputs.platform }} package
+    name: "Build ${{ github.event.inputs.platform }} package"
     steps:
-      - name: Check out repository
+      - name: "Check out repository"
         uses: actions/checkout@v2
-      - name: Build package for ${{ inputs.pe-version }}
-        uses: ./.github/actions/create-package-for-${{ inputs.platform }}
+      - name: "Build package for ${{ github.events.inputs.pe-version }}"
+        uses: "./.github/actions/create-package-for-${{ github.events.inputs.platform }}"
         id: build-package
         with:
-          pe-version: ${{ inputs.pe-version }}
-      - name: Upload ${{ inputs.pe-version }} package
+          pe-version: "${{ github.events.inputs.pe-version }}"
+      - name: "Upload ${{ github.events.inputs.pe-version }} package"
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.build-package.outputs.filename }}
-          path: ${{ steps.build-package.outputs.filename }}
+          name: "${{ steps.build-package.outputs.filename }}"
+          path: "${{ steps.build-package.outputs.filename }}"
           retention-days: 1
