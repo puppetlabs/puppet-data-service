@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/create-package-for-el-8
         id: 'el-8-rpm'
         with:
-          pe-version: ${{ inputs.pe-version }}
+          pe-version: ${{ github.event.inputs.pe-version }}
       - name: 'Upload package'
         uses: actions/upload-artifact@v2
         with:
@@ -36,7 +36,7 @@ jobs:
         uses: ./.github/actions/create-package-for-el-7
         id: 'el-7-rpm'
         with:
-          pe-version: ${{ inputs.pe-version }}
+          pe-version: ${{ github.event.inputs.pe-version }}
       - name: 'Upload package'
         uses: actions/upload-artifact@v2
         with:
