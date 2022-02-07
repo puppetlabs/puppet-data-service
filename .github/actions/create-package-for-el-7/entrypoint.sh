@@ -39,7 +39,7 @@ mkdir -p "${GITHUB_WORKSPACE}"
 pushd "${GITHUB_WORKSPACE}"
   make clean
   make rpm
-  RPMFILE=$(find . -name '*.rpm' -execdir echo '{}' ';' | head -1)
+  RPMFILE=$(find . -name '*.rpm' -printf "%f\n" | head -1)
 popd
 
 echo "::set-output name=filename::${RPMFILE}"
