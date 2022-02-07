@@ -9,7 +9,7 @@ GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-/workspace}
 SCRATCHDIR=${SCRATCHDIR:-/scratch}
 
 if [ -z "${PE_VERSION}" ]; then
-  echo 'ERROR: Did not recieve a valid PE version argument ($1)'
+  echo "ERROR: Did not recieve a valid PE version argument ($1)"
   exit 1
 fi
 
@@ -39,7 +39,7 @@ mkdir -p "${GITHUB_WORKSPACE}"
 pushd "${GITHUB_WORKSPACE}"
   make clean
   make rpm
-  RPMFILE=$(ls -t *.rpm | head -1)
+  RPMFILE=$(find . -name '*.rpm' | head -1)
 popd
 
 echo "::set-output name=filename::${RPMFILE}"
