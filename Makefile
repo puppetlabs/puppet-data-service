@@ -17,7 +17,7 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
 	# Build the package
 	$(fpm) -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
-		-p $(NAME)-$(VERSION)-1.x86_64.pe-$$(rpm -q --qf '%{VERSION}' pe-puppet-enterprise-release | cut -d . -f 1-3).rpm \
+		-p $(NAME)-$(VERSION)-1.pe.$$(rpm -q --qf '%{EVR}' pe-puppet-enterprise-release | cut -d . -f 1-3,6).x86_64.rpm \
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
 		--before-remove package/rpm/preuninstall \

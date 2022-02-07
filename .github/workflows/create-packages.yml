@@ -11,18 +11,35 @@ on:
 jobs:
   create-el-8-rpm:
     runs-on: ubuntu-latest
-    name: 'Build EL 8 RPM'
+    name: 'Build package for EL 8'
     steps:
       - name: 'Check out repository'
         uses: actions/checkout@v2
-      - name: 'Build RPM for EL 8'
-        uses: ./.github/actions/create-pds-rpm-for-el-8
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-8
         id: 'el-8-rpm'
         with:
-          pe-version: ${{ inputs.pe-version }}
-      - name: 'Upload EL 8 RPM'
+          pe-version: ${{ github.event.inputs.pe-version }}
+      - name: 'Upload package'
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.el-8-rpm.outputs.rpm-filename }}
-          path: ${{ steps.el-8-rpm.outputs.rpm-filename }}
+          name: ${{ steps.el-8-rpm.outputs.filename }}
+          path: ${{ steps.el-8-rpm.outputs.filename }}
+          retention-days: 1
+  create-el-7-rpm:
+    runs-on: ubuntu-latest
+    name: 'Build package for EL 7'
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-7
+        id: 'el-7-rpm'
+        with:
+          pe-version: ${{ github.event.inputs.pe-version }}
+      - name: 'Upload package'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.el-7-rpm.outputs.filename }}
+          path: ${{ steps.el-7-rpm.outputs.filename }}
           retention-days: 1

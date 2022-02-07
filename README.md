@@ -134,7 +134,7 @@ To build the pds-server RPM package
 
 1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
 3. Run `make clean`
-4. Run `make package`
+4. Run `make rpm`
 
 ## User guide
 
