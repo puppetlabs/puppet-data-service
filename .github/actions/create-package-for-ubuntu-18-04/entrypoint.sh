@@ -22,8 +22,7 @@ tar -C "${SCRATCHDIR}/pe" -xzf "${SCRATCHDIR}/pe.tar.gz" --strip-components 1
 
 wget https://apt.puppet.com/puppet7-release-${RELEASE}.deb
 dpkg -i puppet7-release-${RELEASE}.deb
-apt update
-apt install -y puppet-agent pe-puppet-enterprise-release pe-postgresql11-devel
+apt-get -qq update; apt-get -qq install -y puppet-agent pe-puppet-enterprise-release pe-postgresql11-devel
 
 # Create the DEB
 
