@@ -1,6 +1,6 @@
-ENV DEBIAN_FRONTEND noninteractive
 # Container image that runs your code
 FROM  ubuntu:18.04
+ENV DEBIAN_FRONTEND noninteractive
 RUN \
   apt-get update \
   apt-get install -y curl
