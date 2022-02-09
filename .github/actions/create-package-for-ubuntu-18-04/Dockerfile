@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM  public.ecr.aws/lts/ubuntu:18.04_stable
+FROM  ubuntu:18.04
 RUN \
   apt install -y curl
 # Copies your code file from your action repository to the filesystem path `/` of the container
