@@ -43,3 +43,20 @@ jobs:
           name: ${{ steps.el-7-rpm.outputs.filename }}
           path: ${{ steps.el-7-rpm.outputs.filename }}
           retention-days: 1
+  create-ubuntu-18-04-deb:
+    runs-on: ubuntu-latest
+    name: 'Build package for Ubuntu 18.04'
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-ubuntu-18-04
+        id: 'ubuntu-18-04-deb'
+        with:
+          pe-version: ${{ github.event.inputs.pe-version }}
+      - name: 'Upload package'
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.ubuntu-18-04-deb.outputs.filename }}
+          path: ${{ steps.ubuntu-18-04-deb.outputs.filename }}
+          retention-days: 1

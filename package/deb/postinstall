@@ -1,0 +1,4 @@
+if [ $1 -eq 1 ] ; then
+  # Initial installation
+  systemctl --no-reload preset pds-server.service &>/dev/null || :
+fi

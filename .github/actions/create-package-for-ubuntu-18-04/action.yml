@@ -1,0 +1,15 @@
+# action.yml
+name: 'Create PDS DEB for Ubuntu 18.04'
+description: 'This Github action will build the PDS DEB for Ubuntu 18.04'
+inputs:
+  pe-version:
+    description: 'The version of PE to build the DEB for'
+    required: true
+outputs:
+  filename:
+    description: 'The filename (in the workdir) of the DEB created'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.pe-version }}
