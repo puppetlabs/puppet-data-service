@@ -62,10 +62,13 @@ $(bundle): app/Gemfile app/Gemfile.lock
 # Require various build dependencies be installed and handled automatically, IF
 # the build is running on Linux
 ifeq ($(OS), Linux)
-$(bundle): $(pe-postgresql-devel)
+$(bundle): bundler $(pe-postgresql-devel)
 $(pds-cli): $(go)
 endif
 
+bundler:
+	/opt/puppetlabs/puppet/bin/gem install bundler
+	
 $(pe-postgresql-devel):
 	sudo yum install -y pe-postgresql11-devel
 
