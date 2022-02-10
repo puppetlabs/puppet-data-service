@@ -96,10 +96,10 @@ bundler:
 	$(gem) install bundler
 	
 $(pe-postgresql-devel):
-	command -v yum && sudo yum install -y pe-postgresql11-devel  || sudo apt install -y pe-postgresql11-devel
+	command -v yum && sudo yum install -y pe-postgresql11-devel  || apt-get -qq update; apt -qq install -y pe-postgresql11-devel
 
 $(go):
-	command -v yum && sudo yum install -y golang || sudo apt install -y golang
+	command -v yum && sudo yum install -y golang || apt-get -qq update; apt -qq install -y golang
 
 $(fpm):
 	sudo $(gem) install --no-document fpm
