@@ -20,10 +20,8 @@ mkdir -p "${SCRATCHDIR}/pe"
 curl -o "${SCRATCHDIR}/pe.tar.gz" "https://s3.amazonaws.com/pe-builds/released/${PE_VERSION}/puppet-enterprise-${PE_VERSION}-${PLATFORM}-amd64.tar.gz"
 tar -C "${SCRATCHDIR}/pe" -xzf "${SCRATCHDIR}/pe.tar.gz" --strip-components 1
 
-wget https://apt.puppet.com/puppet7-release-${RELEASE}.deb
-dpkg -i puppet7-release-${RELEASE}.deb
-apt-get -qq update; apt-get -qq install -y puppet-agent
-apt-get -qq update; apt-get -qq install -y pe-postgresql11-devel
+echo "deb [trusted=yes] file:/${SCRATCHDIR}/pe/packages/$PLATFORM-amd64 ./" >> /etc/apt/sources.list
+apt-get -qq update; apt-get -qq install -y puppet-agent pe-postgresql11-devel pe-puppet-enterprise-release
 # Create the DEB
 
 # It is assumed/required that the puppet-data-service project is already
