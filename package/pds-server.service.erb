@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=pds-server
 WorkingDirectory=/opt/puppetlabs/server/apps/pds-server
-ExecStart=/opt/puppetlabs/puppet/bin/ruby -r ./vendor/bundle/bundler/setup.rb ./vendor/bundle/ruby/2.5.0/gems/puma-5.6.1/bin/puma -C config/puma.rb -e production
+ExecStart=/opt/puppetlabs/puppet/bin/ruby -r ./vendor/bundle/bundler/setup.rb ./vendor/bundle/ruby/2.5.0/gems/puma-<%= puma_version %>/bin/puma -C config/puma.rb -e production
 Restart=always
 
 [Install]

@@ -7,14 +7,20 @@ RUBY_VERSION := $(strip $(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'pu
 pds-cli = golang/pds-cli/pds-cli
 bundle = app/vendor/bundle/ruby/$(RUBY_VERSION)
 pe-postgresql-devel = /opt/puppetlabs/server/apps/postgresql/11/include
-go = /usr/bin/go
+go = /usr/local/go/bin
 fpm = /opt/puppetlabs/puppet/bin/fpm
+erb = /opt/puppetlabs/puppet/bin/erb
+gem = /opt/puppetlabs/puppet/bin/gem
+bundler = /opt/puppetlabs/puppet/bin/bundle
 
 .PHONY: rpm clean
 
 rpm: $(bundle) $(pds-cli) $(fpm)
 	# We don't want a symlink in the RPM, we want a regular file
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
+	# generate the service unit file with the correct puma and ruby versions
+	cd app && $(erb) puma_version=$$($(bundler) show 2>/dev/null|grep puma|grep -oP "\(\K[^\)]+") \
+		ruby_version=$(RUBY_VERSION) < ../package/pds-server.service.erb > ../package/pds-server.service
 	# Build the package
 	$(fpm) -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
 		-p $(NAME)-$(VERSION)-1.pe.$$(rpm -q --qf '%{EVR}' pe-puppet-enterprise-release | cut -d . -f 1-3,6).x86_64.rpm \
@@ -46,11 +52,11 @@ clean:
 	rm -f golang/pds-cli/pds-client.yaml
 	rm -f pds-server*.rpm
 
-$(pds-cli): $(wildcard golang/**/*.go)
+$(pds-cli): $(go) $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
 
 $(bundle): app/Gemfile app/Gemfile.lock
-	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin /opt/puppetlabs/puppet/bin/bundle install \
+	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin /opt/puppetlabs/puppet/bin/bundle install --standalone \
 		|| touch app/Gemfile.lock
 
 # Require various build dependencies be installed and handled automatically, IF
