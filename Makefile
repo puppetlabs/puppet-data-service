@@ -76,7 +76,7 @@ clean:
 	rm -f golang/pds-cli/pds-cli
 	rm -f golang/pds-cli/pds-client.yaml
 	rm -f pds-server*.rpm
-    rm -f pds-server*.deb
+	rm -f pds-server*.deb
 
 $(pds-cli): $(go) $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
