@@ -7,7 +7,7 @@ RUBY_VERSION := $(strip $(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'pu
 pds-cli = golang/pds-cli/pds-cli
 bundle = app/vendor/bundle/ruby/$(RUBY_VERSION)
 pe-postgresql-devel = /opt/puppetlabs/server/apps/postgresql/11/include
-go = /usr/local/go/bin
+go = /usr/bin/go
 fpm = /opt/puppetlabs/puppet/bin/fpm
 erb = /opt/puppetlabs/puppet/bin/erb
 gem = /opt/puppetlabs/puppet/bin/gem
@@ -56,7 +56,7 @@ $(pds-cli): $(go) $(wildcard golang/**/*.go)
 	cd golang/pds-cli && go build
 
 $(bundle): app/Gemfile app/Gemfile.lock
-	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin /opt/puppetlabs/puppet/bin/bundle install --standalone \
+	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin $(bundler) install --standalone \
 		|| touch app/Gemfile.lock
 
 # Require various build dependencies be installed and handled automatically, IF
@@ -67,7 +67,7 @@ $(pds-cli): $(go)
 endif
 
 bundler:
-	/opt/puppetlabs/puppet/bin/gem install bundler
+	$(gem) install bundler
 	
 $(pe-postgresql-devel):
 	sudo yum install -y pe-postgresql11-devel
@@ -76,4 +76,4 @@ $(go):
 	sudo yum install -y golang
 
 $(fpm):
-	sudo /opt/puppetlabs/puppet/bin/gem install --no-document fpm
+	sudo $(gem) install --no-document fpm
