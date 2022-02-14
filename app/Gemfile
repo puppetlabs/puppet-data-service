@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'webrick'
-gem 'puma'
+gem 'puma', '~> 5.6.2'
 gem 'sinatra'
 gem 'sinatra-cross_origin'
 gem 'sinatra-contrib'

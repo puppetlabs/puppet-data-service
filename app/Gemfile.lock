@@ -63,6 +63,7 @@ GEM
     zeitwerk (2.5.4)
 
 PLATFORMS
+  x86_64-darwin-19
   x86_64-linux
 
 DEPENDENCIES
@@ -71,7 +72,7 @@ DEPENDENCIES
   composite_primary_keys (~> 13.0)
   pg (~> 1.2.3)
   pry
-  puma
+  puma (~> 5.6.2)
   rake (~> 13.0.6)
   sinatra
   sinatra-activerecord (~> 2.0, >= 2.0.23)
@@ -80,4 +81,4 @@ DEPENDENCIES
   webrick
 
 BUNDLED WITH
-   2.3.6
+   2.3.7
