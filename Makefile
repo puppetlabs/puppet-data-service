@@ -50,7 +50,7 @@ deb: $(bundle) $(pds-cli) $(fpm)
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
 	# Build the package
 	$(fpm) -s dir -t deb -n $(NAME) -a x86_64 -v $(VERSION) \
-		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
+		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='\${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
 		--before-install package/deb/preinstall \
 		--after-install package/deb/postinstall \
 		--before-remove package/deb/preuninstall \
@@ -59,7 +59,7 @@ deb: $(bundle) $(pds-cli) $(fpm)
 		--config-files /etc/puppetlabs/pds/pds-client.yaml \
 		--exclude '*/pds-server.yaml.example' \
 		--exclude '*/pds-client.yaml.example' \
-		--depends "pe-postgresql11 >= $$(dpkg-query --showformat='${Version}' --show pe-postgresql11)" \
+		--depends "pe-postgresql11 >= $$(dpkg-query --showformat='\${Version}' --show pe-postgresql11)" \
 		app/=/opt/puppetlabs/server/apps/pds-server \
 		app/config/pds-server.yaml.example=/etc/puppetlabs/pds/pds-server.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
