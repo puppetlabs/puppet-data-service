@@ -1,4 +1,2 @@
-if [ $1 -eq 0 ] ; then
-  # Package removal, not upgrade
+# Package removal, not upgrade
   systemctl --no-reload disable --now pds-server.service &>/dev/null || :
-fi
