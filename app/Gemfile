@@ -1,18 +1,18 @@
 source 'https://rubygems.org'
 
-gem 'webrick', '~> 1.7.0'
-gem 'puma', '~> 5.6.2'
-gem 'sinatra', '~> 2.1.0'
-gem 'sinatra-cross_origin', '~> 0.4.0'
-gem 'sinatra-contrib', '~> 2.1.0'
-gem 'committee', '~> 4.4.0'
+gem 'webrick', '~> 1.7'
+gem 'puma', '~> 5.6'
+gem 'sinatra', '~> 2.1'
+gem 'sinatra-cross_origin', '~> 0.4'
+gem 'sinatra-contrib', '~> 2.1'
+gem 'committee', '~> 4.4'
 
-gem 'pg', '~> 1.2.3'
-gem 'rake', '~> 13.0.6'
-gem 'sinatra-activerecord', '~> 2.0', '>= 2.0.23'
+gem 'pg', '~> 1.2'
+gem 'rake', '~> 13.0'
+gem 'sinatra-activerecord', '~> 2.0'
 
 # activerecord and composite_primary_keys should have paired versions
-gem 'activerecord', '~> 6.1.0'
+gem 'activerecord', '~> 6.1'
 gem 'composite_primary_keys', '~> 13.0'
 
 group :development do
