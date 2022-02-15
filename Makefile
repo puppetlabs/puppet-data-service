@@ -53,6 +53,9 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 deb: $(bundle) $(pds-cli) $(fpm)
 	# We don't want a symlink in the DEB, we want a regular file
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
+		# generate the service unit file with the correct puma and ruby versions
+	cd app && $(erb) puma_version=$$($(bundler) show 2>/dev/null|grep puma|grep -oP "\(\K[^\)]+") \
+		ruby_version=$(RUBY_VERSION) < ../package/pds-server.service.erb > ../package/pds-server.service
 	# Build the package
 	$(fpm) -s dir -t deb -n $(NAME) -a x86_64 -v $(VERSION) \
 		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
