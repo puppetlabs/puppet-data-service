@@ -29,7 +29,6 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		--provides 'pds-server' \
 		--provides 'pds' \
 		--description 'The Puppet Data Service (PDS) provides a centralized API-driven interface for Puppet node data and for Hiera data.' \
-		--homepage 'https://github.com/puppetlabs/puppet-data-service' \
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
 		--before-remove package/rpm/preuninstall \
@@ -62,12 +61,11 @@ deb: $(bundle) $(pds-cli) $(fpm)
 		--provides 'pds-server' \
 		--provides 'pds' \
 		--description 'The Puppet Data Service (PDS) provides a centralized API-driven interface for Puppet node data and for Hiera data.' \
-		--homepage 'https://github.com/puppetlabs/puppet-data-service' \
 		--before-install package/deb/preinstall \
         --deb-systemd package/pds-server.service \
         --deb-systemd-enable \
         --deb-systemd-auto-start \
-		--config-files /et:wqc/puppetlabs/pds/pds-server.yaml \
+		--config-files /etc/puppetlabs/pds/pds-server.yaml \
 		--config-files /etc/puppetlabs/pds/pds-client.yaml \
 		--exclude '*/pds-server.yaml.example' \
 		--exclude '*/pds-client.yaml.example' \
