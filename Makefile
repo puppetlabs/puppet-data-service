@@ -24,6 +24,12 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 	# Build the package
 	$(fpm) -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
 		-p $(NAME)-$(VERSION)-1.pe.$$(rpm -q --qf '%{EVR}' pe-puppet-enterprise-release | cut -d . -f 1-3,6).x86_64.rpm \
+		-m "Puppet Labs <info@puppetlabs.com>" \
+		--provides 'pds-cli' \
+		--provides 'pds-server' \
+		--provides 'pds' \
+		--description 'The Puppet Data Service (PDS) provides a centralized API-driven interface for Puppet node data and for Hiera data.' \
+		--homepage 'https://github.com/puppetlabs/puppet-data-service' \
 		--before-install package/rpm/preinstall \
 		--after-install package/rpm/postinstall \
 		--before-remove package/rpm/preuninstall \
@@ -50,12 +56,18 @@ deb: $(bundle) $(pds-cli) $(fpm)
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
 	# Build the package
 	$(fpm) -s dir -t deb -n $(NAME) -a x86_64 -v $(VERSION) \
-		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
+		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \                
+		-m "Puppet Labs <info@puppetlabs.com>" \
+		--provides 'pds-cli' \
+		--provides 'pds-server' \
+		--provides 'pds' \
+		--description 'The Puppet Data Service (PDS) provides a centralized API-driven interface for Puppet node data and for Hiera data.' \
+		--homepage 'https://github.com/puppetlabs/puppet-data-service' \
 		--before-install package/deb/preinstall \
-		--after-install package/deb/postinstall \
-		--before-remove package/deb/preuninstall \
-		--after-remove package/deb/postuninstall \
-		--config-files /etc/puppetlabs/pds/pds-server.yaml \
+        --deb-systemd package/pds-server.service \
+        --deb-systemd-enable \
+        --deb-systemd-auto-start \
+		--config-files /et:wqc/puppetlabs/pds/pds-server.yaml \
 		--config-files /etc/puppetlabs/pds/pds-client.yaml \
 		--exclude '*/pds-server.yaml.example' \
 		--exclude '*/pds-client.yaml.example' \

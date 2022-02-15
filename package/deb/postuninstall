@@ -1,2 +1,0 @@
-# Package upgrade, not uninstall
-  systemctl try-restart pds-server.service &>/dev/null || :

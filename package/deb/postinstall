@@ -1,2 +1,0 @@
-# Initial installation
-  systemctl --no-reload preset pds-server.service &>/dev/null || :
