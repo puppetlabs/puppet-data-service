@@ -55,7 +55,7 @@ deb: $(bundle) $(pds-cli) $(fpm)
 	cd app && rm openapi.yaml && cp ../docs/api.yml openapi.yaml
 	# Build the package
 	$(fpm) -s dir -t deb -n $(NAME) -a x86_64 -v $(VERSION) \
-		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \                
+		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
 		-m "Puppet Labs <info@puppetlabs.com>" \
 		--provides 'pds-cli' \
 		--provides 'pds-server' \
