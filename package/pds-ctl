@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script provides an interface to rake commands that facilitate the
 # administration of pds-server.
