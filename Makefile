@@ -1,6 +1,6 @@
 NAME=pds-server
-VERSION=0.1.0
 
+VERSION := $(strip $(shell cat ./VERSION))
 OS := $(strip $(shell uname))
 RUBY_VERSION := $(strip $(shell cd app && /opt/puppetlabs/puppet/bin/ruby -e 'puts RUBY_VERSION.sub(/\d+$$/, "0")'))
 

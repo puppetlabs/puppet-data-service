@@ -1,0 +1,88 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      pe-version:
+        description: 'Array of Puppet Enterprise versions to create RPM packages for'
+        required: true
+        type: string
+
+jobs:
+  create-github-release:
+    name: Deploy GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+          fetch-depth: 0
+      - name: Get Version
+        id: gv
+        run: |
+          echo "::set-output name=ver::$(cat ./VERSION)"
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.gv.outputs.ver }}"
+          draft: false
+          prerelease: false
+  create-el-8-rpm:
+    runs-on: ubuntu-latest
+    name: 'Build package for EL 8'
+    needs: create-github-release
+    strategy:
+      matrix:
+        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+    outputs:
+      package_name: ${{ steps.el-8-rpm.outputs.filename }}
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-8
+        id: 'el-8-rpm'
+        with:
+          pe-version: ${{ matrix.pe_version }}
+      - name: 'Upload package'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-github-release.outputs.upload_url }} 
+          asset_path: ./${{ steps.el-8-rpm.outputs.filename }}
+          asset_name:  ${{ steps.el-8-rpm.outputs.filename }}
+          asset_content_type: mime
+  create-el-7-rpm:
+    runs-on: ubuntu-latest
+    name: 'Build package for EL 7'
+    needs: create-github-release
+    strategy:
+      matrix:
+        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+    outputs:
+      package_name: ${{ steps.el-7-rpm.outputs.filename }}
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-el-7
+        id: 'el-7-rpm'
+        with:
+          pe-version: ${{ matrix.pe_version }}
+      - name: 'Upload package'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-github-release.outputs.upload_url }} 
+          asset_path: ./${{ steps.el-7-rpm.outputs.filename }}
+          asset_name:  ${{ steps.el-7-rpm.outputs.filename }}
+          asset_content_type: mime
