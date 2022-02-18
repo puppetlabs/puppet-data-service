@@ -21,7 +21,7 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 	# generate the service unit file with the correct puma and ruby versions
 	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-server.service.erb > ../package/pds-server.service
 	# generate the pds-ctl file with the right version of ruby for the gem path
-	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-ctl.erb > ../package/pds-ctl
+	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-ctl.erb > ../package/pds-ctl && chmod +x ../package/pds-ctl
 	# Build the package
 	$(fpm) -s dir -t rpm -n $(NAME) -a x86_64 -v $(VERSION) \
 		-p $(NAME)-$(VERSION)-1.pe.$$(rpm -q --qf '%{EVR}' pe-puppet-enterprise-release | cut -d . -f 1-3,6).x86_64.rpm \
@@ -57,7 +57,7 @@ deb: $(bundle) $(pds-cli) $(fpm)
 	# generate the service unit file with the correct puma and ruby versions
 	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-server.service.erb > ../package/pds-server.service
 	# generate the pds-ctl file with the right version of ruby for the gem path
-	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-ctl.erb > ../package/pds-ctl
+	cd app && $(erb) ruby_version=$(RUBY_VERSION) < ../package/pds-ctl.erb > ../package/pds-ctl && chmod +x ../package/pds-ctl
 	# Build the package
 	$(fpm) -s dir -t deb -n $(NAME) -a x86_64 -v $(VERSION) \
 		-p $(NAME)-$(VERSION)-1.pe.$$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-3,6).amd64.deb \
