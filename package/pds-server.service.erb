@@ -10,7 +10,7 @@ Environment=RUBYOPT=-r/opt/puppetlabs/server/apps/pds-server/vendor/bundle/bundl
 Environment=RUBYGEMS_GEMDEPS=/opt/puppetlabs/server/apps/pds-server/Gemfile
 Environment=PATH=/opt/puppetlabs/puppet/bin:$PATH
 Environment=GEM_PATH=/opt/puppetlabs/server/apps/pds-server/vendor/bundle/ruby/<%= ruby_version %>/
-ExecStart=/opt/puppetlabs/server/apps/pds-server/vendor/bundle/ruby/<%= ruby_version %>/puma -C config/puma.rb -e production
+ExecStart=/opt/puppetlabs/server/apps/pds-server/vendor/bundle/ruby/<%= ruby_version %>/bin/puma -C config/puma.rb -e production
 Restart=always
 
 [Install]
