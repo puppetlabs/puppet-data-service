@@ -4,6 +4,9 @@
 # administration of pds-server.
 
 set -e
+RUBYOPT=-r/opt/puppetlabs/server/apps/pds-server/vendor/bundle/bundler/setup.rb
+RUBYGEMS_GEMDEPS=/opt/puppetlabs/server/apps/pds-server/Gemfile
+PATH=/opt/puppetlabs/puppet/bin:$PATH
 
 function main()
 {
@@ -25,7 +28,7 @@ function main()
 function be()
 {
 	cd /opt/puppetlabs/server/apps/pds-server
-	/opt/puppetlabs/puppet/bin/bundle exec "$@"
+	"$@"
 }
 
 main "$@"
