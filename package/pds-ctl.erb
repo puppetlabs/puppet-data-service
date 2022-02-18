@@ -6,6 +6,7 @@
 set -e
 RUBYOPT=-r/opt/puppetlabs/server/apps/pds-server/vendor/bundle/bundler/setup.rb
 RUBYGEMS_GEMDEPS=/opt/puppetlabs/server/apps/pds-server/Gemfile
+GEM_PATH=/opt/puppetlabs/server/apps/pds-server/vendor/bundle/ruby/<%= ruby_version %>/
 PATH=/opt/puppetlabs/puppet/bin:$PATH
 
 function main()
