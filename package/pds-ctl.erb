@@ -1,10 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script provides an interface to rake commands that facilitate the
 # administration of pds-server.
 
 set -e
-
+RUBYOPT=-r/opt/puppetlabs/server/apps/pds-server/vendor/bundle/bundler/setup.rb
+RUBYGEMS_GEMDEPS=/opt/puppetlabs/server/apps/pds-server/Gemfile
+GEM_PATH=/opt/puppetlabs/server/apps/pds-server/vendor/bundle/ruby/<%= ruby_version %>/
+PATH=/opt/puppetlabs/puppet/bin:$PATH
+export RUBYOPT RUBYGEMS_GEMDEPS GEM_PATH PATH
 function main()
 {
 	case "$1" in
@@ -25,7 +29,7 @@ function main()
 function be()
 {
 	cd /opt/puppetlabs/server/apps/pds-server
-	/opt/puppetlabs/puppet/bin/bundle exec "$@"
+	"$@"
 }
 
 main "$@"
