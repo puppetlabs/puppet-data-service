@@ -112,10 +112,21 @@ bundler:
 	$(gem) install bundler
 	
 $(pe-postgresql-devel):
-	command -v yum && sudo yum install -y pe-postgresql11-devel  || sudo apt-get update; sudo apt install -y pe-postgresql11-devel
+	if command -v yum; then \
+		sudo yum install -y pe-postgresql11-devel; \
+	else \
+		sudo apt-get update; \
+		sudo apt install -y pe-postgresql11-devel; \
+	fi
 
 $(go):
-	command -v yum && sudo yum install -y golang || sudo add-apt-repository -y ppa:longsleep/golang-backports ; apt-get update; sudo aptinstall -y golang-go
+	if command -v yum; then \
+		sudo yum install -y golang; \
+	else \
+		sudo add-apt-repository -y ppa:longsleep/golang-backports; \
+		apt-get update; \
+		sudo aptinstall -y golang-go; \
+	fi
 
 $(fpm):
 	sudo $(gem) install --no-document fpm
