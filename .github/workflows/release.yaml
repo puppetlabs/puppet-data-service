@@ -108,3 +108,33 @@ jobs:
           asset_path: ./${{ steps.el-7-rpm.outputs.filename }}
           asset_name:  ${{ steps.el-7-rpm.outputs.filename }}
           asset_content_type: mime
+  create-ubuntu-18-04-deb:
+    runs-on: ubuntu-latest
+    name: 'Build package for Ubuntu 18.04'
+    needs: create-github-release
+    strategy:
+      matrix:
+        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+    outputs:
+      package_name: ${{ steps.ubuntu-18-04-deb.outputs.filename }}
+    steps:
+      - name: 'Check out repository'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.create-github-release.outputs.versioned_ref }}
+          clean: true
+          fetch-depth: 0
+      - name: 'Build package'
+        uses: ./.github/actions/create-package-for-ubuntu-18-04
+        id: 'ubuntu-18-04-deb'
+        with:
+          pe-version: ${{ matrix.pe_version }}
+      - name: 'Upload package'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-github-release.outputs.upload_url }}
+          asset_path: ./${{ steps.ubuntu-18-04-deb.outputs.filename }}
+          asset_name:  ${{ steps.ubuntu-18-04-deb.outputs.filename }}
+          asset_content_type: mime
