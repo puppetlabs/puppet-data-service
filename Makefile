@@ -99,6 +99,7 @@ $(pds-cli): $(go) $(wildcard golang/**/*.go)
 $(bundle): app/Gemfile app/Gemfile.lock
 	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin $(bundler) install --standalone \
 		|| touch app/Gemfile.lock
+	cd app && PATH=$$PATH:/opt/puppetlabs/server/bin $(bundler) lock --add-platform ruby	
 
 # Require various build dependencies be installed and handled automatically, IF
 # the build is running on Linux
