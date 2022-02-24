@@ -1,25 +1,19 @@
-name: 'Release'
+name: 'Auto Release'
 
 on:
-  workflow_dispatch:
-    inputs:
-      pe-version:
-        description: 'Array of Puppet Enterprise versions to create RPM packages for'
-        required: true
-        type: string
-        default: '["2021.5.0", "2019.8.10"]'
-      pds-version:
-        description: 'Version string of the PDS release'
-        required: true
-        type: string
+  pull_request:
+    types:
+      - closed
+    paths:
+      - 'VERSION'
 
 jobs:
   create-github-release:
     name: Deploy GitHub Release
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true }}
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
-      versioned_ref: ${{ steps.commit_version.outputs.commit_long_sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -27,25 +21,18 @@ jobs:
           ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
-      - name: Set Version
-        id: sv
+      - name: Get Version
+        id: gv
         run: |
-          echo "${{ github.event.inputs.pds-version }}" > ./VERSION
-      - name: Commit Version
-        uses: EndBug/add-and-commit@v8
-        id: commit_version
-        with:
-          message: "Released PDS Version: ${{ github.event.inputs.pds-version }}"
-          add: 'VERSION'
-          default_author: github_actions
+          echo "::set-output name=ver::$(cat ./VERSION)"
       - name: Create Release
         uses: actions/create-release@v1
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          commitish: ${{ steps.commit_version.outputs.commit_long_sha }}
-          tag_name: "v${{ github.event.inputs.pds-version }}"
+          release_name: "v${{ steps.gv.outputs.ver }}"
+          tag_name: "v${{ steps.gv.outputs.ver }}"
           draft: false
           prerelease: false
   create-el-8-rpm:
@@ -54,14 +41,16 @@ jobs:
     needs: create-github-release
     strategy:
       matrix:
-        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+        pe_version:
+          - '2021.5.0'
+          - '2019.8.10'
     outputs:
       package_name: ${{ steps.el-8-rpm.outputs.filename }}
     steps:
       - name: 'Check out repository'
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.create-github-release.outputs.versioned_ref }}
+          ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
       - name: 'Build package'
@@ -84,14 +73,16 @@ jobs:
     needs: create-github-release
     strategy:
       matrix:
-        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+        pe_version:
+          - '2021.5.0'
+          - '2019.8.10'
     outputs:
       package_name: ${{ steps.el-7-rpm.outputs.filename }}
     steps:
       - name: 'Check out repository'
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.create-github-release.outputs.versioned_ref }}
+          ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
       - name: 'Build package'
@@ -114,14 +105,16 @@ jobs:
     needs: create-github-release
     strategy:
       matrix:
-        pe_version: ${{ fromJson(github.event.inputs.pe-version) }}
+        pe_version:
+          - '2021.5.0'
+          - '2019.8.10'
     outputs:
       package_name: ${{ steps.ubuntu-18-04-deb.outputs.filename }}
     steps:
       - name: 'Check out repository'
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.create-github-release.outputs.versioned_ref }}
+          ref: ${{ github.ref }}
           clean: true
           fetch-depth: 0
       - name: 'Build package'

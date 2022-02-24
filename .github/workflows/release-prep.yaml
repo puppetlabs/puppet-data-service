@@ -1,0 +1,57 @@
+name: 'Prepare Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      pds-version:
+        description: 'Version string of the PDS release'
+        required: true
+        type: string
+
+jobs:
+  release-prep:
+    name: Create release prep PR
+    runs-on: ubuntu-latest
+    outputs:
+      versioned_ref: ${{ steps.commit_version.outputs.commit_long_sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+          fetch-depth: 0
+      - name: Set Version
+        id: sv
+        run: |
+          echo "${{ github.event.inputs.pds-version }}" > ./VERSION
+      - name: "Check if a release is necessary"
+        if: ${{ github.repository_owner == 'puppetlabs' }}
+        id: check
+        run: |
+          git diff --quiet VERSION && echo "::set-output name=release::false" || echo "::set-output name=release::true"
+      - name: "Commit changes"
+        if: ${{ github.repository_owner == 'puppetlabs' && steps.check.outputs.release == 'true' }}
+        run: |
+          git config --local user.email "${{ github.repository_owner }}@users.noreply.github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Release prep v${{ github.event.inputs.pds-version }}"
+      - name: Create Pull Request
+        id: cpr
+        uses: puppetlabs/peter-evans-create-pull-request@v3
+        if: ${{ github.repository_owner == 'puppetlabs' && steps.check.outputs.release == 'true' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Release prep v${{ github.event.inputs.pds-version }}"
+          branch: "release-prep-v${{ github.event.inputs.pds-version }}"
+          delete-branch: true
+          title: "Release prep v${{ github.event.inputs.pds-version }}"
+          body: |
+            Automated release-prep 
+          labels: "maintenance"
+      - name: PR outputs
+        if: ${{ github.repository_owner == 'puppetlabs' && steps.check.outputs.release == 'true' }}
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
