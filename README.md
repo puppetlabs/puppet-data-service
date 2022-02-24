@@ -127,14 +127,22 @@ Paths:
 
 * `fpm` must be installed
 * `rpm` build tools must be installed
+* `deb` build-essentialmust be installed
 
 #### Procedure
 
 To build the pds-server RPM package
 
 1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
-3. Run `make clean`
-4. Run `make rpm`
+2. Run `make clean`
+3. Run `make rpm`
+
+To build the pds-server DEB package
+
+1. Checkout the project repo on a host of the OS type you would like to build the package for and change to that directory
+2. Run `make clean`
+3. Run `make deb`
+
 
 ## User guide
 
