@@ -12,8 +12,6 @@ jobs:
   release-prep:
     name: Create release prep PR
     runs-on: ubuntu-latest
-    outputs:
-      versioned_ref: ${{ steps.commit_version.outputs.commit_long_sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
