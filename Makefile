@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 NAME=pds-server
 
 VERSION := $(strip $(shell cat ./VERSION))
@@ -41,6 +42,8 @@ rpm: $(bundle) $(pds-cli) $(fpm)
 		--rpm-attr '0600,pds-server,pds-server:/etc/puppetlabs/pds/pds-server.yaml' \
 		--rpm-attr '0640,pds-server,pe-puppet:/etc/puppetlabs/pds/pds-client.yaml' \
 		--depends "pe-postgresql11 >= $$(rpm -q --qf '%{VERSION}' pe-postgresql11)" \
+		--depends "pe-puppet-enterprise-release >= $$(rpm -q --qf '%{VERSION}' pe-puppet-enterprise-release | cut -d . -f 1-2)" \
+		--depends "pe-puppet-enterprise-release < $$(( $$(rpm -q --qf '%{VERSION}' pe-puppet-enterprise-release | cut -d . -f 1-1) + 1 ))" \
 		app/=/opt/puppetlabs/server/apps/pds-server \
 		app/config/pds-server.yaml.example=/etc/puppetlabs/pds/pds-server.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
@@ -75,6 +78,8 @@ deb: $(bundle) $(pds-cli) $(fpm)
 		--exclude '*/pds-server.yaml.example' \
 		--exclude '*/pds-client.yaml.example' \
 		--depends "pe-postgresql11 >= $$(dpkg-query --showformat='$${Version}' --show pe-postgresql11)" \
+		--depends "pe-puppet-enterprise-release >= $$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-2)" \
+		--depends "pe-puppet-enterprise-release < $$(( $$(dpkg-query --showformat='$${Version}' --show pe-puppet-enterprise-release | cut -d . -f 1-1) + 1 ))" \
 		app/=/opt/puppetlabs/server/apps/pds-server \
 		app/config/pds-server.yaml.example=/etc/puppetlabs/pds/pds-server.yaml \
 		golang/pds-cli/pds-cli=/opt/puppetlabs/bin/pds-cli \
