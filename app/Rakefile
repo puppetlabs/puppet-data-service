@@ -13,16 +13,16 @@ namespace :db do
 end
 
 namespace :app do |args|
+  # Define the helper-required data_adapter method in a way that works for
+  # rake tasks
+  def data_adapter
+    App.settings.data_adapter
+  end
+
   desc "creates and sets an admin token"
   task :set_admin_token, [:token] => :'db:load_config' do |t, args|
     require 'pds/helpers/data_helpers'
     include PDS::Helpers::DataHelpers
-
-    # Define the helper-required data_adapter method in a way that works for
-    # rake tasks
-    def data_adapter
-      App.settings.data_adapter
-    end
 
     admin = {
       'username'   => 'admin',
@@ -33,5 +33,24 @@ namespace :app do |args|
 
     update_timestamps!(:users, [admin])
     data_adapter.upsert(:users, resources: [admin])
+  end
+
+  desc "checks if Admin user exists"
+  task :admin_exists? do
+    require './app'
+    require 'pds/helpers/data_helpers'
+    include PDS::Helpers::DataHelpers
+
+    begin
+      users = data_adapter.read(:users, filters: [['=', 'username', 'admin']])
+      abort "Admin does not exist" if users.empty?
+      puts "Admin user exists, created on #{users.first['created-at']}"
+    rescue ActiveRecord::ConnectionNotEstablished
+      abort "Error: The PDS is not connected to a Database"
+    rescue ActiveRecord::NoDatabaseError
+      abort "Error: The PDS database does not exist, make sure to run 'rake db:create' and 'rake db:migrate' first"
+    rescue ActiveRecord::StatementInvalid, PG::UndefinedTable
+      abort "Error: The PDS is missing one or more tables, make sure to run 'rake db:migrate'"
+    end
   end
 end
