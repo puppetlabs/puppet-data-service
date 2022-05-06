@@ -163,7 +163,7 @@ pds-cli
 
 Demonstrating the PDS CLI capabilities with the below GIFs
 
-1. Adding a class to a instance
+1. Adding a class to a node
 
 Steps
 * Check the content of site.pp and hiera.yaml to allow for class and configuration on the server
