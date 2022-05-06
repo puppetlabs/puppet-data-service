@@ -36,7 +36,7 @@ namespace :app do |args|
   end
 
   desc "checks if Admin user exists"
-  task :does_admin_exist? do
+  task :admin_exists? do
     require './app'
     require 'pds/helpers/data_helpers'
     include PDS::Helpers::DataHelpers
