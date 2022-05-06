@@ -174,10 +174,9 @@ Steps
 ![Add a class with PDS](./docs/images/pdsaddfact.gif)
 
 2. Adding hiera data to a node
-
-Steps
-* Add a hiera value for the client node for motd content 
-* Run puppet on the client and confirm the new content is pplied
+    - Steps
+      * Add a Hiera value for the client node for `motd` content 
+      * Run Puppet on the client and confirm the new content is applied
 
 ![Add hiera data with PDS](./docs/images/pdsaddhiera.gif)
 
