@@ -158,7 +158,7 @@ The CLI offers you a convinient way to create and retrieve data from the PDS. Yo
 ```
 pds-cli
 ```
-
+[The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 ## PDS cli demo
 
 Demonstrating the PDS cli you can view the following gifs.
@@ -191,9 +191,6 @@ Steps
 * Run puppet on the client to apply the change to motd
 
 ![Add fact and use in hiera with PDS](./docs/images/pdsaddfacttohiera.gif)
-
-
-[The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 
 ## Disaster Recovery
 
