@@ -36,13 +36,21 @@ namespace :app do |args|
   end
 
   desc "checks if Admin user exists"
-  task :does_admin_exist do
+  task :does_admin_exist? do
     require './app'
     require 'pds/helpers/data_helpers'
     include PDS::Helpers::DataHelpers
 
-    users = data_adapter.read(:users, filters: [['=', 'username', 'admin']])
-    abort "Admin does not exist" if users.empty?
-    puts "Admin user exists, created on #{users.first['created-at']}"
+    begin
+      users = data_adapter.read(:users, filters: [['=', 'username', 'admin']])
+      abort "Admin does not exist" if users.empty?
+      puts "Admin user exists, created on #{users.first['created-at']}"
+    rescue ActiveRecord::ConnectionNotEstablished
+      abort "Error: The PDS is not connected to a Database"
+    rescue ActiveRecord::NoDatabaseError
+      abort "Error: The PDS database does not exist, make sure to run 'rake db:create' and 'rake db:migrate' first"
+    rescue ActiveRecord::StatementInvalid, PG::UndefinedTable
+      abort "Error: The PDS is missing one or more tables, make sure to run 'rake db:migrate'"
+    end
   end
 end
