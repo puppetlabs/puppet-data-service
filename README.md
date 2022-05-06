@@ -182,12 +182,12 @@ Steps
 
 3. Adding a fact and using it in hiera data
 
-Steps
-* Add a fact to the client node with the pds-cli
-* Run puppet on the client to pick up the new fact
-* API call to show external facts on the server
-* Update the hiera content with the pds-cli to change motd content and include the fact
-* Run puppet on the client to apply the change to motd
+   - Steps
+     * Add a fact to the client node with the `pds-cli`
+     * Run Puppet on the client to pick up the new fact
+     * API call to show external facts on the server
+     * Update the Hiera content with the `pds-cli` to change `motd` content and include the fact
+     * Run Puppet on the client to apply the change to `motd`
 
 ![Add fact and use in hiera with PDS](./docs/images/pdsaddfacttohiera.gif)
 
