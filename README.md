@@ -165,11 +165,11 @@ Demonstrating the PDS CLI capabilities with the below GIFs
 
 1. Adding a class to a node
 
-Steps
-* Check the content of site.pp and hiera.yaml to allow for class and configuration on the server
-* Check the content of the client catalog on the client
-* Add the motd class to the client node with the pds-cli on the server
-* Running the puppet agent on the client node and confirm the new class is in the catalog and applied.
+    - Steps
+       * Check the content of `site.pp` and `hiera.yaml` to allow for class and configuration on the server
+       * Check the content of the client catalog on the client
+      * Add the `motd` class to the client node with the `pds-cli` on the server
+      * Running the Puppet agent on the client node and confirming the new class is in the catalog and applied.
 
 ![Add a class with PDS](./docs/images/pdsaddfact.gif)
 
