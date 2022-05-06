@@ -161,7 +161,7 @@ pds-cli
 [The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 ## PDS cli demo
 
-Demonstrating the PDS cli you can view the following gifs.
+Demonstrating the PDS CLI capabilities with the below GIFs
 
 1. Adding a class to a instance
 
