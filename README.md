@@ -159,7 +159,7 @@ The CLI offers you a convinient way to create and retrieve data from the PDS. Yo
 pds-cli
 ```
 [The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
-## PDS cli demo
+## PDS CLI demo
 
 Demonstrating the PDS CLI capabilities with the below GIFs
 
