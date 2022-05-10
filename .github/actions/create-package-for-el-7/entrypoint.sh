@@ -13,6 +13,9 @@ if [ -z "${PE_VERSION}" ]; then
   exit 1
 fi
 
+# Ensure Git works properly in this GH Actions container environment
+git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
 # Download PE and install required dependent packages
 
 mkdir -p "${SCRATCHDIR}/pe"
