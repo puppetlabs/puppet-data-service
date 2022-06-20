@@ -158,6 +158,37 @@ The CLI offers you a convinient way to create and retrieve data from the PDS. Yo
 ```
 pds-cli
 ```
+## PDS CLI demo
+
+Demonstrating the PDS CLI capabilities with the below GIFs
+
+1. Adding a class to a node
+
+    - Steps
+       * Check the content of `site.pp` and `hiera.yaml` to allow for class and configuration on the server
+       * Check the content of the client catalog on the client
+      * Add the `motd` class to the client node with the `pds-cli` on the server
+      * Running the Puppet agent on the client node and confirming the new class is in the catalog and applied.
+
+![Add a class with PDS](./docs/images/pdsaddfact.gif)
+
+2. Adding hiera data to a node
+    - Steps
+      * Add a Hiera value for the client node for `motd` content 
+      * Run Puppet on the client and confirm the new content is applied
+
+![Add hiera data with PDS](./docs/images/pdsaddhiera.gif)
+
+3. Adding a fact and using it in hiera data
+
+   - Steps
+     * Add a fact to the client node with the `pds-cli`
+     * Run Puppet on the client to pick up the new fact
+     * API call to show external facts on the server
+     * Update the Hiera content with the `pds-cli` to change `motd` content and include the fact
+     * Run Puppet on the client to apply the change to `motd`
+
+![Add fact and use in hiera with PDS](./docs/images/pdsaddfacttohiera.gif)
 
 [The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 
