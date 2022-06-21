@@ -170,14 +170,14 @@ Demonstrating the PDS CLI capabilities with the below GIFs
       * Add the `motd` class to the client node with the `pds-cli` on the server
       * Running the Puppet agent on the client node and confirming the new class is in the catalog and applied.
 
-![Add a class with PDS](./docs/images/pdsaddfact.gif)
+![Add a class with PDS](./docs/images/pds_add_fact.gif)
 
 2. Adding hiera data to a node
     - Steps
       * Add a Hiera value for the client node for `motd` content 
       * Run Puppet on the client and confirm the new content is applied
 
-![Add hiera data with PDS](./docs/images/pdsaddhiera.gif)
+![Add hiera data with PDS](./docs/images/pds_add_hiera.gif)
 
 3. Adding a fact and using it in hiera data
 
@@ -188,7 +188,7 @@ Demonstrating the PDS CLI capabilities with the below GIFs
      * Update the Hiera content with the `pds-cli` to change `motd` content and include the fact
      * Run Puppet on the client to apply the change to `motd`
 
-![Add fact and use in hiera with PDS](./docs/images/pdsaddfacttohiera.gif)
+![Add fact and use in hiera with PDS](./docs/images/pds_add_fact_to_hiera.gif)
 
 [The PDS CLI documentation](golang/pds-cli/doc/pds-cli.md) section has detailed instructions of the available options
 
